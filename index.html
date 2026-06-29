@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Morphing Periodic Table — Five Ways to See the Elements</title>
+<meta name="description" content="An interactive periodic table that morphs between five different scientific arrangements — standard, long form, Janet's left-step, a continuous spiral, and a sunburst — so the relationships between elements become visible." />
+<style>
+  :root{
+    --bg:#070b18;
+    --panel:#0e1530;
+    --panel2:#141d3d;
+    --line:#26315c;
+    --txt:#e8edff;
+    --muted:#9aa7d4;
+    --accent:#5cc8ff;
+    --accent2:#b388ff;
+    --tile:56px;
+    --cell:64px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);overflow-x:hidden;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  body{
+    background:
+      radial-gradient(1200px 700px at 18% -8%, rgba(92,200,255,.10), transparent 60%),
+      radial-gradient(1000px 700px at 90% 0%, rgba(179,136,255,.12), transparent 55%),
+      var(--bg);
+    min-height:100vh;
+  }
+  a{color:var(--accent);}
+  header{padding:26px 22px 6px;max-width:1500px;margin:0 auto;}
+  h1{
+    margin:0;font-size:clamp(24px,3.4vw,40px);font-weight:800;letter-spacing:-.5px;
+    background:linear-gradient(92deg,#7ad7ff,#b388ff 55%,#ff9ad5);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .sub{color:var(--muted);margin:8px 0 0;max-width:760px;line-height:1.5;font-size:15px;}
+  .wrap{max-width:1500px;margin:0 auto;padding:0 22px 60px;}
+
+  /* control bar */
+  .controls{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;margin:18px 0 6px;}
+  .ctl-group{display:flex;flex-direction:column;gap:6px;}
+  .ctl-label{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-weight:700;}
+  .seg{display:flex;flex-wrap:wrap;gap:6px;background:var(--panel);border:1px solid var(--line);
+    padding:5px;border-radius:12px;}
+  .seg button{
+    border:0;background:transparent;color:var(--muted);font-weight:600;font-size:13px;
+    padding:8px 13px;border-radius:8px;cursor:pointer;transition:.18s;white-space:nowrap;
+  }
+  .seg button:hover{color:var(--txt);background:var(--panel2);}
+  .seg button.on{background:linear-gradient(92deg,#2b6cff33,#7b3bff33);color:#fff;
+    box-shadow:inset 0 0 0 1px #5cc8ff66;}
+  .search{flex:1;min-width:160px;}
+  .search input{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--txt);
+    padding:10px 12px;border-radius:10px;font-size:14px;outline:none;}
+  .search input:focus{border-color:var(--accent);}
+
+  .hint{font-size:12.5px;color:var(--muted);margin:4px 0 0;min-height:18px;transition:.2s;}
+  .hint b{color:var(--accent);}
+
+  /* layout: board + side panel */
+  .stagewrap{display:flex;gap:20px;margin-top:14px;align-items:flex-start;}
+  #viewport{flex:1;min-width:0;overflow:hidden;position:relative;border-radius:16px;
+    background:linear-gradient(180deg,#0a1024,#070b18);border:1px solid #1a2348;}
+  #board{position:relative;transform-origin:top left;}
+  .tile{
+    position:absolute;left:0;top:0;width:var(--tile);height:var(--tile);
+    border-radius:10px;cursor:pointer;overflow:hidden;
+    display:flex;flex-direction:column;justify-content:center;align-items:center;
+    color:#0a0f22;background:#2a3460;
+    box-shadow:0 1px 0 rgba(255,255,255,.18) inset,0 4px 10px rgba(0,0,0,.28);
+    transition:transform .78s cubic-bezier(.22,.61,.25,1),
+               background-color .45s ease, opacity .35s ease, box-shadow .2s;
+    will-change:transform;user-select:none;
+  }
+  .tile .num{position:absolute;top:4px;left:6px;font-size:9.5px;font-weight:700;opacity:.72;}
+  .tile .sym{font-size:19px;font-weight:800;line-height:1;letter-spacing:-.5px;}
+  .tile .val{position:absolute;bottom:3px;font-size:8.5px;font-weight:600;opacity:.78;
+    font-variant-numeric:tabular-nums;}
+  .tile.nodata{background:repeating-linear-gradient(45deg,#1b2447,#1b2447 5px,#222d54 5px,#222d54 10px);
+    color:#7e8ac0;}
+  .tile:hover{box-shadow:0 0 0 2px #fff,0 8px 20px rgba(0,0,0,.45);z-index:6;}
+  .tile.sel{box-shadow:0 0 0 3px #ffe06b,0 8px 22px rgba(0,0,0,.5);z-index:7;}
+  .tile.dim{opacity:.16;}
+  .tile.hl-period{box-shadow:0 0 0 2px #5cc8ff,0 6px 16px rgba(0,0,0,.4);z-index:4;}
+  .tile.hl-group{box-shadow:0 0 0 2px #ffd86b,0 8px 20px rgba(0,0,0,.5);z-index:5;}
+  .tile.match{box-shadow:0 0 0 3px #6bff9e,0 0 22px #6bff9e88;z-index:8;}
+
+  /* axis-ish labels for grid layouts */
+  .glabel{position:absolute;color:var(--muted);font-size:11px;font-weight:700;opacity:.55;
+    transition:opacity .4s, transform .6s;pointer-events:none;}
+
+  /* side panel */
+  #side{width:312px;flex:none;background:var(--panel);border:1px solid var(--line);
+    border-radius:16px;padding:16px;position:sticky;top:14px;}
+  #side .ph{color:var(--muted);font-size:13px;line-height:1.6;text-align:center;padding:30px 6px;}
+  .d-top{display:flex;gap:12px;align-items:center;}
+  .d-badge{width:64px;height:64px;flex:none;border-radius:12px;display:flex;flex-direction:column;
+    justify-content:center;align-items:center;color:#0a0f22;font-weight:800;}
+  .d-badge .s{font-size:26px;line-height:1;}
+  .d-badge .n{font-size:11px;opacity:.7;}
+  .d-name{font-size:20px;font-weight:800;margin:0;}
+  .d-cat{font-size:12px;color:var(--muted);margin-top:2px;text-transform:capitalize;}
+  .d-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px;}
+  .d-cell{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:8px 9px;}
+  .d-cell .k{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);}
+  .d-cell .v{font-size:14px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums;}
+  .d-cfg{margin-top:12px;background:var(--panel2);border:1px solid var(--line);border-radius:9px;
+    padding:9px;font-size:12.5px;}
+  .d-cfg .k{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);}
+  .d-cfg code{color:#9ad0ff;font-size:12.5px;}
+  .d-sum{margin-top:12px;font-size:12.5px;line-height:1.55;color:#c9d2f5;max-height:150px;overflow:auto;}
+  #shell{display:block;margin:12px auto 2px;}
+
+  /* legend */
+  .legend{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;
+    background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:11px 14px;}
+  .legend .lg-title{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);
+    font-weight:700;margin-right:4px;}
+  .lg-item{display:flex;align-items:center;gap:6px;font-size:12px;color:#cdd6fb;}
+  .lg-sw{width:13px;height:13px;border-radius:4px;}
+  .lg-bar{height:13px;width:220px;border-radius:7px;}
+  .lg-scale{display:flex;justify-content:space-between;width:220px;font-size:10.5px;color:var(--muted);
+    font-variant-numeric:tabular-nums;}
+
+  details.about{margin-top:20px;background:var(--panel);border:1px solid var(--line);
+    border-radius:12px;padding:4px 16px;}
+  details.about summary{cursor:pointer;padding:12px 0;font-weight:700;color:var(--txt);}
+  details.about p{color:var(--muted);line-height:1.6;font-size:14px;}
+  details.about b{color:#bcd2ff;}
+  footer{color:var(--muted);font-size:12px;margin-top:24px;line-height:1.6;}
+
+  @media(max-width:900px){
+    .stagewrap{flex-direction:column;}
+    #side{width:100%;position:static;}
+    .controls{flex-direction:column;align-items:stretch;gap:12px;}
+    .ctl-group,.search{width:100%;}
+    .seg{width:100%;}
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>The Morphing Periodic Table</h1>
+  <p class="sub">The same 118 elements, five different ways. Each tile <b>flies</b> to its new home when you
+  switch arrangements — watch how families stay together no matter how you fold the sequence.
+  Hover an element to light up its <b>group</b> and <b>period</b>; recolor by any property to see the trends.</p>
+</header>
+
+<div class="wrap">
+  <div class="controls">
+    <div class="ctl-group">
+      <span class="ctl-label">Arrangement</span>
+      <div class="seg" id="layoutSeg">
+        <button data-l="standard" class="on">Standard</button>
+        <button data-l="long">Long form</button>
+        <button data-l="left">Left-step</button>
+        <button data-l="spiral">Spiral</button>
+        <button data-l="sun">Orbits</button>
+      </div>
+    </div>
+    <div class="ctl-group">
+      <span class="ctl-label">Color by</span>
+      <div class="seg" id="colorSeg">
+        <button data-c="cat" class="on">Family</button>
+        <button data-c="phase">State</button>
+        <button data-c="en">Electronegativity</button>
+        <button data-c="ie">Ionization energy</button>
+        <button data-c="mass">Atomic mass</button>
+        <button data-c="den">Density</button>
+        <button data-c="melt">Melting point</button>
+      </div>
+    </div>
+    <div class="ctl-group search">
+      <span class="ctl-label">Find</span>
+      <input id="search" placeholder="Search name, symbol, or number…" autocomplete="off" />
+    </div>
+  </div>
+  <p class="hint" id="hint"></p>
+
+  <div class="stagewrap">
+    <div id="viewport"><div id="board"></div></div>
+    <aside id="side"><div class="ph">Hover or tap any element to see its full profile, electron
+      configuration, and a Bohr shell diagram.<br><br>Click to pin it.</div></aside>
+  </div>
+
+  <div class="legend" id="legend"></div>
+
+  <details class="about">
+    <summary>What am I looking at? — the five arrangements explained</summary>
+    <p><b>Standard.</b> The familiar 18-column table. Notice the lanthanides and actinides are torn out and
+    floated below — a compromise to keep the page from getting too wide.</p>
+    <p><b>Long form (32-column).</b> The f-block put back where it chemically belongs, between groups 2 and 3.
+    This is the "true" shape of the table; we usually cut it up only to fit on paper.</p>
+    <p><b>Left-step (Janet, 1928).</b> Elements ordered by how their orbitals actually fill (the s-block moves to
+    the right). Its boldest claim: helium sits above beryllium, not neon — because helium's electrons fill an
+    s-orbital, just like the alkaline-earth metals.</p>
+    <p><b>Spiral.</b> One continuous ribbon from hydrogen outward, never broken. Each loop is one period, so you
+    can trace the unbroken thread of atomic number the way de Chancourtois and Benfey imagined it.</p>
+    <p><b>Orbits.</b> Each period becomes a concentric ring — a nod to the electron shells in the Bohr diagram on
+    the right. The alkali metals all sit at the top of their ring and the noble gases close it, so one full
+    lap around any ring walks you through exactly one period.</p>
+    <p style="color:#8e9ad0;font-size:13px;margin-bottom:14px;">Tip: the small number at the bottom of each tile
+    shows the actual value being mapped in the current color mode.</p>
+  </details>
+
+  <footer>
+    Built as an interactive exploration of how the periodic table can be re-imagined.
+    Element data from the open <a href="https://github.com/Bowserinator/Periodic-Table-JSON" target="_blank" rel="noopener">Periodic-Table-JSON</a>
+    dataset (CC-BY-SA). Left-step, spiral, and orbit coordinates computed from each element's block, period, and group.
+  </footer>
+</div>
+
+<script>
+const CELL=64, TILE=56, RND_S=0.76;
+const VW=32*CELL, VH=11.2*CELL;
+let ELEMENTS=[], TILES={}, periodLen={}, periodIdx={}, spiralPos={};
+let curLayout='standard', curColor='cat', selected=null, locked=false;
+
+/* ---------- color systems ---------- */
+const CAT_COLORS={
+  'alkali metal':'#ff7a7a','alkaline earth metal':'#ffb057','transition metal':'#ffd64d',
+  'post-transition metal':'#74e08a','metalloid':'#37d6b0','diatomic nonmetal':'#5bb6ff',
+  'polyatomic nonmetal':'#8aa0ff','noble gas':'#d68bff','lanthanide':'#ff8fc4','actinide':'#e0a0ff'
+};
+const catKey = c => CAT_COLORS[c] ? c : 'unknown';
+const CAT_LABELS={
+  'alkali metal':'Alkali metal','alkaline earth metal':'Alkaline earth','transition metal':'Transition metal',
+  'post-transition metal':'Post-transition','metalloid':'Metalloid','diatomic nonmetal':'Diatomic nonmetal',
+  'polyatomic nonmetal':'Polyatomic nonmetal','noble gas':'Noble gas','lanthanide':'Lanthanide',
+  'actinide':'Actinide','unknown':'Unknown / predicted'
+};
+const PHASE_COLORS={'Solid':'#9ad0ff','Liquid':'#7ce0c0','Gas':'#ff9ec7','':'#5a6796'};
+
+const NUM={
+  en:{label:'Electronegativity',unit:'(Pauling)',fmt:v=>v.toFixed(2)},
+  ie:{label:'1st ionization energy',unit:'kJ/mol',fmt:v=>Math.round(v)},
+  mass:{label:'Atomic mass',unit:'u',fmt:v=>v.toFixed(1)},
+  den:{label:'Density',unit:'g/cm³',fmt:v=>v<1?v.toFixed(3):v.toFixed(2)},
+  melt:{label:'Melting point',unit:'K',fmt:v=>Math.round(v)}
+};
+// perceptual-ish cool→warm scale
+const SCALE=[[59,76,192],[68,160,243],[80,212,194],[245,221,90],[247,150,70],[210,45,55]];
+function lerp(a,b,t){return a+(b-a)*t;}
+function scaleColor(t){
+  t=Math.max(0,Math.min(1,t));
+  const x=t*(SCALE.length-1), i=Math.floor(x), f=x-i;
+  const a=SCALE[i], b=SCALE[Math.min(i+1,SCALE.length-1)];
+  return `rgb(${Math.round(lerp(a[0],b[0],f))},${Math.round(lerp(a[1],b[1],f))},${Math.round(lerp(a[2],b[2],f))})`;
+}
+let numRange={};
+function computeRanges(){
+  for(const k of Object.keys(NUM)){
+    const vals=ELEMENTS.map(e=>e[k]).filter(v=>v!=null);
+    numRange[k]={min:Math.min(...vals),max:Math.max(...vals)};
+  }
+}
+function luminance(rgb){ // rgb string -> 0..1
+  const m=rgb.match(/\d+/g).map(Number);
+  return (0.299*m[0]+0.587*m[1]+0.114*m[2])/255;
+}
+function colorFor(el){
+  if(curColor==='cat') return {bg:CAT_COLORS[catKey(el.cat)]||'#7a86b8',data:true};
+  if(curColor==='phase') return {bg:PHASE_COLORS[el.phase]||PHASE_COLORS[''],data:true};
+  const v=el[curColor];
+  if(v==null) return {bg:null,data:false};
+  const r=numRange[curColor];
+  let t=(v-r.min)/(r.max-r.min);
+  if(curColor==='den'||curColor==='mass') t=Math.pow(t,0.4); // these are very skewed
+  return {bg:scaleColor(t),data:true};
+}
+function tileValue(el){
+  if(curColor==='cat'||curColor==='phase') return el.mass!=null?el.mass.toFixed(1):'';
+  const v=el[curColor]; return v==null?'—':NUM[curColor].fmt(v);
+}
+
+/* ---------- positions ---------- */
+function rawPos(el){
+  switch(curLayout){
+    case 'standard': return {cx:el.x*CELL, cy:el.y*CELL, s:1};
+    case 'long':     return {cx:el.wx*CELL, cy:el.wy*CELL, s:1};
+    case 'left':     return {cx:el.lx*CELL, cy:el.ly*CELL, s:1};
+    case 'spiral':{
+      const p=spiralPos[el.n];
+      return {cx:p.cx, cy:p.cy, s:RND_S};
+    }
+    case 'sun':{
+      // concentric rings: one ring per period (≈ electron shell),
+      // evenly spaced, alkali metals aligned at the top
+      const len=periodLen[el.period], i=periodIdx[el.n];
+      const a=-Math.PI/2 + 2*Math.PI*(i/len);
+      const r=36+el.period*38;
+      return {cx:r*Math.cos(a), cy:r*Math.sin(a), s:RND_S};
+    }
+  }
+}
+function applyLayout(){
+  const pos={};
+  let minx=1e9,miny=1e9,maxx=-1e9,maxy=-1e9;
+  for(const el of ELEMENTS){
+    const p=rawPos(el); pos[el.n]=p;
+    const h=TILE*p.s/2;
+    minx=Math.min(minx,p.cx-h); maxx=Math.max(maxx,p.cx+h);
+    miny=Math.min(miny,p.cy-h); maxy=Math.max(maxy,p.cy+h);
+  }
+  const round = curLayout==='spiral'||curLayout==='sun';
+  // round layouts: center on true polar origin (0,0) so rings stay concentric.
+  // grid layouts: center the bounding box.
+  const shx = round ? VW/2 : (VW-(maxx-minx))/2 - minx;
+  const shy = round ? VH/2 : (VH-(maxy-miny))/2 - miny;
+  for(const el of ELEMENTS){
+    const p=pos[el.n], s=p.s;
+    const x=p.cx+shx-TILE*s/2, y=p.cy+shy-TILE*s/2;
+    TILES[el.n].style.transform=`translate(${x.toFixed(1)}px,${y.toFixed(1)}px) scale(${s})`;
+  }
+  drawGuides(shx,shy);
+}
+
+/* group/period guide labels (grid layouts only) */
+let guides=[];
+function drawGuides(shx,shy){
+  const board=document.getElementById('board');
+  guides.forEach(g=>g.remove()); guides=[];
+  const gridLayout = curLayout==='standard'||curLayout==='long'||curLayout==='left';
+  if(!gridLayout) return;
+  // period numbers down the left
+  const rows = curLayout==='standard'?7:(curLayout==='long'?7:8);
+  for(let r=1;r<=rows;r++){
+    const el=ELEMENTS.find(e=>(curLayout==='standard'?e.y:curLayout==='long'?e.wy:e.ly)===r && e.period);
+    if(!el) continue;
+    const lab=document.createElement('div'); lab.className='glabel'; lab.textContent=el.period;
+    const yy=r*CELL+shy; const xx=( (curLayout==='standard'? (function(){let m=99;ELEMENTS.forEach(e=>{if(e.y===r)m=Math.min(m,e.x)});return m;})()
+              : curLayout==='long'? (function(){let m=99;ELEMENTS.forEach(e=>{if(e.wy===r)m=Math.min(m,e.wx)});return m;})()
+              : (function(){let m=99;ELEMENTS.forEach(e=>{if(e.ly===r)m=Math.min(m,e.lx)});return m;})())-1 )*CELL+shx;
+    lab.style.transform=`translate(${xx-2}px,${yy-7}px)`;
+    board.appendChild(lab); guides.push(lab);
+  }
+}
+
+/* ---------- coloring pass ---------- */
+function recolor(){
+  for(const el of ELEMENTS){
+    const t=TILES[el.n], c=colorFor(el);
+    if(c.data){ t.classList.remove('nodata'); t.style.background=c.bg;
+      t.style.color = luminance(c.bg)>0.62?'#0a0f22':'#f3f6ff'; }
+    else { t.classList.add('nodata'); t.style.background=''; t.style.color=''; }
+    t.querySelector('.val').textContent=tileValue(el);
+  }
+  buildLegend();
+}
+
+/* ---------- legend ---------- */
+function buildLegend(){
+  const L=document.getElementById('legend'); L.innerHTML='';
+  const title=document.createElement('span'); title.className='lg-title';
+  if(curColor==='cat'){
+    title.textContent='Family'; L.appendChild(title);
+    const seen=new Set();
+    ['alkali metal','alkaline earth metal','transition metal','post-transition metal','metalloid',
+     'diatomic nonmetal','polyatomic nonmetal','noble gas','lanthanide','actinide','unknown'].forEach(k=>{
+      const it=document.createElement('div'); it.className='lg-item';
+      it.innerHTML=`<span class="lg-sw" style="background:${CAT_COLORS[k]||'#7a86b8'}"></span>${CAT_LABELS[k]}`;
+      L.appendChild(it);
+    });
+  } else if(curColor==='phase'){
+    title.textContent='State at 0 °C'; L.appendChild(title);
+    [['Solid','Solid'],['Liquid','Liquid'],['Gas','Gas'],['','Unknown']].forEach(([k,lab])=>{
+      const it=document.createElement('div'); it.className='lg-item';
+      it.innerHTML=`<span class="lg-sw" style="background:${PHASE_COLORS[k]}"></span>${lab}`;
+      L.appendChild(it);
+    });
+  } else {
+    const m=NUM[curColor], r=numRange[curColor];
+    title.textContent=m.label+' '+m.unit; L.appendChild(title);
+    const wrap=document.createElement('div');
+    let grad='linear-gradient(90deg,';
+    grad+=SCALE.map((c,i)=>`rgb(${c[0]},${c[1]},${c[2]}) ${Math.round(i/(SCALE.length-1)*100)}%`).join(',')+')';
+    wrap.innerHTML=`<div class="lg-bar" style="background:${grad}"></div>
+      <div class="lg-scale"><span>${m.fmt(r.min)}</span><span>${m.fmt(r.max)}</span></div>`;
+    L.appendChild(wrap);
+    const it=document.createElement('div'); it.className='lg-item';
+    it.innerHTML=`<span class="lg-sw nodata-sw" style="background:repeating-linear-gradient(45deg,#1b2447,#1b2447 3px,#222d54 3px,#222d54 6px)"></span>no data`;
+    L.appendChild(it);
+  }
+}
+
+/* ---------- highlight relationships ---------- */
+function highlight(el){
+  for(const e of ELEMENTS){
+    const t=TILES[e.n]; t.classList.remove('hl-group','hl-period','dim');
+    if(e.n===el.n) continue;
+    const sameGroup = el.group && e.group===el.group;
+    const samePeriod = e.period===el.period;
+    if(sameGroup) t.classList.add('hl-group');
+    else if(samePeriod) t.classList.add('hl-period');
+    else t.classList.add('dim');
+  }
+}
+function clearHighlight(){
+  for(const e of ELEMENTS){ TILES[e.n].classList.remove('hl-group','hl-period','dim'); }
+}
+
+/* ---------- detail panel ---------- */
+function showDetail(el){
+  const c=colorFor(el), bg=c.data?c.bg:'#3a4574';
+  const fg=c.data&&luminance(c.bg)>0.62?'#0a0f22':'#f3f6ff';
+  const cell=(k,v)=>`<div class="d-cell"><div class="k">${k}</div><div class="v">${v}</div></div>`;
+  const f=(v,fix,suf)=>v==null?'—':(typeof v==='number'?(fix!=null?v.toFixed(fix):v):v)+(suf||'');
+  document.getElementById('side').innerHTML=`
+    <div class="d-top">
+      <div class="d-badge" style="background:${bg};color:${fg}">
+        <div class="s">${el.sym}</div><div class="n">${el.n}</div>
+      </div>
+      <div>
+        <p class="d-name">${el.name}</p>
+        <div class="d-cat">${el.cat}</div>
+      </div>
+    </div>
+    <div class="d-grid">
+      ${cell('Atomic mass',f(el.mass,3,' u'))}
+      ${cell('Period · Group',el.period+' · '+(el.group||'—'))}
+      ${cell('Block',el.block+'-block')}
+      ${cell('State (0 °C)',el.phase||'—')}
+      ${cell('Electronegativity',f(el.en,2))}
+      ${cell('Ionization',f(el.ie,0,' kJ/mol'))}
+      ${cell('Density',f(el.den,null,' g/cm³'))}
+      ${cell('Melts at',f(el.melt,0,' K'))}
+    </div>
+    <div class="d-cfg"><div class="k">Electron configuration</div><code>${el.cfg||'—'}</code></div>
+    <svg id="shell" width="170" height="170"></svg>
+    <div class="d-sum">${el.sum||''}</div>`;
+  drawShell(el);
+}
+function drawShell(el){
+  const svg=document.getElementById('shell'); if(!svg) return;
+  const cx=85,cy=85, shells=el.shells||[];
+  const NS='http://www.w3.org/2000/svg';
+  const nuc=document.createElementNS(NS,'circle');
+  nuc.setAttribute('cx',cx);nuc.setAttribute('cy',cy);nuc.setAttribute('r',9);
+  nuc.setAttribute('fill','#ffd86b'); svg.appendChild(nuc);
+  const symt=document.createElementNS(NS,'text');
+  symt.setAttribute('x',cx);symt.setAttribute('y',cy+3.5);symt.setAttribute('text-anchor','middle');
+  symt.setAttribute('font-size','9');symt.setAttribute('font-weight','800');symt.setAttribute('fill','#0a0f22');
+  symt.textContent=el.sym; svg.appendChild(symt);
+  const maxR=72, step=shells.length>0?(maxR-16)/shells.length:0;
+  shells.forEach((cnt,i)=>{
+    const r=16+step*(i+1);
+    const ring=document.createElementNS(NS,'circle');
+    ring.setAttribute('cx',cx);ring.setAttribute('cy',cy);ring.setAttribute('r',r);
+    ring.setAttribute('fill','none');ring.setAttribute('stroke','#3a4574');ring.setAttribute('stroke-width','1');
+    svg.appendChild(ring);
+    for(let e=0;e<cnt;e++){
+      const ang=-Math.PI/2 + 2*Math.PI*e/cnt;
+      const dot=document.createElementNS(NS,'circle');
+      dot.setAttribute('cx',cx+r*Math.cos(ang));dot.setAttribute('cy',cy+r*Math.sin(ang));
+      dot.setAttribute('r',2.6);dot.setAttribute('fill','#7ad7ff');
+      svg.appendChild(dot);
+    }
+  });
+}
+
+/* ---------- search ---------- */
+function runSearch(q){
+  q=q.trim().toLowerCase();
+  for(const el of ELEMENTS){
+    const t=TILES[el.n]; t.classList.remove('match','dim');
+    if(!q) continue;
+    const hit = el.name.toLowerCase().includes(q)||el.sym.toLowerCase()===q
+      ||el.sym.toLowerCase().startsWith(q)||String(el.n)===q;
+    if(hit) t.classList.add('match'); else t.classList.add('dim');
+  }
+}
+
+/* ---------- build ---------- */
+function build(){
+  const board=document.getElementById('board');
+  board.style.width=VW+'px'; board.style.height=VH+'px';
+  // period index for spiral
+  const byPeriod={};
+  ELEMENTS.forEach(e=>{ (byPeriod[e.period]=byPeriod[e.period]||[]).push(e); });
+  Object.values(byPeriod).forEach(arr=>{
+    arr.sort((a,b)=>a.n-b.n);
+    periodLen[arr[0].period]=arr.length;
+    arr.forEach((e,i)=>periodIdx[e.n]=i);
+  });
+  // even arc-length Archimedean spiral, ordered by atomic number
+  const sorted=[...ELEMENTS].sort((a,b)=>a.n-b.n);
+  let th=0; const bb=8.4, spacing=48;
+  for(const el of sorted){
+    const r=30+bb*th, a=th-Math.PI/2;
+    spiralPos[el.n]={cx:r*Math.cos(a), cy:r*Math.sin(a)};
+    th += spacing/Math.max(r,40);
+  }
+  for(const el of ELEMENTS){
+    const t=document.createElement('div'); t.className='tile';
+    t.innerHTML=`<span class="num">${el.n}</span><span class="sym">${el.sym}</span><span class="val"></span>`;
+    t.addEventListener('mouseenter',()=>{ highlight(el); if(!locked) showDetail(el); });
+    t.addEventListener('mouseleave',()=>{ if(!document.querySelector('.match')) clearHighlight(); });
+    t.addEventListener('click',()=>{
+      if(selected===el.n && locked){ locked=false; TILES[el.n].classList.remove('sel'); return; }
+      if(selected) TILES[selected].classList.remove('sel');
+      selected=el.n; locked=true; t.classList.add('sel'); showDetail(el);
+    });
+    board.appendChild(t); TILES[el.n]=t;
+  }
+  computeRanges();
+  applyLayout(); recolor(); resize();
+  // robustly react to the viewport settling / window changes
+  new ResizeObserver(resize).observe(document.body);
+  requestAnimationFrame(resize);
+}
+
+/* ---------- scaling ----------
+   We size the viewport box explicitly from the (reliable) document width rather
+   than trusting flex to constrain a 2048px-wide child, then scale the board to fit. */
+function resize(){
+  const vp=document.getElementById('viewport');
+  const sw=document.querySelector('.stagewrap');
+  const isRow=getComputedStyle(sw).flexDirection==='row';
+  const pad=44, side=isRow?332:0; // .wrap padding + (side panel + gap)
+  const avail=Math.max(240, document.documentElement.clientWidth - pad - side);
+  const scale=Math.min(1, avail/VW);
+  vp.style.flex='none';
+  vp.style.width=avail+'px';
+  vp.style.height=(VH*scale)+'px';
+  document.getElementById('board').style.transform=`scale(${scale})`;
+}
+window.addEventListener('resize',resize);
+
+/* ---------- hint text ---------- */
+const HINTS={
+  standard:'The everyday table — but see how the lanthanides &amp; actinides are exiled to the bottom.',
+  long:'The f-block restored to its true home between groups 2 and 3. The table is really this wide.',
+  left:'Ordered by orbital filling. Look at the top-right: <b>helium now sits above beryllium</b>.',
+  spiral:'One unbroken thread from hydrogen outward — atomic number never skips.',
+  sun:'Each ring is a period — like an electron shell. Alkali metals line up at the top; the noble gases close each ring.'
+};
+
+/* ---------- controls ---------- */
+function wire(){
+  document.getElementById('layoutSeg').addEventListener('click',e=>{
+    const b=e.target.closest('button'); if(!b) return;
+    document.querySelectorAll('#layoutSeg button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); curLayout=b.dataset.l; applyLayout();
+    document.getElementById('hint').innerHTML=HINTS[curLayout];
+  });
+  document.getElementById('colorSeg').addEventListener('click',e=>{
+    const b=e.target.closest('button'); if(!b) return;
+    document.querySelectorAll('#colorSeg button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); curColor=b.dataset.c; recolor();
+    if(locked&&selected) showDetail(ELEMENTS.find(x=>x.n===selected));
+  });
+  document.getElementById('search').addEventListener('input',e=>runSearch(e.target.value));
+  document.getElementById('hint').innerHTML=HINTS[curLayout];
+}
+
+function applyInitialParams(){
+  const p=new URLSearchParams(location.search);
+  const l=p.get('layout'), c=p.get('color');
+  if(l && HINTS[l]){ curLayout=l;
+    document.querySelectorAll('#layoutSeg button').forEach(x=>x.classList.toggle('on',x.dataset.l===l)); }
+  if(c && (c==='cat'||c==='phase'||NUM[c])){ curColor=c;
+    document.querySelectorAll('#colorSeg button').forEach(x=>x.classList.toggle('on',x.dataset.c===c)); }
+}
+fetch('elements.json').then(r=>r.json()).then(data=>{
+  ELEMENTS=data; applyInitialParams(); build(); wire();
+  const sel=new URLSearchParams(location.search).get('sel');
+  if(sel){ const el=ELEMENTS.find(x=>x.n==sel||x.sym.toLowerCase()===String(sel).toLowerCase());
+    if(el){ selected=el.n; locked=true; TILES[el.n].classList.add('sel'); showDetail(el); highlight(el); } }
+}).catch(err=>{
+  document.getElementById('side').innerHTML='<div class="ph">Could not load element data.<br>'+err+'</div>';
+});
+</script>
+</body>
+</html>

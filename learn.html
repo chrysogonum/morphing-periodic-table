@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Guide — The Morphing Periodic Table</title>
+<meta name="description" content="How to use the Morphing Periodic Table, and how each of its arrangements and color modes helps you learn the properties and trends of the chemical elements." />
+<style>
+  :root{
+    --bg:#070b18;--panel:#0e1530;--panel2:#141d3d;--line:#26315c;
+    --txt:#e8edff;--muted:#9aa7d4;--accent:#5cc8ff;--accent2:#b388ff;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;overflow-x:hidden;background:var(--bg);color:var(--txt);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;}
+  body{background:
+      radial-gradient(1200px 700px at 18% -8%, rgba(92,200,255,.10), transparent 60%),
+      radial-gradient(1000px 700px at 90% 0%, rgba(179,136,255,.12), transparent 55%),
+      var(--bg);min-height:100vh;}
+  .wrap{max-width:980px;margin:0 auto;padding:26px 22px 70px;}
+  h1{margin:0;font-size:clamp(24px,3.4vw,38px);font-weight:800;letter-spacing:-.5px;
+    background:linear-gradient(92deg,#7ad7ff,#b388ff 55%,#ff9ad5);
+    -webkit-background-clip:text;background-clip:text;color:transparent;}
+  .lede{color:var(--muted);font-size:16px;max-width:720px;margin:10px 0 0;}
+  nav.topnav{display:flex;gap:10px;margin:18px 0 0;}
+  nav.topnav a{padding:8px 15px;border-radius:9px;text-decoration:none;font-weight:700;font-size:13px;
+    border:1px solid var(--line);color:var(--muted);background:var(--panel);transition:.15s;}
+  nav.topnav a:hover{color:var(--txt);}
+  nav.topnav a.active{color:#fff;background:linear-gradient(92deg,#2b6cff33,#7b3bff33);
+    box-shadow:inset 0 0 0 1px #5cc8ff66;}
+
+  h2{font-size:22px;margin:38px 0 6px;font-weight:800;}
+  h2 .em{color:var(--accent);}
+  h3{font-size:16.5px;margin:22px 0 4px;font-weight:700;color:#dbe4ff;}
+  p{color:#c7d0f0;}
+  a.inline{color:var(--accent);}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-top:14px;}
+  .steps{list-style:none;padding:0;margin:14px 0 0;counter-reset:s;}
+  .steps li{position:relative;padding:12px 14px 12px 50px;background:var(--panel);border:1px solid var(--line);
+    border-radius:11px;margin-bottom:10px;}
+  .steps li::before{counter-increment:s;content:counter(s);position:absolute;left:12px;top:12px;
+    width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:13px;color:#0a0f22;background:linear-gradient(135deg,#7ad7ff,#b388ff);}
+  .steps b{color:#eaf1ff;}
+
+  .try{display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:7px 13px;border-radius:8px;
+    text-decoration:none;font-weight:700;font-size:13px;color:#0a0f22;
+    background:linear-gradient(92deg,#7ad7ff,#9bc2ff);box-shadow:0 3px 10px rgba(0,0,0,.3);transition:.15s;}
+  .try:hover{transform:translateY(-1px);filter:brightness(1.07);}
+  .try.alt{background:linear-gradient(92deg,#c6a3ff,#ff9ad5);}
+  .arrow{font-size:15px;}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;}
+  .feat{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:16px 18px;}
+  .feat h3{margin-top:0;display:flex;align-items:center;gap:8px;}
+  .chip{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--panel2);
+    border:1px solid var(--line);color:var(--accent);}
+  .feat p{font-size:14px;margin:6px 0 0;color:#bcc6e8;}
+
+  table.trend{width:100%;border-collapse:collapse;margin-top:14px;font-size:14px;}
+  table.trend th,table.trend td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);
+    vertical-align:top;}
+  table.trend th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em;}
+  table.trend td b{color:#eaf1ff;}
+  .dir{font-weight:800;color:var(--accent2);white-space:nowrap;}
+
+  footer{color:var(--muted);font-size:12.5px;margin-top:40px;border-top:1px solid var(--line);padding-top:18px;}
+  @media(max-width:720px){ .grid2{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>How to read the Morphing Periodic Table</h1>
+  <p class="lede">This is a short field guide. It explains every control, and — more importantly — what each
+  one is <i>for</i>: how morphing the table and recoloring it turns the periodic table from a chart you
+  memorize into a set of patterns you can actually see. Every blue button below opens the live tool already
+  set up for that idea.</p>
+  <nav class="topnav">
+    <a href="index.html">Explore</a>
+    <a href="learn.html" class="active">Guide &amp; how to learn from it</a>
+  </nav>
+
+  <h2>The <span class="em">30-second</span> how-to</h2>
+  <ol class="steps">
+    <li><b>Pick an arrangement</b> (top-left). The same 118 tiles fly into a new shape — standard, long form,
+      left-step, spiral, or orbits. The motion itself is the lesson: nothing is added or removed, only refolded.</li>
+    <li><b>Color by a property</b> (top-middle). Family, state, electronegativity, ionization energy, atomic
+      mass, density, or melting point. A plain-English note under the table tells you the trend and <i>why</i> it happens.</li>
+    <li><b>Hover an element.</b> Its whole <b>group</b> lights up gold and its <b>period</b> lights up blue, with
+      everything else dimmed — so you can see the family it belongs to at a glance.</li>
+    <li><b>Click to pin it.</b> A side panel shows mass, configuration, the key properties, and a Bohr shell
+      diagram drawn from its real electron shells. Click again to unpin.</li>
+    <li><b>Search or isolate.</b> Type a name, symbol, or number to find an element; or click a family in the
+      legend to light up just that family everywhere.</li>
+  </ol>
+  <a class="try" href="index.html"><span>Open the explorer</span><span class="arrow">→</span></a>
+
+  <h2>The five arrangements — and <span class="em">what each one teaches</span></h2>
+  <p>There has never been one "correct" periodic table. Chemists have folded the same sequence of elements many
+  ways, each exposing a different truth. Switch between them and watch what moves — the elements that travel the
+  farthest are the ones whose "home" is genuinely debated.</p>
+
+  <div class="card">
+    <h3>Standard — the everyday table</h3>
+    <p>The familiar 18-column shape. Its honest flaw: the lanthanides and actinides are torn out and parked below,
+    purely so the chart fits on a page. Good for orientation; misleading about where those 28 elements really live.</p>
+    <a class="try" href="index.html?layout=standard&amp;color=cat">Try it<span class="arrow">→</span></a>
+  </div>
+  <div class="card">
+    <h3>Long form — the table's true width</h3>
+    <p>The f-block slotted back between groups 2 and 3, where it chemically belongs. This is the real shape; we only
+    chop it up to save paper. Watch the two detached rows slide up into place.</p>
+    <a class="try" href="index.html?layout=long&amp;color=cat&amp;sel=58">Try it<span class="arrow">→</span></a>
+  </div>
+  <div class="card">
+    <h3>Left-step (Charles Janet, 1928) — ordered by orbital filling</h3>
+    <p>Re-sorted by the order electrons actually fill orbitals, which slides the s-block to the right. Its boldest
+    claim: <b>helium sits above beryllium</b>, not above neon — because helium fills an s-orbital just like the
+    alkaline-earth metals. A great argument-starter about what "belongs" with what.</p>
+    <a class="try alt" href="index.html?layout=left&amp;color=cat&amp;sel=2">See helium move<span class="arrow">→</span></a>
+  </div>
+  <div class="card">
+    <h3>Spiral — continuity made visible</h3>
+    <p>One unbroken ribbon winding out from hydrogen. The standard table hides its seams; here you can trace atomic
+    number with your finger and never lift it. Color it by family and the same families sweep past on every loop —
+    that recurrence <i>is</i> periodicity.</p>
+    <a class="try" href="index.html?layout=spiral&amp;color=cat">Trace the thread<span class="arrow">→</span></a>
+  </div>
+  <div class="card">
+    <h3>Orbits — periods as electron shells</h3>
+    <p>Each period drawn as a concentric ring, echoing the Bohr shell diagram in the side panel. One full lap of a
+    ring is exactly one period; the alkali metals all start at the top and the noble gases close each ring. A bridge
+    between the flat chart and the atom underneath it.</p>
+    <a class="try" href="index.html?layout=sun&amp;color=cat&amp;sel=10">Go around<span class="arrow">→</span></a>
+  </div>
+
+  <h2>Reading the <span class="em">properties</span> — the color modes</h2>
+  <p>Color is where the table stops being a list and becomes a map. Each mode below paints all 118 elements on one
+  scale at once, so a trend that takes a paragraph to state becomes a gradient you can see in a second. Open any of
+  them, then switch arrangements while the colors hold — the same trend looks different in each shape.</p>
+
+  <div class="grid2">
+    <div class="feat">
+      <h3>Electronegativity <span class="chip">trend</span></h3>
+      <p>Rises toward the top-right, peaking at fluorine; falls toward the bottom-left. It is how hard an atom tugs
+      shared electrons — fiercest when the nucleus is small and barely shielded.</p>
+      <a class="try" href="index.html?layout=standard&amp;color=en&amp;sel=9">Show it<span class="arrow">→</span></a>
+    </div>
+    <div class="feat">
+      <h3>Ionization energy <span class="chip">trend</span></h3>
+      <p>Also climbs to the top-right and falls down each group. It is the energy to rip off an electron — hardest
+      for the tightly-held noble gases, easiest for the big, loose alkali metals.</p>
+      <a class="try" href="index.html?layout=standard&amp;color=ie&amp;sel=2">Show it<span class="arrow">→</span></a>
+    </div>
+    <div class="feat">
+      <h3>Melting point <span class="chip">extremes</span></h3>
+      <p>Peaks among the central transition metals — tungsten holds out to 3695&nbsp;K — and collapses at the noble
+      gases. Carbon is the nonmetal that refuses to melt.</p>
+      <a class="try" href="index.html?layout=standard&amp;color=melt&amp;sel=74">Find the peak<span class="arrow">→</span></a>
+    </div>
+    <div class="feat">
+      <h3>Density <span class="chip">extremes</span></h3>
+      <p>Concentrated in the middle of the d-block — osmium and iridium are the densest things on the chart — and
+      featherweight among the gases up top.</p>
+      <a class="try" href="index.html?layout=standard&amp;color=den&amp;sel=76">Find the heavies<span class="arrow">→</span></a>
+    </div>
+    <div class="feat">
+      <h3>Atomic mass <span class="chip">trend</span></h3>
+      <p>Climbs almost monotonically with atomic number. Spot the rare inversions (argon&nbsp;&gt;&nbsp;potassium) —
+      the reason the modern table is ordered by proton count, not weight.</p>
+      <a class="try" href="index.html?layout=long&amp;color=mass">Show the climb<span class="arrow">→</span></a>
+    </div>
+    <div class="feat">
+      <h3>State at 0&nbsp;°C <span class="chip">snapshot</span></h3>
+      <p>Almost everything is solid. Only two elements are liquid (mercury, bromine); the handful of gases huddle
+      at the top-right. A quick reality check on what the elements are actually like.</p>
+      <a class="try" href="index.html?layout=standard&amp;color=phase">See the states<span class="arrow">→</span></a>
+    </div>
+  </div>
+
+  <h2>Periodic trends <span class="em">cheat-sheet</span></h2>
+  <p>Four trends explain most of chemistry's behaviour. Each comes down to a tug-of-war between how strongly the
+  nucleus pulls and how far away (and how shielded) the outer electrons are.</p>
+  <table class="trend">
+    <tr><th>Property</th><th>Across a period →</th><th>Down a group ↓</th><th>Why</th></tr>
+    <tr>
+      <td><b>Atomic radius</b></td>
+      <td><span class="dir">decreases →</span></td>
+      <td><span class="dir">increases ↓</span></td>
+      <td>More protons pull the same shell in tighter across a row; each new row adds a whole shell further out.</td>
+    </tr>
+    <tr>
+      <td><b>Ionization energy</b></td>
+      <td><span class="dir">increases →</span></td>
+      <td><span class="dir">decreases ↓</span></td>
+      <td>A closer, less-shielded electron is harder to remove. <a class="inline" href="index.html?color=ie">color by it →</a></td>
+    </tr>
+    <tr>
+      <td><b>Electronegativity</b></td>
+      <td><span class="dir">increases →</span></td>
+      <td><span class="dir">decreases ↓</span></td>
+      <td>Small, high-charge atoms grip bonding electrons hardest; fluorine wins. <a class="inline" href="index.html?color=en">color by it →</a></td>
+    </tr>
+    <tr>
+      <td><b>Metallic character</b></td>
+      <td><span class="dir">decreases →</span></td>
+      <td><span class="dir">increases ↓</span></td>
+      <td>Easily-lost outer electrons make metals; the metalloid staircase marks the hand-off to nonmetals.</td>
+    </tr>
+  </table>
+
+  <h2>Three <span class="em">two-minute experiments</span></h2>
+  <p>The fastest way to learn from the tool is to ask it a question and watch it answer.</p>
+
+  <div class="card">
+    <h3>1 · Does helium really belong with the noble gases?</h3>
+    <p>Open the left-step table with helium pinned. Notice it now sits above beryllium, with the other noble gases
+    far away. Switch back to Standard and watch it leap across to neon. Which home convinces you?</p>
+    <a class="try alt" href="index.html?layout=left&amp;sel=2&amp;color=cat">Run it<span class="arrow">→</span></a>
+  </div>
+  <div class="card">
+    <h3>2 · Where on the table is an element most reactive?</h3>
+    <p>Color by ionization energy, then isolate the alkali metals (click "Alkali metal" in the legend, or use the
+    link). The deep-blue, easy-to-ionize corner is where metals give up electrons most readily — the most reactive
+    metals live at the bottom-left.</p>
+    <a class="try" href="index.html?color=ie&amp;family=alkali%20metal">Run it<span class="arrow">→</span></a>
+  </div>
+  <div class="card">
+    <h3>3 · What are the toughest materials on the chart?</h3>
+    <p>Color by melting point and pin tungsten. The glowing band through the centre of the d-block is exactly the
+    family of refractory metals engineers reach for when nothing else survives the heat.</p>
+    <a class="try" href="index.html?color=melt&amp;sel=74">Run it<span class="arrow">→</span></a>
+  </div>
+
+  <footer>
+    <p style="margin:0 0 6px;"><a class="inline" href="index.html">← Back to the explorer</a></p>
+    Element data from the open <a class="inline" href="https://github.com/Bowserinator/Periodic-Table-JSON" target="_blank" rel="noopener">Periodic-Table-JSON</a>
+    dataset (CC-BY-SA). Trends are taught the way chemists reason about them, from nuclear charge, shielding, and
+    distance; individual elements have well-known exceptions worth hunting for.
+  </footer>
+</div>
+</body>
+</html>

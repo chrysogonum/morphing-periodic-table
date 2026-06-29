@@ -131,6 +131,21 @@
   details.about b{color:#bcd2ff;}
   footer{color:var(--muted);font-size:12px;margin-top:24px;line-height:1.6;}
 
+  /* educational additions */
+  nav.topnav{display:flex;gap:10px;margin:16px 0 0;}
+  nav.topnav a{padding:8px 15px;border-radius:9px;text-decoration:none;font-weight:700;font-size:13px;
+    border:1px solid var(--line);color:var(--muted);background:var(--panel);transition:.15s;}
+  nav.topnav a:hover{color:var(--txt);}
+  nav.topnav a.active{color:#fff;background:linear-gradient(92deg,#2b6cff33,#7b3bff33);
+    box-shadow:inset 0 0 0 1px #5cc8ff66;}
+  .trendnote{margin-top:10px;font-size:13.5px;line-height:1.55;color:#cdd6fb;
+    background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);
+    border-radius:8px;padding:10px 14px;}
+  .trendnote b{color:#bcd2ff;}
+  .lg-item.clickable{cursor:pointer;padding:2px 7px;border-radius:6px;transition:.15s;}
+  .lg-item.clickable:hover{background:var(--panel2);}
+  .lg-item.activef{background:var(--panel2);box-shadow:inset 0 0 0 1px var(--accent);}
+
   @media(max-width:900px){
     .stagewrap{flex-direction:column;}
     #side{width:100%;position:static;}
@@ -146,6 +161,10 @@
   <p class="sub">The same 118 elements, five different ways. Each tile <b>flies</b> to its new home when you
   switch arrangements — watch how families stay together no matter how you fold the sequence.
   Hover an element to light up its <b>group</b> and <b>period</b>; recolor by any property to see the trends.</p>
+  <nav class="topnav">
+    <a href="index.html" class="active">Explore</a>
+    <a href="learn.html">Guide &amp; how to learn from it</a>
+  </nav>
 </header>
 
 <div class="wrap">
@@ -186,6 +205,7 @@
   </div>
 
   <div class="legend" id="legend"></div>
+  <p class="trendnote" id="trendnote"></p>
 
   <details class="about">
     <summary>What am I looking at? — the five arrangements explained</summary>
@@ -216,7 +236,18 @@
 const CELL=64, TILE=56, RND_S=0.76;
 const VW=32*CELL, VH=11.2*CELL;
 let ELEMENTS=[], TILES={}, periodLen={}, periodIdx={}, spiralPos={};
-let curLayout='standard', curColor='cat', selected=null, locked=false;
+let curLayout='standard', curColor='cat', selected=null, locked=false, activeCat=null;
+
+/* short, actionable explanation of what each color mode teaches */
+const COLOR_NOTES={
+  cat:'<b>Families</b> share a column and behave alike. Click any family in the legend above to isolate it across the whole table.',
+  phase:'Nearly everything is <b>solid</b> at 0&nbsp;°C. Only mercury and bromine are liquid; the gases cluster at the top-right among the nonmetals and noble gases.',
+  en:'<b>Electronegativity rises toward the top-right</b>, peaking at fluorine, and falls toward the bottom-left. It measures how hard an atom pulls bonding electrons — strongest when the nucleus is small and exposed.',
+  ie:'<b>Ionization energy rises toward the top-right</b> (hardest to ionize: helium, neon, fluorine) and drops down each group. Pulling an electron off is hardest when it sits close to a strong, well-shielded nucleus.',
+  mass:'<b>Atomic mass climbs steadily with atomic number</b> — rightward and downward — as each step adds protons and neutrons. A few neighbours invert (e.g. argon/potassium), which is exactly why the table is ordered by atomic number, not mass.',
+  den:'<b>Density peaks in the middle of the d-block</b> — osmium and iridium are the densest elements — and is lowest for the gases up top. Watch the heavy transition metals near the centre glow.',
+  melt:'<b>Melting points peak among the central transition metals</b> (tungsten melts at 3695&nbsp;K) and bottom out at the noble gases, which barely condense. Carbon is the standout nonmetal that stays solid to extreme heat.'
+};
 
 /* ---------- color systems ---------- */
 const CAT_COLORS={
@@ -348,6 +379,7 @@ function recolor(){
     t.querySelector('.val').textContent=tileValue(el);
   }
   buildLegend();
+  document.getElementById('trendnote').innerHTML=COLOR_NOTES[curColor]||'';
 }
 
 /* ---------- legend ---------- */
@@ -359,10 +391,13 @@ function buildLegend(){
     const seen=new Set();
     ['alkali metal','alkaline earth metal','transition metal','post-transition metal','metalloid',
      'diatomic nonmetal','polyatomic nonmetal','noble gas','lanthanide','actinide','unknown'].forEach(k=>{
-      const it=document.createElement('div'); it.className='lg-item';
+      const it=document.createElement('div'); it.className='lg-item clickable'; it.dataset.cat=k;
       it.innerHTML=`<span class="lg-sw" style="background:${CAT_COLORS[k]||'#7a86b8'}"></span>${CAT_LABELS[k]}`;
+      it.title='Click to isolate this family';
+      it.onclick=()=>filterCategory(k);
       L.appendChild(it);
     });
+    markActiveLegend();
   } else if(curColor==='phase'){
     title.textContent='State at 0 °C'; L.appendChild(title);
     [['Solid','Solid'],['Liquid','Liquid'],['Gas','Gas'],['','Unknown']].forEach(([k,lab])=>{
@@ -399,6 +434,25 @@ function highlight(el){
 }
 function clearHighlight(){
   for(const e of ELEMENTS){ TILES[e.n].classList.remove('hl-group','hl-period','dim'); }
+}
+/* restore whatever sticky state was showing before a hover (family filter, search, or nothing) */
+function restoreBase(){
+  for(const e of ELEMENTS){ TILES[e.n].classList.remove('hl-group','hl-period','dim','match'); }
+  if(activeCat){
+    for(const e of ELEMENTS){ TILES[e.n].classList.add(catKey(e.cat)===activeCat?'match':'dim'); }
+    markActiveLegend(); return;
+  }
+  const q=document.getElementById('search').value.trim();
+  if(q) runSearch(q);
+}
+function markActiveLegend(){
+  document.querySelectorAll('.lg-item.clickable').forEach(x=>
+    x.classList.toggle('activef', x.dataset.cat===activeCat));
+}
+/* click a legend family to isolate it across every arrangement */
+function filterCategory(cat){
+  activeCat = (activeCat===cat) ? null : cat;
+  restoreBase();
 }
 
 /* ---------- detail panel ---------- */
@@ -496,7 +550,7 @@ function build(){
     const t=document.createElement('div'); t.className='tile';
     t.innerHTML=`<span class="num">${el.n}</span><span class="sym">${el.sym}</span><span class="val"></span>`;
     t.addEventListener('mouseenter',()=>{ highlight(el); if(!locked) showDetail(el); });
-    t.addEventListener('mouseleave',()=>{ if(!document.querySelector('.match')) clearHighlight(); });
+    t.addEventListener('mouseleave',()=>restoreBase());
     t.addEventListener('click',()=>{
       if(selected===el.n && locked){ locked=false; TILES[el.n].classList.remove('sel'); return; }
       if(selected) TILES[selected].classList.remove('sel');
@@ -548,10 +602,10 @@ function wire(){
   document.getElementById('colorSeg').addEventListener('click',e=>{
     const b=e.target.closest('button'); if(!b) return;
     document.querySelectorAll('#colorSeg button').forEach(x=>x.classList.remove('on'));
-    b.classList.add('on'); curColor=b.dataset.c; recolor();
+    b.classList.add('on'); curColor=b.dataset.c; activeCat=null; recolor(); restoreBase();
     if(locked&&selected) showDetail(ELEMENTS.find(x=>x.n===selected));
   });
-  document.getElementById('search').addEventListener('input',e=>runSearch(e.target.value));
+  document.getElementById('search').addEventListener('input',e=>{ activeCat=null; runSearch(e.target.value); });
   document.getElementById('hint').innerHTML=HINTS[curLayout];
 }
 
@@ -565,9 +619,12 @@ function applyInitialParams(){
 }
 fetch('elements.json').then(r=>r.json()).then(data=>{
   ELEMENTS=data; applyInitialParams(); build(); wire();
-  const sel=new URLSearchParams(location.search).get('sel');
+  const params=new URLSearchParams(location.search);
+  const sel=params.get('sel');
   if(sel){ const el=ELEMENTS.find(x=>x.n==sel||x.sym.toLowerCase()===String(sel).toLowerCase());
     if(el){ selected=el.n; locked=true; TILES[el.n].classList.add('sel'); showDetail(el); highlight(el); } }
+  const fam=params.get('family');
+  if(fam && CAT_LABELS[fam]){ activeCat=fam; restoreBase(); }
 }).catch(err=>{
   document.getElementById('side').innerHTML='<div class="ph">Could not load element data.<br>'+err+'</div>';
 });

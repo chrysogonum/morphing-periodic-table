@@ -13,6 +13,10 @@ fly to their new positions when you switch arrangements.
 - **Spiral** — one continuous Archimedean ribbon from hydrogen outward; atomic number never breaks.
 - **Orbits** — each period drawn as a concentric ring, echoing electron shells.
 
+## Pages
+- **`index.html`** — the interactive explorer.
+- **`learn.html`** — a guide explaining how to use the tool and how each arrangement and color mode teaches a property or trend, with one-click "Try it" deep links into the explorer.
+
 ## Features
 - Recolor by family, state, electronegativity, ionization energy, atomic mass, density, or melting point.
 - Hover any element to light up its whole **group** and **period**.

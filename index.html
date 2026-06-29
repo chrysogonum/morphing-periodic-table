@@ -3,171 +3,264 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Morphing Periodic Table — Five Ways to See the Elements</title>
-<meta name="description" content="An interactive periodic table that morphs between five different scientific arrangements — standard, long form, Janet's left-step, a continuous spiral, and a sunburst — so the relationships between elements become visible." />
+<title>The Morphing Periodic Table — an element spectrometer</title>
+<meta name="description" content="An interactive instrument that morphs the periodic table between five scientific arrangements — standard, long form, Janet's left-step, a continuous spiral, and concentric orbits — and maps any property across all 118 elements." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Expanded:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#070b18;
-    --panel:#0e1530;
-    --panel2:#141d3d;
-    --line:#26315c;
-    --txt:#e8edff;
-    --muted:#9aa7d4;
-    --accent:#5cc8ff;
-    --accent2:#b388ff;
+    --void:#08090C;
+    --surface:#0E1116;
+    --surface-2:#151922;
+    --hair:#222732;
+    --hair-bright:#333A48;
+    --ink:#EDEFF4;
+    --dim:#9AA1B2;
+    --faint:#5C6373;
+    --signal:#74E7FF;      /* functional accent only: focus, live dot, selection */
+    --warm:#F2C14E;        /* group highlight */
+    --pos:#5BE08A;         /* match/search highlight */
     --tile:56px;
     --cell:64px;
+    --disp:'Archivo Expanded','Archivo',sans-serif;
+    --body:'Archivo',system-ui,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
   }
   *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);overflow-x:hidden;
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  html,body{margin:0;padding:0;overflow-x:hidden;background:var(--void);color:var(--ink);
+    font-family:var(--body);-webkit-font-smoothing:antialiased;}
   body{
-    background:
-      radial-gradient(1200px 700px at 18% -8%, rgba(92,200,255,.10), transparent 60%),
-      radial-gradient(1000px 700px at 90% 0%, rgba(179,136,255,.12), transparent 55%),
-      var(--bg);
+    background-color:var(--void);
+    background-image:
+      linear-gradient(rgba(255,255,255,.016) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.016) 1px,transparent 1px);
+    background-size:46px 46px;
+    background-position:center -1px;
     min-height:100vh;
   }
-  a{color:var(--accent);}
-  header{padding:26px 22px 6px;max-width:1500px;margin:0 auto;}
-  h1{
-    margin:0;font-size:clamp(24px,3.4vw,40px);font-weight:800;letter-spacing:-.5px;
-    background:linear-gradient(92deg,#7ad7ff,#b388ff 55%,#ff9ad5);
-    -webkit-background-clip:text;background-clip:text;color:transparent;
-  }
-  .sub{color:var(--muted);margin:8px 0 0;max-width:760px;line-height:1.5;font-size:15px;}
-  .wrap{max-width:1500px;margin:0 auto;padding:0 22px 60px;}
+  ::selection{background:var(--signal);color:var(--void);}
 
-  /* control bar */
-  .controls{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;margin:18px 0 6px;}
-  .ctl-group{display:flex;flex-direction:column;gap:6px;}
-  .ctl-label{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-weight:700;}
-  .seg{display:flex;flex-wrap:wrap;gap:6px;background:var(--panel);border:1px solid var(--line);
-    padding:5px;border-radius:12px;}
-  .seg button{
-    border:0;background:transparent;color:var(--muted);font-weight:600;font-size:13px;
-    padding:8px 13px;border-radius:8px;cursor:pointer;transition:.18s;white-space:nowrap;
-  }
-  .seg button:hover{color:var(--txt);background:var(--panel2);}
-  .seg button.on{background:linear-gradient(92deg,#2b6cff33,#7b3bff33);color:#fff;
-    box-shadow:inset 0 0 0 1px #5cc8ff66;}
-  .search{flex:1;min-width:160px;}
-  .search input{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--txt);
-    padding:10px 12px;border-radius:10px;font-size:14px;outline:none;}
-  .search input:focus{border-color:var(--accent);}
+  /* ---------- instrument top bar ---------- */
+  .topbar{position:sticky;top:0;z-index:50;border-bottom:1px solid var(--hair);
+    background:rgba(8,9,12,.78);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);}
+  .topbar-in{max-width:1500px;margin:0 auto;padding:0 22px;height:54px;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;}
+  .brand{display:flex;align-items:center;gap:10px;min-width:0;}
+  .brand .mk{width:22px;height:22px;flex:none;display:grid;place-items:center;color:var(--void);
+    background:conic-gradient(from 200deg,#7A4DFF,#2BD7E0,#34D17A,#F2E14B,#FF9A3C,#FF4D5E,#7A4DFF);
+    clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);font-weight:800;font-size:11px;}
+  .brand .nm{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;color:var(--ink);
+    font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .brand .nm .sep{color:var(--faint);margin:0 2px;}
+  .tnav{display:flex;align-items:center;gap:4px;}
+  .tnav a{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--dim);text-decoration:none;padding:7px 11px;border-radius:7px;transition:.15s;
+    border:1px solid transparent;}
+  .tnav a:hover{color:var(--ink);}
+  .tnav a.active{color:var(--ink);border-color:var(--hair-bright);background:var(--surface-2);}
+  .status{display:none;font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--faint);
+    align-items:center;gap:7px;padding-left:6px;}
+  .status .dot{width:6px;height:6px;border-radius:50%;background:var(--signal);
+    box-shadow:0 0 8px var(--signal);}
+  @media(min-width:760px){ .status{display:flex;} }
 
-  .hint{font-size:12.5px;color:var(--muted);margin:4px 0 0;min-height:18px;transition:.2s;}
-  .hint b{color:var(--accent);}
+  /* ---------- masthead ---------- */
+  .wrap{max-width:1500px;margin:0 auto;padding:0 22px 64px;}
+  .masthead{padding:46px 0 22px;}
+  .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--faint);}
+  h1{font-family:var(--disp);font-weight:800;font-size:clamp(30px,5.6vw,62px);line-height:.98;
+    letter-spacing:-.01em;margin:14px 0 0;color:var(--ink);max-width:14ch;}
+  h1 .glow{color:#fff;}
+  .lede{font-size:clamp(15px,1.5vw,17px);line-height:1.55;color:var(--dim);max-width:60ch;margin:18px 0 0;}
+  .lede b{color:var(--ink);font-weight:600;}
 
-  /* layout: board + side panel */
+  /* signature: emission-spectrum ribbon */
+  .spectrum{margin:30px 0 2px;position:relative;}
+  .spectrum .bar{height:14px;border-radius:3px;
+    background:linear-gradient(90deg,#7A4DFF,#3B6BFF 18%,#2BD7E0 36%,#34D17A 54%,#F2E14B 70%,#FF9A3C 85%,#FF4D5E);
+    box-shadow:0 0 26px rgba(120,180,255,.18);
+    animation:wipe 1.05s cubic-bezier(.2,.7,.2,1) both .1s;}
+  .spectrum .ticks{position:absolute;inset:0;border-radius:3px;pointer-events:none;
+    background:repeating-linear-gradient(90deg,transparent 0 calc(4.7619% - 1px),rgba(8,9,12,.55) calc(4.7619% - 1px) 4.7619%);
+    animation:wipe 1.05s cubic-bezier(.2,.7,.2,1) both .1s;}
+  .spectrum .slabels{display:flex;justify-content:space-between;margin-top:7px;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);}
+  @keyframes wipe{from{clip-path:inset(0 100% 0 0);}to{clip-path:inset(0 0 0 0);}}
+
+  /* ---------- controls ---------- */
+  .controls{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;margin:34px 0 0;}
+  .ctl-group{display:flex;flex-direction:column;gap:8px;}
+  .ctl-label{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.18em;
+    color:var(--faint);}
+  .seg{display:flex;flex-wrap:wrap;gap:4px;background:var(--surface);border:1px solid var(--hair);
+    padding:4px;border-radius:9px;}
+  .seg button{border:0;background:transparent;color:var(--dim);font-family:var(--body);font-weight:500;
+    font-size:13px;padding:8px 13px;border-radius:6px;cursor:pointer;transition:.15s;white-space:nowrap;
+    position:relative;}
+  .seg button:hover{color:var(--ink);background:var(--surface-2);}
+  .seg button.on{color:var(--void);background:var(--ink);font-weight:600;}
+  .search{flex:1;min-width:170px;}
+  .search input{width:100%;background:var(--surface);border:1px solid var(--hair);color:var(--ink);
+    font-family:var(--body);padding:11px 13px;border-radius:8px;font-size:14px;outline:none;transition:.15s;}
+  .search input::placeholder{color:var(--faint);}
+  .search input:focus{border-color:var(--hair-bright);box-shadow:0 0 0 2px rgba(116,231,255,.25);}
+
+  .hint{font-family:var(--mono);font-size:12px;letter-spacing:.02em;color:var(--dim);margin:16px 0 0;
+    min-height:18px;padding-left:16px;position:relative;}
+  .hint::before{content:'▸';position:absolute;left:0;color:var(--faint);}
+  .hint b{color:var(--ink);font-weight:600;}
+
+  /* ---------- stage ---------- */
   .stagewrap{display:flex;gap:20px;margin-top:14px;align-items:flex-start;}
-  #viewport{flex:1;min-width:0;overflow:hidden;position:relative;border-radius:16px;
-    background:linear-gradient(180deg,#0a1024,#070b18);border:1px solid #1a2348;}
+  #viewport{flex:1;min-width:0;overflow:hidden;position:relative;border-radius:10px;
+    background:
+      radial-gradient(120% 100% at 50% 0%, rgba(255,255,255,.025), transparent 60%),
+      var(--surface);
+    border:1px solid var(--hair);}
+  #viewport::before{content:'';position:absolute;left:18px;right:18px;top:0;height:8px;pointer-events:none;
+    background:repeating-linear-gradient(90deg,var(--hair-bright) 0 1px,transparent 1px 22px);
+    opacity:.5;}
+  .corner{position:absolute;width:13px;height:13px;border:1px solid var(--hair-bright);z-index:3;pointer-events:none;}
+  .corner.tl{top:9px;left:9px;border-right:0;border-bottom:0;}
+  .corner.tr{top:9px;right:9px;border-left:0;border-bottom:0;}
+  .corner.bl{bottom:9px;left:9px;border-right:0;border-top:0;}
+  .corner.br{bottom:9px;right:9px;border-left:0;border-top:0;}
   #board{position:relative;transform-origin:top left;}
-  .tile{
-    position:absolute;left:0;top:0;width:var(--tile);height:var(--tile);
-    border-radius:10px;cursor:pointer;overflow:hidden;
-    display:flex;flex-direction:column;justify-content:center;align-items:center;
-    color:#0a0f22;background:#2a3460;
-    box-shadow:0 1px 0 rgba(255,255,255,.18) inset,0 4px 10px rgba(0,0,0,.28);
-    transition:transform .78s cubic-bezier(.22,.61,.25,1),
-               background-color .45s ease, opacity .35s ease, box-shadow .2s;
-    will-change:transform;user-select:none;
-  }
-  .tile .num{position:absolute;top:4px;left:6px;font-size:9.5px;font-weight:700;opacity:.72;}
-  .tile .sym{font-size:19px;font-weight:800;line-height:1;letter-spacing:-.5px;}
-  .tile .val{position:absolute;bottom:3px;font-size:8.5px;font-weight:600;opacity:.78;
-    font-variant-numeric:tabular-nums;}
-  .tile.nodata{background:repeating-linear-gradient(45deg,#1b2447,#1b2447 5px,#222d54 5px,#222d54 10px);
-    color:#7e8ac0;}
-  .tile:hover{box-shadow:0 0 0 2px #fff,0 8px 20px rgba(0,0,0,.45);z-index:6;}
-  .tile.sel{box-shadow:0 0 0 3px #ffe06b,0 8px 22px rgba(0,0,0,.5);z-index:7;}
-  .tile.dim{opacity:.16;}
-  .tile.hl-period{box-shadow:0 0 0 2px #5cc8ff,0 6px 16px rgba(0,0,0,.4);z-index:4;}
-  .tile.hl-group{box-shadow:0 0 0 2px #ffd86b,0 8px 20px rgba(0,0,0,.5);z-index:5;}
-  .tile.match{box-shadow:0 0 0 3px #6bff9e,0 0 22px #6bff9e88;z-index:8;}
 
-  /* axis-ish labels for grid layouts */
-  .glabel{position:absolute;color:var(--muted);font-size:11px;font-weight:700;opacity:.55;
-    transition:opacity .4s, transform .6s;pointer-events:none;}
+  .tile{position:absolute;left:0;top:0;width:var(--tile);height:var(--tile);border-radius:4px;
+    cursor:pointer;overflow:hidden;display:flex;flex-direction:column;justify-content:center;align-items:center;
+    color:#0a0f22;background:#2a3460;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07),0 1px 2px rgba(0,0,0,.45);
+    transition:transform .78s cubic-bezier(.22,.61,.25,1),background-color .45s ease,opacity .4s ease,box-shadow .15s,filter .15s;
+    will-change:transform;user-select:none;}
+  .tile .num{position:absolute;top:4px;left:5px;font-family:var(--mono);font-size:9px;font-weight:500;opacity:.7;}
+  .tile .sym{font-family:var(--disp);font-size:18px;font-weight:700;line-height:1;letter-spacing:-.01em;}
+  .tile .val{position:absolute;bottom:3px;font-family:var(--mono);font-size:8.5px;font-weight:500;opacity:.8;
+    letter-spacing:-.02em;}
+  .tile.nodata{background:repeating-linear-gradient(45deg,#171b24,#171b24 5px,#1d212c 5px,#1d212c 10px);
+    color:#6b7589;box-shadow:inset 0 0 0 1px var(--hair);}
+  .tile:hover{box-shadow:inset 0 0 0 1px rgba(255,255,255,.07),0 0 0 1.5px #fff,0 6px 16px rgba(0,0,0,.5);
+    filter:brightness(1.06);z-index:6;}
+  .tile.sel{box-shadow:0 0 0 2px var(--signal),0 0 22px rgba(116,231,255,.35),0 6px 18px rgba(0,0,0,.55);z-index:7;}
+  .tile.dim{opacity:.13;}
+  .tile.hl-period{box-shadow:0 0 0 2px var(--signal),0 4px 14px rgba(0,0,0,.45);z-index:4;}
+  .tile.hl-group{box-shadow:0 0 0 2px var(--warm),0 6px 18px rgba(0,0,0,.5);z-index:5;}
+  .tile.match{box-shadow:0 0 0 2px var(--pos),0 0 20px rgba(91,224,138,.4);z-index:8;}
 
-  /* side panel */
-  #side{width:312px;flex:none;background:var(--panel);border:1px solid var(--line);
-    border-radius:16px;padding:16px;position:sticky;top:14px;}
-  #side .ph{color:var(--muted);font-size:13px;line-height:1.6;text-align:center;padding:30px 6px;}
-  .d-top{display:flex;gap:12px;align-items:center;}
-  .d-badge{width:64px;height:64px;flex:none;border-radius:12px;display:flex;flex-direction:column;
-    justify-content:center;align-items:center;color:#0a0f22;font-weight:800;}
-  .d-badge .s{font-size:26px;line-height:1;}
-  .d-badge .n{font-size:11px;opacity:.7;}
-  .d-name{font-size:20px;font-weight:800;margin:0;}
-  .d-cat{font-size:12px;color:var(--muted);margin-top:2px;text-transform:capitalize;}
-  .d-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px;}
-  .d-cell{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:8px 9px;}
-  .d-cell .k{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);}
-  .d-cell .v{font-size:14px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums;}
-  .d-cfg{margin-top:12px;background:var(--panel2);border:1px solid var(--line);border-radius:9px;
-    padding:9px;font-size:12.5px;}
-  .d-cfg .k{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);}
-  .d-cfg code{color:#9ad0ff;font-size:12.5px;}
-  .d-sum{margin-top:12px;font-size:12.5px;line-height:1.55;color:#c9d2f5;max-height:150px;overflow:auto;}
-  #shell{display:block;margin:12px auto 2px;}
+  .glabel{position:absolute;font-family:var(--mono);color:var(--faint);font-size:10px;font-weight:500;
+    transition:opacity .4s,transform .6s;pointer-events:none;}
 
-  /* legend */
+  /* ---------- readout (side panel) ---------- */
+  #side{width:312px;flex:none;background:var(--surface);border:1px solid var(--hair);border-radius:10px;
+    padding:0;position:sticky;top:68px;overflow:hidden;}
+  #side .ph{color:var(--dim);font-family:var(--mono);font-size:12px;line-height:1.7;letter-spacing:.02em;
+    text-align:left;padding:24px 18px;}
+  #side .ph .pk{color:var(--faint);text-transform:uppercase;letter-spacing:.2em;font-size:10.5px;
+    display:block;margin-bottom:10px;}
+  .rd{padding:16px 18px 18px;}
+  .rd-head{display:flex;align-items:stretch;gap:13px;}
+  .rd-symwrap{width:62px;height:62px;flex:none;border-radius:7px;display:grid;place-items:center;
+    background:var(--c);position:relative;}
+  .rd-symwrap .rd-sym{font-family:var(--disp);font-weight:800;font-size:27px;line-height:1;color:var(--cf);}
+  .rd-id{display:flex;flex-direction:column;justify-content:center;min-width:0;}
+  .rd-name{font-family:var(--disp);font-weight:700;font-size:21px;line-height:1.05;color:var(--ink);}
+  .rd-cat{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--dim);margin-top:5px;}
+  .rd-z{margin-left:auto;text-align:right;font-family:var(--disp);font-weight:700;font-size:24px;color:var(--ink);}
+  .rd-z span{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.18em;color:var(--faint);
+    font-weight:500;}
+  .rd-coord{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;color:var(--dim);
+    margin:14px 0 4px;padding:8px 10px;background:var(--surface-2);border:1px solid var(--hair);border-radius:6px;}
+  .rd-rows{margin-top:12px;border-top:1px solid var(--hair);}
+  .rd-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+    padding:7px 0;border-bottom:1px solid var(--hair);}
+  .rd-k{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--faint);}
+  .rd-v{font-family:var(--mono);font-size:13px;color:var(--ink);text-align:right;}
+  .rd-cfg{margin-top:13px;}
+  .rd-cfg .rd-k{display:block;margin-bottom:5px;}
+  .rd-cfg code{font-family:var(--mono);font-size:12.5px;color:var(--signal);}
+  #shell{display:block;margin:14px auto 4px;}
+  .rd-sum{margin-top:10px;font-size:12.5px;line-height:1.6;color:#c2cad9;max-height:148px;overflow:auto;}
+
+  /* ---------- legend ---------- */
   .legend{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;
-    background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:11px 14px;}
-  .legend .lg-title{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);
-    font-weight:700;margin-right:4px;}
-  .lg-item{display:flex;align-items:center;gap:6px;font-size:12px;color:#cdd6fb;}
-  .lg-sw{width:13px;height:13px;border-radius:4px;}
-  .lg-bar{height:13px;width:220px;border-radius:7px;}
-  .lg-scale{display:flex;justify-content:space-between;width:220px;font-size:10.5px;color:var(--muted);
-    font-variant-numeric:tabular-nums;}
+    background:var(--surface);border:1px solid var(--hair);border-radius:9px;padding:11px 14px;}
+  .legend .lg-title{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.16em;
+    color:var(--faint);margin-right:6px;}
+  .lg-item{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11.5px;color:var(--dim);}
+  .lg-sw{width:11px;height:11px;border-radius:2px;}
+  .lg-bar{height:12px;width:230px;border-radius:2px;}
+  .lg-scale{display:flex;justify-content:space-between;width:230px;font-family:var(--mono);font-size:10px;
+    color:var(--faint);margin-top:3px;}
+  .lg-item.clickable{cursor:pointer;padding:3px 7px;border-radius:5px;transition:.15s;}
+  .lg-item.clickable:hover{background:var(--surface-2);color:var(--ink);}
+  .lg-item.activef{background:var(--surface-2);color:var(--ink);box-shadow:inset 0 0 0 1px var(--hair-bright);}
 
-  details.about{margin-top:20px;background:var(--panel);border:1px solid var(--line);
-    border-radius:12px;padding:4px 16px;}
-  details.about summary{cursor:pointer;padding:12px 0;font-weight:700;color:var(--txt);}
-  details.about p{color:var(--muted);line-height:1.6;font-size:14px;}
-  details.about b{color:#bcd2ff;}
-  footer{color:var(--muted);font-size:12px;margin-top:24px;line-height:1.6;}
+  .trendnote{margin-top:12px;font-size:13.5px;line-height:1.55;color:var(--dim);
+    background:var(--surface);border:1px solid var(--hair);border-radius:8px;padding:12px 15px;
+    position:relative;}
+  .trendnote::before{content:'READOUT';font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;
+    color:var(--faint);display:block;margin-bottom:5px;}
+  .trendnote b{color:var(--ink);font-weight:600;}
 
-  /* educational additions */
-  nav.topnav{display:flex;gap:10px;margin:16px 0 0;}
-  nav.topnav a{padding:8px 15px;border-radius:9px;text-decoration:none;font-weight:700;font-size:13px;
-    border:1px solid var(--line);color:var(--muted);background:var(--panel);transition:.15s;}
-  nav.topnav a:hover{color:var(--txt);}
-  nav.topnav a.active{color:#fff;background:linear-gradient(92deg,#2b6cff33,#7b3bff33);
-    box-shadow:inset 0 0 0 1px #5cc8ff66;}
-  .trendnote{margin-top:10px;font-size:13.5px;line-height:1.55;color:#cdd6fb;
-    background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);
-    border-radius:8px;padding:10px 14px;}
-  .trendnote b{color:#bcd2ff;}
-  .lg-item.clickable{cursor:pointer;padding:2px 7px;border-radius:6px;transition:.15s;}
-  .lg-item.clickable:hover{background:var(--panel2);}
-  .lg-item.activef{background:var(--panel2);box-shadow:inset 0 0 0 1px var(--accent);}
+  details.about{margin-top:18px;background:var(--surface);border:1px solid var(--hair);border-radius:9px;
+    padding:2px 16px;}
+  details.about summary{cursor:pointer;padding:13px 0;font-family:var(--mono);font-size:12px;
+    letter-spacing:.06em;text-transform:uppercase;color:var(--ink);list-style:none;}
+  details.about summary::-webkit-details-marker{display:none;}
+  details.about summary::before{content:'+ ';color:var(--signal);}
+  details.about[open] summary::before{content:'– ';}
+  details.about p{color:var(--dim);line-height:1.65;font-size:14px;}
+  details.about b{color:var(--ink);}
+  footer{color:var(--faint);font-family:var(--mono);font-size:11px;line-height:1.8;letter-spacing:.02em;
+    margin-top:26px;border-top:1px solid var(--hair);padding-top:18px;}
+  footer a{color:var(--dim);}
 
+  :focus-visible{outline:2px solid var(--signal);outline-offset:2px;}
+  @media(prefers-reduced-motion:reduce){
+    .spectrum .bar,.spectrum .ticks{animation:none;}
+    .tile{transition:background-color .3s ease,box-shadow .15s;}
+  }
   @media(max-width:900px){
     .stagewrap{flex-direction:column;}
     #side{width:100%;position:static;}
-    .controls{flex-direction:column;align-items:stretch;gap:12px;}
+    .controls{flex-direction:column;align-items:stretch;gap:14px;}
     .ctl-group,.search{width:100%;}
     .seg{width:100%;}
+    .masthead{padding:34px 0 18px;}
   }
 </style>
 </head>
 <body>
-<header>
-  <h1>The Morphing Periodic Table</h1>
-  <p class="sub">The same 118 elements, five different ways. Each tile <b>flies</b> to its new home when you
-  switch arrangements — watch how families stay together no matter how you fold the sequence.
-  Hover an element to light up its <b>group</b> and <b>period</b>; recolor by any property to see the trends.</p>
-  <nav class="topnav">
-    <a href="index.html" class="active">Explore</a>
-    <a href="learn.html">Guide &amp; how to learn from it</a>
-  </nav>
-</header>
+<div class="topbar">
+  <div class="topbar-in">
+    <div class="brand">
+      <span class="mk">Z</span>
+      <span class="nm">PERIODIC<span class="sep">/</span>SPECTROMETER</span>
+    </div>
+    <nav class="tnav">
+      <div class="status"><span class="dot"></span>118 ELEMENTS · LIVE</div>
+      <a href="index.html" class="active">Explore</a>
+      <a href="learn.html">Guide</a>
+    </nav>
+  </div>
+</div>
 
 <div class="wrap">
+  <section class="masthead">
+    <div class="eyebrow">Interactive instrument · 5 arrangements · 7 property maps</div>
+    <h1>The Morphing <span class="glow">Periodic Table</span></h1>
+    <p class="lede">The same 118 elements, refolded five ways. Each tile <b>flies</b> to its new position when you
+    switch arrangements — so the relationships hold while the shape changes. Map any property across the whole set,
+    and hover any element to light up its <b>group</b> and <b>period</b>.</p>
+    <div class="spectrum" aria-hidden="true">
+      <div class="bar"></div>
+      <div class="ticks"></div>
+      <div class="slabels"><span>low intensity</span><span>property scale</span><span>high intensity</span></div>
+    </div>
+  </section>
+
   <div class="controls">
     <div class="ctl-group">
       <span class="ctl-label">Arrangement</span>
@@ -180,7 +273,7 @@
       </div>
     </div>
     <div class="ctl-group">
-      <span class="ctl-label">Color by</span>
+      <span class="ctl-label">Map property</span>
       <div class="seg" id="colorSeg">
         <button data-c="cat" class="on">Family</button>
         <button data-c="phase">State</button>
@@ -192,23 +285,27 @@
       </div>
     </div>
     <div class="ctl-group search">
-      <span class="ctl-label">Find</span>
-      <input id="search" placeholder="Search name, symbol, or number…" autocomplete="off" />
+      <span class="ctl-label">Locate</span>
+      <input id="search" placeholder="Name, symbol, or number…" autocomplete="off" />
     </div>
   </div>
   <p class="hint" id="hint"></p>
 
   <div class="stagewrap">
-    <div id="viewport"><div id="board"></div></div>
-    <aside id="side"><div class="ph">Hover or tap any element to see its full profile, electron
-      configuration, and a Bohr shell diagram.<br><br>Click to pin it.</div></aside>
+    <div id="viewport">
+      <span class="corner tl"></span><span class="corner tr"></span>
+      <span class="corner bl"></span><span class="corner br"></span>
+      <div id="board"></div>
+    </div>
+    <aside id="side"><div class="ph"><span class="pk">Readout</span>Hover or tap any element to load its full
+      profile — properties, electron configuration, and a Bohr shell diagram. Click to lock it in.</div></aside>
   </div>
 
   <div class="legend" id="legend"></div>
   <p class="trendnote" id="trendnote"></p>
 
   <details class="about">
-    <summary>What am I looking at? — the five arrangements explained</summary>
+    <summary>The five arrangements, explained</summary>
     <p><b>Standard.</b> The familiar 18-column table. Notice the lanthanides and actinides are torn out and
     floated below — a compromise to keep the page from getting too wide.</p>
     <p><b>Long form (32-column).</b> The f-block put back where it chemically belongs, between groups 2 and 3.
@@ -221,13 +318,13 @@
     <p><b>Orbits.</b> Each period becomes a concentric ring — a nod to the electron shells in the Bohr diagram on
     the right. The alkali metals all sit at the top of their ring and the noble gases close it, so one full
     lap around any ring walks you through exactly one period.</p>
-    <p style="color:#8e9ad0;font-size:13px;margin-bottom:14px;">Tip: the small number at the bottom of each tile
-    shows the actual value being mapped in the current color mode.</p>
+    <p style="color:var(--faint);font-size:13px;margin-bottom:14px;">Tip: the small number at the bottom of each
+    tile shows the actual value being mapped in the current property.</p>
   </details>
 
   <footer>
-    Built as an interactive exploration of how the periodic table can be re-imagined.
-    Element data from the open <a href="https://github.com/Bowserinator/Periodic-Table-JSON" target="_blank" rel="noopener">Periodic-Table-JSON</a>
+    An interactive exploration of how the periodic table can be re-imagined. Element data from the open
+    <a href="https://github.com/Bowserinator/Periodic-Table-JSON" target="_blank" rel="noopener">Periodic-Table-JSON</a>
     dataset (CC-BY-SA). Left-step, spiral, and orbit coordinates computed from each element's block, period, and group.
   </footer>
 </div>
@@ -271,8 +368,8 @@ const NUM={
   den:{label:'Density',unit:'g/cm³',fmt:v=>v<1?v.toFixed(3):v.toFixed(2)},
   melt:{label:'Melting point',unit:'K',fmt:v=>Math.round(v)}
 };
-// perceptual-ish cool→warm scale
-const SCALE=[[59,76,192],[68,160,243],[80,212,194],[245,221,90],[247,150,70],[210,45,55]];
+// emission-spectrum ramp (violet → red): the instrument's signature scale
+const SCALE=[[122,77,255],[59,107,255],[43,215,224],[52,209,122],[242,225,75],[255,154,60],[255,77,94]];
 function lerp(a,b,t){return a+(b-a)*t;}
 function scaleColor(t){
   t=Math.max(0,Math.min(1,t));
@@ -388,7 +485,6 @@ function buildLegend(){
   const title=document.createElement('span'); title.className='lg-title';
   if(curColor==='cat'){
     title.textContent='Family'; L.appendChild(title);
-    const seen=new Set();
     ['alkali metal','alkaline earth metal','transition metal','post-transition metal','metalloid',
      'diatomic nonmetal','polyatomic nonmetal','noble gas','lanthanide','actinide','unknown'].forEach(k=>{
       const it=document.createElement('div'); it.className='lg-item clickable'; it.dataset.cat=k;
@@ -415,7 +511,7 @@ function buildLegend(){
       <div class="lg-scale"><span>${m.fmt(r.min)}</span><span>${m.fmt(r.max)}</span></div>`;
     L.appendChild(wrap);
     const it=document.createElement('div'); it.className='lg-item';
-    it.innerHTML=`<span class="lg-sw nodata-sw" style="background:repeating-linear-gradient(45deg,#1b2447,#1b2447 3px,#222d54 3px,#222d54 6px)"></span>no data`;
+    it.innerHTML=`<span class="lg-sw" style="background:repeating-linear-gradient(45deg,#171b24,#171b24 3px,#1d212c 3px,#1d212c 6px)"></span>no data`;
     L.appendChild(it);
   }
 }
@@ -455,60 +551,59 @@ function filterCategory(cat){
   restoreBase();
 }
 
-/* ---------- detail panel ---------- */
+/* ---------- readout panel ---------- */
 function showDetail(el){
   const c=colorFor(el), bg=c.data?c.bg:'#3a4574';
   const fg=c.data&&luminance(c.bg)>0.62?'#0a0f22':'#f3f6ff';
-  const cell=(k,v)=>`<div class="d-cell"><div class="k">${k}</div><div class="v">${v}</div></div>`;
+  const row=(k,v)=>`<div class="rd-row"><span class="rd-k">${k}</span><span class="rd-v">${v}</span></div>`;
   const f=(v,fix,suf)=>v==null?'—':(typeof v==='number'?(fix!=null?v.toFixed(fix):v):v)+(suf||'');
   document.getElementById('side').innerHTML=`
-    <div class="d-top">
-      <div class="d-badge" style="background:${bg};color:${fg}">
-        <div class="s">${el.sym}</div><div class="n">${el.n}</div>
+    <div class="rd">
+      <div class="rd-head">
+        <div class="rd-symwrap" style="--c:${bg};--cf:${fg}"><span class="rd-sym">${el.sym}</span></div>
+        <div class="rd-id"><div class="rd-name">${el.name}</div><div class="rd-cat">${el.cat}</div></div>
+        <div class="rd-z"><span>Z</span>${el.n}</div>
       </div>
-      <div>
-        <p class="d-name">${el.name}</p>
-        <div class="d-cat">${el.cat}</div>
+      <div class="rd-coord">GROUP ${el.group||'—'} · PERIOD ${el.period} · ${(el.block||'').toUpperCase()}-BLOCK</div>
+      <div class="rd-rows">
+        ${row('Atomic mass',f(el.mass,3,' u'))}
+        ${row('State · 0 °C',el.phase||'—')}
+        ${row('Electronegativity',f(el.en,2))}
+        ${row('Ionization',f(el.ie,0,' kJ/mol'))}
+        ${row('Density',f(el.den,null,' g/cm³'))}
+        ${row('Melting point',f(el.melt,0,' K'))}
+        ${row('Boiling point',f(el.boil,0,' K'))}
       </div>
-    </div>
-    <div class="d-grid">
-      ${cell('Atomic mass',f(el.mass,3,' u'))}
-      ${cell('Period · Group',el.period+' · '+(el.group||'—'))}
-      ${cell('Block',el.block+'-block')}
-      ${cell('State (0 °C)',el.phase||'—')}
-      ${cell('Electronegativity',f(el.en,2))}
-      ${cell('Ionization',f(el.ie,0,' kJ/mol'))}
-      ${cell('Density',f(el.den,null,' g/cm³'))}
-      ${cell('Melts at',f(el.melt,0,' K'))}
-    </div>
-    <div class="d-cfg"><div class="k">Electron configuration</div><code>${el.cfg||'—'}</code></div>
-    <svg id="shell" width="170" height="170"></svg>
-    <div class="d-sum">${el.sum||''}</div>`;
+      <div class="rd-cfg"><span class="rd-k">Electron configuration</span><code>${el.cfg||'—'}</code></div>
+      <svg id="shell" width="190" height="190"></svg>
+      <div class="rd-sum">${el.sum||''}</div>
+    </div>`;
   drawShell(el);
 }
 function drawShell(el){
   const svg=document.getElementById('shell'); if(!svg) return;
-  const cx=85,cy=85, shells=el.shells||[];
+  const cx=95,cy=95, shells=el.shells||[];
   const NS='http://www.w3.org/2000/svg';
   const nuc=document.createElementNS(NS,'circle');
-  nuc.setAttribute('cx',cx);nuc.setAttribute('cy',cy);nuc.setAttribute('r',9);
-  nuc.setAttribute('fill','#ffd86b'); svg.appendChild(nuc);
+  nuc.setAttribute('cx',cx);nuc.setAttribute('cy',cy);nuc.setAttribute('r',10);
+  nuc.setAttribute('fill','#F2C14E'); svg.appendChild(nuc);
   const symt=document.createElementNS(NS,'text');
   symt.setAttribute('x',cx);symt.setAttribute('y',cy+3.5);symt.setAttribute('text-anchor','middle');
-  symt.setAttribute('font-size','9');symt.setAttribute('font-weight','800');symt.setAttribute('fill','#0a0f22');
+  symt.setAttribute('font-size','9');symt.setAttribute('font-weight','800');
+  symt.setAttribute('font-family',"'IBM Plex Mono',monospace");symt.setAttribute('fill','#08090C');
   symt.textContent=el.sym; svg.appendChild(symt);
-  const maxR=72, step=shells.length>0?(maxR-16)/shells.length:0;
+  const maxR=82, step=shells.length>0?(maxR-18)/shells.length:0;
   shells.forEach((cnt,i)=>{
-    const r=16+step*(i+1);
+    const r=18+step*(i+1);
     const ring=document.createElementNS(NS,'circle');
     ring.setAttribute('cx',cx);ring.setAttribute('cy',cy);ring.setAttribute('r',r);
-    ring.setAttribute('fill','none');ring.setAttribute('stroke','#3a4574');ring.setAttribute('stroke-width','1');
+    ring.setAttribute('fill','none');ring.setAttribute('stroke','#2c313d');ring.setAttribute('stroke-width','1');
     svg.appendChild(ring);
     for(let e=0;e<cnt;e++){
       const ang=-Math.PI/2 + 2*Math.PI*e/cnt;
       const dot=document.createElementNS(NS,'circle');
       dot.setAttribute('cx',cx+r*Math.cos(ang));dot.setAttribute('cy',cy+r*Math.sin(ang));
-      dot.setAttribute('r',2.6);dot.setAttribute('fill','#7ad7ff');
+      dot.setAttribute('r',2.6);dot.setAttribute('fill','#74E7FF');
       svg.appendChild(dot);
     }
   });
@@ -546,8 +641,10 @@ function build(){
     spiralPos[el.n]={cx:r*Math.cos(a), cy:r*Math.sin(a)};
     th += spacing/Math.max(r,40);
   }
+  const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
   for(const el of ELEMENTS){
     const t=document.createElement('div'); t.className='tile';
+    if(!reduce) t.style.opacity='0';
     t.innerHTML=`<span class="num">${el.n}</span><span class="sym">${el.sym}</span><span class="val"></span>`;
     t.addEventListener('mouseenter',()=>{ highlight(el); if(!locked) showDetail(el); });
     t.addEventListener('mouseleave',()=>restoreBase());
@@ -563,6 +660,13 @@ function build(){
   // robustly react to the viewport settling / window changes
   new ResizeObserver(resize).observe(document.body);
   requestAnimationFrame(resize);
+  // boot reveal: elements resolve in atomic-number order
+  if(!reduce){
+    requestAnimationFrame(()=>{
+      sorted.forEach((el,i)=>{ const t=TILES[el.n]; t.style.transitionDelay=(i*4)+'ms'; t.style.opacity='1'; });
+    });
+    setTimeout(()=>{ for(const el of ELEMENTS){ const t=TILES[el.n]; t.style.transitionDelay=''; t.style.opacity=''; } }, 4*118+650);
+  }
 }
 
 /* ---------- scaling ----------
@@ -584,11 +688,11 @@ window.addEventListener('resize',resize);
 
 /* ---------- hint text ---------- */
 const HINTS={
-  standard:'The everyday table — but see how the lanthanides &amp; actinides are exiled to the bottom.',
-  long:'The f-block restored to its true home between groups 2 and 3. The table is really this wide.',
-  left:'Ordered by orbital filling. Look at the top-right: <b>helium now sits above beryllium</b>.',
-  spiral:'One unbroken thread from hydrogen outward — atomic number never skips.',
-  sun:'Each ring is a period — like an electron shell. Alkali metals line up at the top; the noble gases close each ring.'
+  standard:'STANDARD — the everyday table; watch the lanthanides &amp; actinides exiled to the bottom.',
+  long:'LONG FORM — the f-block restored to its true home between groups 2 and 3.',
+  left:'LEFT-STEP — ordered by orbital filling. Top-right: <b>helium now sits above beryllium</b>.',
+  spiral:'SPIRAL — one unbroken thread from hydrogen outward; atomic number never skips.',
+  sun:'ORBITS — each ring is a period. Alkali metals line up at the top; noble gases close each ring.'
 };
 
 /* ---------- controls ---------- */

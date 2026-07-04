@@ -270,9 +270,9 @@
       aria-label="The telluric screw: elements placed by atomic weight and weight-mod-16, alkali metals highlighted"></svg>
   </div>
   <p class="readout" id="telreadout"></p>
-  <p class="note">Positions use <i>modern</i> atomic weights (de Chancourtois worked in 1862 values, which differ
-  for the heavies) — but the decoherence is robust to that: the column breaks because heavy elements aren't
-  16-spaced in weight, true under either ruler.</p>
+  <p class="note">Positions use modern atomic weights except indium and uranium, shown at their 1865 values
+  (de Chancourtois worked in period weights that differ for the heavies) — but the decoherence is robust to that:
+  the column breaks because heavy elements aren't 16-spaced in weight, true under either ruler.</p>
 
   <footer>
     <span class="copy">© 2026 Peter Repetti · All rights reserved</span>
@@ -318,7 +318,7 @@ const LAGS=[
 ];
 const MISSES=[
   {name:'The sub-hydrogen phantoms', sub:'newtonium · coronium',
-   note:'Mendeleev also proposed elements lighter than hydrogen — a world-ether and "coronium," to explain a green line in the Sun\'s corona. Neither exists: the green line was later shown by Grotrian and Edlén to come from highly ionized iron (Fe XIV). A law that only shows its hits is propaganda; this was a real miss.'},
+   note:'Late in life (c. 1903–04) Mendeleev proposed two elements <i>lighter than hydrogen</i>, a group-0/period-0 pair: <b>newtonium</b>, the world-ether itself, and <b>coronium</b>, invoked to explain a green line in the Sun\'s corona. Neither exists — the coronal line was later shown by Grotrian and Edlén to come from highly ionized iron (Fe XIV). A law that only shows its hits is propaganda; this was a real miss, from the same man who called germanium in advance.'},
 ];
 
 /* ---- centerpiece: the 1871 fragment, gaps that fill on play ---- */
@@ -491,10 +491,15 @@ function playWaves(){ stopPlay(); if(curYear>=2020) setYear(1660);
   playTimer=setInterval(()=>{ let y=curYear+4; if(y>=2020){setYear(2020);stopPlay();return;} setYear(y); },70); }
 function stopPlay(){ if(playTimer){clearInterval(playTimer);playTimer=null;} }
 
+/* 1865-era atomic weights for the heavies Mendeleev most famously re-weighted (sourced);
+   the rest stay modern (disclosed). Indium: 75.6 from the wrong InO stoichiometry (→113).
+   Uranium: ~120 before Mendeleev doubled it to ~240. */
+const HIST_W={In:76,U:120};
+const ew=e=>HIST_W[e.sym]!=null?HIST_W[e.sym]:e.mass;   // effective period weight
 fetch('elements.json').then(r=>r.json()).then(data=>{
   const by={}; data.forEach(e=>by[e.sym]=e);
-  const set=KNOWN1865.map(s=>by[s]).filter(Boolean).sort((a,b)=>a.mass-b.mass)
-    .map((e,i)=>({...e, ord:i+1, vol:(e.den? e.mass/e.den : null)}));
+  const set=KNOWN1865.map(s=>by[s]).filter(Boolean).sort((a,b)=>ew(a)-ew(b))
+    .map((e,i)=>({...e, ord:i+1, vol:(e.den? ew(e)/e.den : null)}));
   renderNewlands(set,set.length);
   renderWaves(data);
   renderTelluric(data);
@@ -513,8 +518,8 @@ function renderTelluric(all){
   const yl=svgEl('text',{x:L-42,y:T-16,'font-size':10.5,fill:'#9AA1B2','font-family':'var(--mono)'}); yl.textContent='atomic weight  ↓'; svg.appendChild(yl);
   const xl=svgEl('text',{x:L+pw,y:H-8,'text-anchor':'end','font-size':10,fill:'#5C6373','font-family':'var(--mono)'}); xl.textContent='position around the cylinder (weight mod 16)  →'; svg.appendChild(xl);
   // all elements faint, colored by family
-  all.forEach(e=>{ if(e.mass==null) return;
-    svg.appendChild(svgEl('circle',{cx:x(res(e.mass)),cy:y(e.mass),r:3,fill:CAT_COLORS[e.cat]||'#7a86b8',opacity:.38})); });
+  all.forEach(e=>{ if(e.mass==null) return; const w=ew(e);
+    svg.appendChild(svgEl('circle',{cx:x(res(w)),cy:y(w),r:3,fill:CAT_COLORS[e.cat]||'#7a86b8',opacity:.38})); });
   // the alkali column — the hero stack that holds then breaks
   const alk=all.filter(e=>e.cat==='alkali metal'&&e.mass<160).sort((a,b)=>a.mass-b.mass); // Li Na K Rb Cs
   const col=(res(alk[0].mass)+res(alk[1].mass)+res(alk[2].mass))/3;                        // ~7 (Li/Na/K)
@@ -588,9 +593,10 @@ function renderNewlands(set,N){
     `<b>Note.</b> The set is the 63 elements known by 1865 — discovery dates sourced from Wikipedia's element `+
     `timeline (parsed from wikitext, validated against known dates), counting <i>first identification</i>, so `+
     `fluorine (recognized by 1771, isolated only in 1886) is in. "Didymium" is excluded: it wasn't split into `+
-    `praseodymium and neodymium until 1885. Ordering uses <i>modern</i> atomic weights as an interim proxy — exact `+
-    `for the light elements the octave turns on, but it flatters the heavy end, where 1865 weights were themselves `+
-    `wrong (uranium was reckoned ~120, not 238). Atomic volume = molar mass ÷ density.`;
+    `praseodymium and neodymium until 1885. <b>Indium and uranium sit at their 1865 weights</b> (76 and ~120 — the `+
+    `two heavies Mendeleev most famously re-weighted), so uranium lands mid-strip, not at the right edge, and the `+
+    `heavy end reads as disordered as it actually was; other heavies still use modern weights. Light-element order `+
+    `(where the octave lives) is identical either way. Atomic volume = molar mass ÷ density.`;
 }
 
 /* boot */

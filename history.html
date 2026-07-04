@@ -255,6 +255,25 @@
   1807–08), spectroscopy on identification. "Chemical isolation" is the large neutral background the dramatic
   methods stand out against. Long-tail dates are curated-approximate; the waves are the point.</p>
 
+  <h2><span class="idx">04</span> The telluric screw, 1862 — the diagram they didn't print</h2>
+  <p class="sect-lede">Seven years before Mendeleev, Alexandre-Émile de Chancourtois wound the elements up a
+  cylinder by atomic weight — one full turn every <b>16 units</b> (oxygen's weight) — so elements 16 apart
+  stack in a vertical column. His <i>vis tellurique</i> was the first real periodic system. The journal
+  published it <b>without the diagram</b>, and the idea sank for a decade. Here it is rebuilt — the cylinder
+  unrolled, each element at its weight (down) and its wrap-position (across).</p>
+  <div class="chartcard">
+    <div class="chart-h">
+      <span class="chart-t">Elements wound up a cylinder by atomic weight · one turn per 16 units</span>
+      <span class="chart-s">alkali column highlighted</span>
+    </div>
+    <svg id="telluric" viewBox="0 0 600 640" preserveAspectRatio="xMidYMid meet" role="img"
+      aria-label="The telluric screw: elements placed by atomic weight and weight-mod-16, alkali metals highlighted"></svg>
+  </div>
+  <p class="readout" id="telreadout"></p>
+  <p class="note">Positions use <i>modern</i> atomic weights (de Chancourtois worked in 1862 values, which differ
+  for the heavies) — but the decoherence is robust to that: the column breaks because heavy elements aren't
+  16-spaced in weight, true under either ruler.</p>
+
   <footer>
     <span class="copy">© 2026 Peter Repetti · All rights reserved</span>
     A history of the periodic table. Element data from the open
@@ -478,7 +497,43 @@ fetch('elements.json').then(r=>r.json()).then(data=>{
     .map((e,i)=>({...e, ord:i+1, vol:(e.den? e.mass/e.den : null)}));
   renderNewlands(set,set.length);
   renderWaves(data);
+  renderTelluric(data);
 }).catch(()=>{ document.getElementById('setmeta').textContent='could not load element data'; });
+
+/* ================= H3: the telluric screw (de Chancourtois, 1862) ================= */
+function renderTelluric(all){
+  const svg=document.getElementById('telluric'); if(!svg) return; svg.innerHTML='';
+  const W=600,H=640,L=54,R=34,T=52,B=46, pw=W-L-R, ph=H-T-B, wMax=240;
+  const res=m=>((m%16)+16)%16;
+  const x=r=>L+(r/16)*pw, y=w=>T+Math.min(w,wMax)/wMax*ph;
+  [0,50,100,150,200].forEach(w=>{
+    svg.appendChild(svgEl('line',{x1:L,y1:y(w),x2:L+pw,y2:y(w),stroke:'#1b2029','stroke-width':1}));
+    const t=svgEl('text',{x:L-8,y:y(w)+3,'text-anchor':'end','font-size':10,fill:'#5C6373','font-family':'var(--mono)'}); t.textContent=w; svg.appendChild(t);
+  });
+  const yl=svgEl('text',{x:L-42,y:T-16,'font-size':10.5,fill:'#9AA1B2','font-family':'var(--mono)'}); yl.textContent='atomic weight  ↓'; svg.appendChild(yl);
+  const xl=svgEl('text',{x:L+pw,y:H-8,'text-anchor':'end','font-size':10,fill:'#5C6373','font-family':'var(--mono)'}); xl.textContent='position around the cylinder (weight mod 16)  →'; svg.appendChild(xl);
+  // all elements faint, colored by family
+  all.forEach(e=>{ if(e.mass==null) return;
+    svg.appendChild(svgEl('circle',{cx:x(res(e.mass)),cy:y(e.mass),r:3,fill:CAT_COLORS[e.cat]||'#7a86b8',opacity:.38})); });
+  // the alkali column — the hero stack that holds then breaks
+  const alk=all.filter(e=>e.cat==='alkali metal'&&e.mass<160).sort((a,b)=>a.mass-b.mass); // Li Na K Rb Cs
+  const col=(res(alk[0].mass)+res(alk[1].mass)+res(alk[2].mass))/3;                        // ~7 (Li/Na/K)
+  svg.appendChild(svgEl('line',{x1:x(col),y1:y(0),x2:x(col),y2:y(alk[2].mass)+14,stroke:'#ff7a7a','stroke-width':1,'stroke-dasharray':'3 4',opacity:.55}));
+  svg.appendChild(svgEl('polyline',{points:alk.map(e=>`${x(res(e.mass)).toFixed(1)},${y(e.mass).toFixed(1)}`).join(' '),fill:'none',stroke:'#ff7a7a','stroke-width':2}));
+  alk.forEach(e=>{
+    svg.appendChild(svgEl('circle',{cx:x(res(e.mass)),cy:y(e.mass),r:6,fill:'#ff7a7a',stroke:'#fff','stroke-width':1.2}));
+    const t=svgEl('text',{x:x(res(e.mass))+11,y:y(e.mass)+4,'font-size':12,'font-weight':700,fill:'#fff','font-family':'var(--disp)'}); t.textContent=e.sym; svg.appendChild(t);
+  });
+  const a1=svgEl('text',{x:x(col)+16,y:y(alk[1].mass)-7,'font-size':10.5,'font-weight':700,fill:'#5BE08A','font-family':'var(--mono)'}); a1.textContent='column holds — each +16'; svg.appendChild(a1);
+  const a2=svgEl('text',{x:x(res(alk[4].mass))-10,y:y(alk[4].mass)+3,'text-anchor':'end','font-size':10.5,'font-weight':700,fill:'#F2C14E','font-family':'var(--mono)'}); a2.textContent='drift — no longer 16-spaced'; svg.appendChild(a2);
+  document.getElementById('telreadout').innerHTML=
+    `The cylinder turns once every 16 weight-units, so elements 16 apart fall in the same vertical column. `+
+    `<b>Lithium, sodium, potassium</b> do exactly that — each ~16 heavier than the last — and stack cleanly on the `+
+    `dashed line. Then <b>rubidium</b> and <b>caesium</b> peel away to the left: their weights aren't 16-spaced, so `+
+    `the column bends and the alignment dies — at the <b>fourth row</b>, the same place Newlands' octave broke, for `+
+    `the same reason. A real pattern, seen in 1862, defeated by the same wrong ruler; and then buried because the `+
+    `printer dropped the picture.`;
+}
 
 function renderNewlands(set,N){
   const svg=document.getElementById('chart'); svg.innerHTML='';

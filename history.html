@@ -109,6 +109,8 @@
   .bar .exact{position:absolute;left:0;top:0;bottom:0;display:flex;align-items:center;padding-left:6px;
     font-family:var(--mono);font-size:8.5px;color:var(--pos);letter-spacing:.06em;}
   .barwrap{grid-column:2;}
+  .prow.bound{border-top:1px dashed var(--hair);} /* a satisfied constraint, not a scored delta */
+  .cmet{color:var(--pos);font-size:9px;letter-spacing:.05em;font-family:var(--mono);margin-left:4px;}
   .scard .note{font-family:var(--mono);font-size:10px;color:var(--faint);line-height:1.55;margin-top:11px;}
   .scard .note b{color:var(--dim);}
   /* lag timeline */
@@ -232,18 +234,20 @@ const HITS=[
      {k:'Oxide ρ',   p:4.7, a:4.70,  u:' g/cm³'},
      {k:'Chloride ρ',p:1.9, a:1.879, u:' g/cm³'},
    ],
-   note:'Grey metal, refractory dioxide, volatile chloride boiling under 100 °C (found: 86.5 °C) — all called in advance. Oxide density is a near-exact 4.7 vs 4.70 (the contemporaneous value, not the modern polymorph).'},
+   bounds:[{k:'Chloride bp', pred:'< 100 °C', got:'86.5 °C'}],
+   note:'A grey metal forming a refractory dioxide and a volatile chloride — the character called in advance, not just the numbers. Oxide density lands 4.7 vs 4.70, the contemporaneous value (not the modern polymorph).'},
   {sym:'Ga', name:'eka-aluminium → gallium', meta:'predicted 1871 · found 1875 · Boisbaudran', cls:'hit',
    props:[
      {k:'Atomic wt', p:68,  a:69.72, u:''},
      {k:'Density',   p:5.9, a:5.904, u:' g/cm³'},
    ],
-   note:'Boisbaudran first measured the density as 4.7; Mendeleev wrote suggesting he remeasure, and it came back 5.9 — exactly the prediction. Melting point called "low"; gallium melts at 29.8 °C, in the hand.'},
+   bounds:[{k:'Melting pt', pred:'low', got:'29.8 °C'}],
+   note:'Boisbaudran first measured the density as 4.7; Mendeleev wrote suggesting he remeasure, and it came back 5.9 — exactly the prediction. A predicted "low" melting point held: gallium melts in the hand.'},
   {sym:'Sc', name:'eka-boron → scandium', meta:'predicted 1871 · found 1879 · Nilson', cls:'hit',
    props:[
      {k:'Atomic wt', p:44,  a:44.96, u:''},
    ],
-   note:'The thin one — Mendeleev said less about eka-boron, so only the atomic weight is scored. Padding it with unattested numbers would be the dishonest move; a real prediction with one clean line beats an inflated one.'},
+   note:'One line by necessity, not by weaker prediction: the surviving <b>record</b> of Mendeleev\'s quantitative eka-boron figures is sparse, so only the atomic weight is scored. The empty space is a gap in the record — padding it with unattested numbers would be the dishonest move.'},
 ];
 const LAGS=[
   {sym:'Tc', name:'eka-manganese → technetium', pred:1871, found:1937, note:'First synthetic element — no stable isotope exists on Earth, so it waited for a cyclotron. Predicted atomic weight 100 (Tc ≈ 97–98).'},
@@ -319,6 +323,12 @@ function renderCards(){
         `<div class="prow" style="border-top:0;padding-top:0"><span class="pk"></span>`+
           `<span class="pv" style="grid-column:2">pred <b>${pr.p}${pr.u}</b> → got <b>${pr.a}${pr.u}</b></span><span></span></div>`;
     });
+    // qualitative bounds — satisfied constraints, NOT deltas (no bar, no % — a third category of correct)
+    (h.bounds||[]).forEach(b=>{
+      rows+=`<div class="prow bound"><span class="pk">${b.k}</span>`+
+        `<span class="pv" style="grid-column:2">pred <b>${b.pred}</b> → <b>${b.got}</b> <span class="cmet">✓ bound met</span></span>`+
+        `<span class="pe" style="color:var(--pos)">✓</span></div>`;
+    });
     card.innerHTML=`<h3>${h.sym} · ${h.name.split('→')[1].trim()}</h3><div class="meta">${h.meta}</div>${rows}<div class="note">${h.note}</div>`;
     C.appendChild(card);
   });
@@ -341,10 +351,12 @@ function renderCards(){
     C.appendChild(card);
   });
   document.getElementById('prov').innerHTML=
-    `<b>On the scale.</b> Every bar measures the same thing — percent off, against one fixed 5% axis — so a `+
-    `near-bullseye reads short and a looser bet reads long. Germanium's oxide density (4.7 → 4.70) and gallium's `+
-    `density (5.9 → 5.904) land as “exact”; gallium's atomic weight (68 → 69.72) is the loosest of the three, and `+
-    `should look it. Predictions 1871, verified against published comparisons and cross-checked for provenance.`;
+    `<b>On the scale.</b> Every bar measures the same thing — percent off, against one fixed 5% axis — so the bars `+
+    `keep their true ordering instead of each looking equally perfect. Tightest: germanium's oxide density `+
+    `(4.7 → 4.70) and gallium's density (5.9 → 5.904), effectively exact. The single loosest bar is germanium's `+
+    `<i>density</i>, at 3.4%. Among the headline atomic-weight bets, gallium's (2.5%) is the softest, scandium's `+
+    `(2.1%) just behind, germanium's (0.9%) the sharpest — shown in that order, not flattered equal. Predictions `+
+    `1871, verified against published comparisons and cross-checked for provenance.`;
 }
 
 /* ================= Newlands section (from the spike) ================= */

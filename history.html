@@ -141,6 +141,27 @@
   .readout .hold{color:var(--pos);font-weight:600;} .readout .drift{color:var(--warm);font-weight:600;}
   .note{margin-top:14px;font-family:var(--mono);font-size:11.5px;line-height:1.7;color:var(--faint);}
   .note b{color:var(--dim);}
+  /* ---------- H2: waves of discovery ---------- */
+  .wavecard{margin-top:22px;background:radial-gradient(120% 100% at 50% 0%,rgba(255,255,255,.025),transparent 60%),var(--surface);
+    border:1px solid var(--hair);border-radius:12px;padding:18px 18px 14px;position:relative;overflow:hidden;}
+  .wavecard::before{content:'';position:absolute;left:18px;right:18px;top:0;height:8px;pointer-events:none;
+    background:repeating-linear-gradient(90deg,var(--hair-bright) 0 1px,transparent 1px 22px);opacity:.5;}
+  .wave-h{display:flex;justify-content:space-between;align-items:center;margin:2px 4px 14px;}
+  .wave-t{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);}
+  .yearbig{font-family:var(--disp);font-weight:800;font-size:34px;color:var(--ink);line-height:1;letter-spacing:.02em;}
+  #ptboard{position:relative;margin:0 auto;}
+  .wtile{position:absolute;border-radius:3px;display:flex;align-items:center;justify-content:center;
+    font-family:var(--disp);font-weight:700;font-size:11px;background:#111620;color:#3a4353;
+    box-shadow:inset 0 0 0 1px #1b2029;transition:background-color .5s ease,color .5s ease,box-shadow .3s;}
+  .wtile.lit{box-shadow:inset 0 0 0 1px rgba(255,255,255,.14),0 2px 6px rgba(0,0,0,.4);}
+  .wave-ctl{display:flex;gap:12px;align-items:center;margin:18px 2px 0;flex-wrap:wrap;}
+  .wave-ctl input[type=range]{flex:1;min-width:180px;accent-color:var(--signal);cursor:pointer;}
+  .wave-legend{display:flex;flex-wrap:wrap;gap:7px 14px;margin:14px 2px 0;}
+  .wlg{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10.5px;color:var(--dim);}
+  .wlg .sw{width:11px;height:11px;border-radius:2px;}
+  .wave-cap{margin-top:14px;font-size:14px;line-height:1.55;color:var(--dim);min-height:42px;
+    background:var(--surface);border:1px solid var(--hair);border-left:2px solid var(--signal);border-radius:8px;padding:12px 15px;}
+  .wave-cap b{color:var(--ink);font-weight:600;}
   footer{color:var(--faint);font-family:var(--mono);font-size:11px;line-height:1.8;letter-spacing:.02em;
     margin-top:40px;border-top:1px solid var(--hair);padding-top:18px;}
   footer a{color:var(--dim);}
@@ -211,6 +232,28 @@
   </div>
   <p class="readout" id="readout"></p>
   <p class="note" id="datanote"></p>
+
+  <h2><span class="idx">03</span> How we found them — waves of human capability</h2>
+  <p class="sect-lede">Now color the board not by chemistry but by <b>how each element was first caught</b>.
+  Press play and you're not watching chemistry — you're watching human <b>capability</b>. Each new method
+  opens a whole region at once: <b>Davy's electrolysis</b> cracks the left of the table in 1807–08, then
+  <b>spectroscopy</b>, <b>radioactivity</b>, and finally the <b>accelerator</b>, making elements that were
+  never on Earth.</p>
+  <div class="wavecard">
+    <div class="wave-h"><span class="wave-t">Discovery method · press play or drag the year</span><span class="yearbig" id="yearbig">1660</span></div>
+    <div id="ptboard"></div>
+    <div class="wave-ctl">
+      <button class="btn" id="waveplay" type="button">▶ Play 1660 → 2020</button>
+      <input type="range" id="wavescrub" min="1660" max="2020" step="1" value="1660" aria-label="year" />
+      <button class="btn ghost" id="wavereset" type="button">Reset</button>
+    </div>
+    <div class="wave-legend" id="wavelegend"></div>
+    <div class="wave-cap" id="wavecap"></div>
+  </div>
+  <p class="note">Method buckets curated from the sourced discoverer/era data; each element lights on the date it
+  was first obtained <i>by its crediting method</i> — electrolysis on isolation (so Davy's cluster bursts at
+  1807–08), spectroscopy on identification. "Chemical isolation" is the large neutral background the dramatic
+  methods stand out against. Long-tail dates are curated-approximate; the waves are the point.</p>
 
   <footer>
     <span class="copy">© 2026 Peter Repetti · All rights reserved</span>
@@ -374,11 +417,67 @@ const CAT_LABELS={'alkali metal':'Alkali metal','alkaline earth metal':'Alkaline
 const NS='http://www.w3.org/2000/svg';
 const svgEl=(t,a)=>{const n=document.createElementNS(NS,t);for(const k in a)n.setAttribute(k,a[k]);return n;};
 
+/* ================= H2: waves of discovery (method coloring) ================= */
+/* per-element {method, reveal-year}, sourced from the validated discovery pipe.
+   reveal = isolation for the electrolysis cluster (Davy 1807-08), identification otherwise. */
+const MY={"H":{"m":"chemical","y":1671},"He":{"m":"spectroscopy","y":1868},"Li":{"m":"electrolysis","y":1821},"Be":{"m":"chemical","y":1798},"B":{"m":"electrolysis","y":1808},"C":{"m":"antiquity","y":0},"N":{"m":"chemical","y":1772},"O":{"m":"chemical","y":1771},"F":{"m":"chemical","y":1771},"Ne":{"m":"chemical","y":1898},"Na":{"m":"electrolysis","y":1807},"Mg":{"m":"electrolysis","y":1808},"Al":{"m":"electrolysis","y":1825},"Si":{"m":"chemical","y":1823},"P":{"m":"chemical","y":1669},"S":{"m":"antiquity","y":0},"Cl":{"m":"chemical","y":1774},"Ar":{"m":"chemical","y":1894},"K":{"m":"electrolysis","y":1807},"Ca":{"m":"electrolysis","y":1808},"Sc":{"m":"chemical","y":1879},"Ti":{"m":"chemical","y":1791},"V":{"m":"chemical","y":1801},"Cr":{"m":"chemical","y":1797},"Mn":{"m":"chemical","y":1774},"Fe":{"m":"antiquity","y":0},"Co":{"m":"chemical","y":1735},"Ni":{"m":"chemical","y":1751},"Cu":{"m":"antiquity","y":0},"Zn":{"m":"antiquity","y":0},"Ga":{"m":"spectroscopy","y":1875},"Ge":{"m":"chemical","y":1886},"As":{"m":"antiquity","y":0},"Se":{"m":"chemical","y":1817},"Br":{"m":"chemical","y":1826},"Kr":{"m":"chemical","y":1898},"Rb":{"m":"spectroscopy","y":1861},"Sr":{"m":"electrolysis","y":1808},"Y":{"m":"chemical","y":1794},"Zr":{"m":"chemical","y":1789},"Nb":{"m":"chemical","y":1801},"Mo":{"m":"chemical","y":1778},"Tc":{"m":"accelerator","y":1937},"Ru":{"m":"chemical","y":1844},"Rh":{"m":"chemical","y":1804},"Pd":{"m":"chemical","y":1802},"Ag":{"m":"antiquity","y":0},"Cd":{"m":"chemical","y":1817},"In":{"m":"spectroscopy","y":1863},"Sn":{"m":"antiquity","y":0},"Sb":{"m":"antiquity","y":0},"Te":{"m":"chemical","y":1782},"I":{"m":"chemical","y":1811},"Xe":{"m":"chemical","y":1898},"Cs":{"m":"spectroscopy","y":1860},"Ba":{"m":"electrolysis","y":1808},"La":{"m":"chemical","y":1839},"Ce":{"m":"chemical","y":1803},"Pr":{"m":"chemical","y":1885},"Nd":{"m":"chemical","y":1885},"Pm":{"m":"accelerator","y":1945},"Sm":{"m":"chemical","y":1879},"Eu":{"m":"chemical","y":1896},"Gd":{"m":"chemical","y":1880},"Tb":{"m":"chemical","y":1843},"Dy":{"m":"chemical","y":1886},"Ho":{"m":"chemical","y":1878},"Er":{"m":"chemical","y":1843},"Tm":{"m":"chemical","y":1879},"Yb":{"m":"chemical","y":1878},"Lu":{"m":"chemical","y":1906},"Hf":{"m":"chemical","y":1922},"Ta":{"m":"chemical","y":1802},"W":{"m":"chemical","y":1781},"Re":{"m":"chemical","y":1925},"Os":{"m":"chemical","y":1803},"Ir":{"m":"chemical","y":1803},"Pt":{"m":"antiquity","y":0},"Au":{"m":"antiquity","y":0},"Hg":{"m":"antiquity","y":0},"Tl":{"m":"spectroscopy","y":1861},"Pb":{"m":"antiquity","y":0},"Bi":{"m":"antiquity","y":0},"Po":{"m":"radioactivity","y":1898},"At":{"m":"accelerator","y":1940},"Rn":{"m":"radioactivity","y":1899},"Fr":{"m":"radioactivity","y":1939},"Ra":{"m":"radioactivity","y":1898},"Ac":{"m":"radioactivity","y":1899},"Th":{"m":"chemical","y":1829},"Pa":{"m":"chemical","y":1913},"U":{"m":"chemical","y":1789},"Np":{"m":"accelerator","y":1940},"Pu":{"m":"accelerator","y":1941},"Am":{"m":"accelerator","y":1944},"Cm":{"m":"accelerator","y":1944},"Bk":{"m":"accelerator","y":1949},"Cf":{"m":"accelerator","y":1950},"Es":{"m":"accelerator","y":1952},"Fm":{"m":"accelerator","y":1953},"Md":{"m":"accelerator","y":1955},"No":{"m":"accelerator","y":1966},"Lr":{"m":"accelerator","y":1961},"Rf":{"m":"accelerator","y":1969},"Db":{"m":"accelerator","y":1970},"Sg":{"m":"accelerator","y":1974},"Bh":{"m":"accelerator","y":1981},"Hs":{"m":"accelerator","y":1984},"Mt":{"m":"accelerator","y":1982},"Ds":{"m":"accelerator","y":1994},"Rg":{"m":"accelerator","y":1994},"Cn":{"m":"accelerator","y":1996},"Nh":{"m":"accelerator","y":2004},"Fl":{"m":"accelerator","y":1999},"Mc":{"m":"accelerator","y":2003},"Lv":{"m":"accelerator","y":2000},"Ts":{"m":"accelerator","y":2010},"Og":{"m":"accelerator","y":2002}};
+const METHOD={
+  antiquity:{c:'#b0894f',t:'#08090C',lab:'Known to antiquity'},
+  chemical:{c:'#5b6b8a',t:'#eef2fb',lab:'Chemical isolation'},
+  electrolysis:{c:'#74E7FF',t:'#08090C',lab:'Electrolysis (Davy)'},
+  spectroscopy:{c:'#d68bff',t:'#08090C',lab:'Spectroscopy'},
+  radioactivity:{c:'#5BE08A',t:'#08090C',lab:'Radioactivity'},
+  accelerator:{c:'#F2C14E',t:'#08090C',lab:'Accelerator / synthetic'}};
+let waveTiles={}, curYear=1660, playTimer=null;
+function renderWaves(all){
+  const board=document.getElementById('ptboard'); if(!board) return;
+  const cell=30, W=18*cell, Hb=10.6*cell;
+  board.style.width=W+'px'; board.style.height=Hb+'px';
+  all.forEach(e=>{
+    const my=MY[e.sym]; if(!my||e.x==null||e.y==null) return;
+    const t=document.createElement('div'); t.className='wtile';
+    t.style.left=((e.x-1)*cell)+'px'; t.style.top=((e.y-1)*cell)+'px';
+    t.style.width=(cell-3)+'px'; t.style.height=(cell-3)+'px';
+    t.textContent=e.sym; t.dataset.yr=my.y; t.dataset.m=my.m;
+    t.title=`${e.name} · ${METHOD[my.m].lab}${my.y>0?' · '+my.y:''}`;
+    board.appendChild(t); waveTiles[e.sym]=t;
+  });
+  const L=document.getElementById('wavelegend');
+  ['antiquity','chemical','electrolysis','spectroscopy','radioactivity','accelerator'].forEach(k=>{
+    const d=document.createElement('div'); d.className='wlg';
+    d.innerHTML=`<span class="sw" style="background:${METHOD[k].c}"></span>${METHOD[k].lab}`; L.appendChild(d);});
+  document.getElementById('wavescrub').addEventListener('input',e=>{stopPlay();setYear(+e.target.value);});
+  document.getElementById('waveplay').addEventListener('click',playWaves);
+  document.getElementById('wavereset').addEventListener('click',()=>{stopPlay();setYear(1660);});
+  setYear(1660);
+  const qy=new URLSearchParams(location.search).get('year'); if(qy) setYear(+qy);   // deep-link a year
+}
+function setYear(y){
+  curYear=y;
+  document.getElementById('yearbig').textContent=y;
+  document.getElementById('wavescrub').value=y;
+  for(const s in waveTiles){const t=waveTiles[s], ry=+t.dataset.yr, m=METHOD[t.dataset.m];
+    if(ry===0||ry<=y){t.style.background=m.c;t.style.color=m.t;t.classList.add('lit');}
+    else{t.style.background='';t.style.color='';t.classList.remove('lit');}}
+  let msg;
+  if(y>=1939) msg='<b>The accelerator age.</b> Everything past uranium is <b>made</b>, not found — technetium (1937) filled Mendeleev\'s eka-manganese hole straight off a cyclotron, and the synthetic elements march out to the edge of the table.';
+  else if(y>=1898) msg='<b>Radioactivity opens a new door.</b> The Curies pull polonium and radium out of tons of pitchblende in 1898 — elements found by their glow, not their chemistry.';
+  else if(y>=1860) msg='<b>Spectroscopy lights the next wave.</b> Bunsen & Kirchhoff read <b>caesium</b> (1860) and <b>rubidium</b> (1861) off a flame\'s spectrum; Crookes finds thallium the same way.';
+  else if(y>=1807) msg='<b>Davy\'s burst.</b> One man, one new method — electrolysis — cracks a whole region open in 1807–08: potassium and sodium, then calcium, magnesium, barium, strontium, boron. The left edge lights at once.';
+  else if(y>=1669) msg='The chemical age: phosphorus (1669) opens a slow, steady accumulation — one element at a time, by ordinary chemical isolation.';
+  else msg='Before 1669: only the elements known since antiquity — the workable metals, plus carbon and sulfur. Press play to watch the methods arrive.';
+  document.getElementById('wavecap').innerHTML=msg;
+}
+function playWaves(){ stopPlay(); if(curYear>=2020) setYear(1660);
+  playTimer=setInterval(()=>{ let y=curYear+4; if(y>=2020){setYear(2020);stopPlay();return;} setYear(y); },70); }
+function stopPlay(){ if(playTimer){clearInterval(playTimer);playTimer=null;} }
+
 fetch('elements.json').then(r=>r.json()).then(data=>{
   const by={}; data.forEach(e=>by[e.sym]=e);
   const set=KNOWN1865.map(s=>by[s]).filter(Boolean).sort((a,b)=>a.mass-b.mass)
     .map((e,i)=>({...e, ord:i+1, vol:(e.den? e.mass/e.den : null)}));
   renderNewlands(set,set.length);
+  renderWaves(data);
 }).catch(()=>{ document.getElementById('setmeta').textContent='could not load element data'; });
 
 function renderNewlands(set,N){

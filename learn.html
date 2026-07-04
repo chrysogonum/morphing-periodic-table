@@ -119,9 +119,10 @@
   <h2><span class="idx">00</span> The 30-second operation</h2>
   <ol class="steps">
     <li><b>Pick an arrangement.</b> The same 118 tiles fly into a new shape — standard, long form, left-step,
-      spiral, or orbits. The motion is the lesson: nothing is added or removed, only refolded.</li>
-    <li><b>Map a property.</b> Family, state, electronegativity, ionization energy, atomic mass, density, or
-      melting point. A plain-English readout under the table states the trend and <i>why</i> it happens.</li>
+      spiral, orbits, or the wave. The motion is the lesson: nothing is added or removed, only refolded.</li>
+    <li><b>Map a property.</b> Grouped into <b>categories</b> (family, state), <b>periodic trends</b>
+      (electronegativity, ionization energy, effective charge) and <b>physical</b> properties (density, melting
+      point, atomic mass). A plain-English readout under the table states the trend and <i>why</i> it happens.</li>
     <li><b>Hover an element.</b> Its whole <b>group</b> lights up gold and its <b>period</b> lights up blue,
       everything else dimmed — so the family it belongs to is obvious at a glance.</li>
     <li><b>Click to lock it in.</b> The readout panel loads mass, configuration, key properties, and a Bohr
@@ -131,10 +132,10 @@
   </ol>
   <a class="try" href="index.html"><span class="ar">▸</span>Open the instrument</a>
 
-  <h2><span class="idx">01</span> The five arrangements</h2>
+  <h2><span class="idx">01</span> The six arrangements</h2>
   <p class="sect-lede">There has never been one "correct" periodic table. Chemists have folded the same sequence
   many ways, each exposing a different truth. Switch between them and watch what moves — the elements that
-  travel farthest are the ones whose "home" is genuinely debated.</p>
+  travel farthest are the ones whose "home" is genuinely debated. The last one unrolls the table completely.</p>
 
   <div class="card">
     <div class="tag">Arrangement 01 · the everyday table</div>
@@ -175,6 +176,16 @@
     A bridge between the flat chart and the atom underneath it.</p>
     <a class="try" href="index.html?layout=sun&amp;color=cat&amp;sel=10"><span class="ar">▸</span>Go around</a>
   </div>
+  <div class="card">
+    <div class="tag">Arrangement 06 · the periodic law, literally</div>
+    <h3>Wave — the property becomes height</h3>
+    <p>Unroll the whole table into a single row ordered by atomic number, and let the mapped property become
+    <b>height</b>. The everyday 2-D table is really this wave, wrapped so its peaks stack into columns. Map
+    ionization energy and watch the <i>same</i> spike return at every noble gas and the same trough at every alkali
+    metal — the value doesn't drift, it <b>repeats</b>. That repeating function of atomic number is exactly what the
+    word "periodic" means; here it stops being a definition and becomes a shape you can see.</p>
+    <a class="try alt" href="index.html?layout=wave&amp;color=ie"><span class="ar">▸</span>See the wave</a>
+  </div>
 
   <h2><span class="idx">02</span> Reading the property maps</h2>
   <p class="sect-lede">Color is where the table stops being a list and becomes a map. Each mode paints all 118
@@ -195,6 +206,14 @@
       <p>Also climbs to the top-right and falls down each group. It is the energy to rip off an electron —
       hardest for the tightly-held noble gases, easiest for the big, loose alkali metals.</p>
       <a class="try" href="index.html?layout=standard&amp;color=ie&amp;sel=2"><span class="ar">▸</span>Map it</a>
+    </div>
+    <div class="card">
+      <div class="tag">Mechanism · the cause</div>
+      <h3>Effective charge (Z<sub>eff</sub>)</h3>
+      <p>The pull a valence electron <i>actually</i> feels — the full nuclear charge minus the inner electrons
+      screening it. Rises across a period, resets down a group. Estimated with Slater's rules from each element's
+      configuration; click an element to see the shielding and net pull drawn out.</p>
+      <a class="try" href="index.html?layout=standard&amp;color=zeff&amp;sel=17"><span class="ar">▸</span>Map the cause</a>
     </div>
     <div class="card">
       <div class="tag">Extremes · the centre</div>
@@ -224,6 +243,19 @@
       at the top-right. A quick reality check on what the elements are actually like.</p>
       <a class="try" href="index.html?layout=standard&amp;color=phase"><span class="ar">▸</span>See the states</a>
     </div>
+  </div>
+
+  <div class="card" style="margin-top:16px;border-left:2px solid #74e7ff;">
+    <div class="tag">The trend and its reason, side by side</div>
+    <h3>Ionization energy is what you measure — effective charge is why</h3>
+    <p>Most students learn "ionization energy increases up and to the right" and stop there. Map ionization energy,
+    then switch to effective charge without moving anything else: the two pictures land on <b>almost the same
+    shape</b>. That's not a coincidence — it's the mechanism. The more net positive charge an outer electron feels
+    (Z<sub>eff</sub>), the harder it is to pull away (ionization energy). Seeing the measured trend and its cause
+    fall on the same gradient is the difference between memorizing chemistry and understanding it. Try it in the
+    <a href="index.html?layout=wave&amp;color=ie">wave</a>, too, where both trace the very same sawtooth.</p>
+    <a class="try" href="index.html?layout=standard&amp;color=ie"><span class="ar">▸</span>Map ionization energy</a>
+    <a class="try alt" href="index.html?layout=standard&amp;color=zeff&amp;sel=17"><span class="ar">▸</span>Now map the cause</a>
   </div>
 
   <h2><span class="idx">03</span> Periodic trends — quick reference</h2>

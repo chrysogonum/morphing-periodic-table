@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>The Morphing Periodic Table — an element spectrometer</title>
-<meta name="description" content="An interactive instrument that morphs the periodic table between five scientific arrangements — standard, long form, Janet's left-step, a continuous spiral, and concentric orbits — and maps any property across all 118 elements." />
+<meta name="description" content="An interactive instrument that morphs the periodic table between six scientific arrangements — standard, long form, Janet's left-step, a continuous spiral, concentric orbits, and a periodicity wave — and maps any property (including Slater effective nuclear charge) across all 118 elements." />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Expanded:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -101,6 +101,10 @@
     position:relative;}
   .seg button:hover{color:var(--ink);background:var(--surface-2);}
   .seg button.on{color:var(--void);background:var(--ink);font-weight:600;}
+  .segwrap{display:flex;flex-wrap:wrap;gap:12px 14px;align-items:flex-start;}
+  .seg-cluster{display:flex;flex-direction:column;gap:5px;}
+  .seg-cap{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.16em;
+    color:var(--faint);padding-left:3px;}
   .search{flex:1;min-width:170px;}
   .search input{width:100%;background:var(--surface);border:1px solid var(--hair);color:var(--ink);
     font-family:var(--body);padding:11px 13px;border-radius:8px;font-size:14px;outline:none;transition:.15s;}
@@ -181,7 +185,12 @@
   .rd-cfg .rd-k{display:block;margin-bottom:5px;}
   .rd-cfg code{font-family:var(--mono);font-size:12.5px;color:var(--signal);}
   #shell{display:block;margin:14px auto 4px;}
-  .rd-sum{margin-top:10px;font-size:12.5px;line-height:1.6;color:#c2cad9;max-height:148px;overflow:auto;}
+  .rd-zeff{margin-top:12px;padding-top:12px;border-top:1px solid var(--hair);}
+  .rd-zeff .rd-k{display:block;margin-bottom:6px;}
+  #zeff{display:block;margin:2px 0 6px;}
+  .rd-zcap{font-size:12px;line-height:1.55;color:var(--dim);}
+  .rd-zcap b{color:var(--ink);font-weight:600;}
+  .rd-sum{margin-top:12px;font-size:12.5px;line-height:1.6;color:#c2cad9;max-height:148px;overflow:auto;}
 
   /* ---------- legend ---------- */
   .legend{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;
@@ -239,6 +248,7 @@
     .controls{flex-direction:column;align-items:stretch;gap:14px;}
     .ctl-group,.search{width:100%;}
     .seg{width:100%;}
+    .segwrap,.seg-cluster{width:100%;}
     .masthead{padding:34px 0 18px;}
   }
 </style>
@@ -260,9 +270,9 @@
 
 <div class="wrap">
   <section class="masthead">
-    <div class="eyebrow">Interactive instrument · 5 arrangements · 7 property maps</div>
+    <div class="eyebrow">Interactive instrument · 6 arrangements · 8 property maps</div>
     <h1>The Morphing <span class="glow">Periodic Table</span></h1>
-    <p class="lede">The same 118 elements, refolded five ways. Each tile <b>flies</b> to its new position when you
+    <p class="lede">The same 118 elements, refolded six ways. Each tile <b>flies</b> to its new position when you
     switch arrangements — so the relationships hold while the shape changes. Map any property across the whole set,
     and hover any element to light up its <b>group</b> and <b>period</b>.</p>
     <div class="spectrum" aria-hidden="true">
@@ -281,18 +291,29 @@
         <button data-l="left">Left-step</button>
         <button data-l="spiral">Spiral</button>
         <button data-l="sun">Orbits</button>
+        <button data-l="wave">Wave</button>
       </div>
     </div>
     <div class="ctl-group">
       <span class="ctl-label">Map property</span>
-      <div class="seg" id="colorSeg">
-        <button data-c="cat" class="on">Family</button>
-        <button data-c="phase">State</button>
-        <button data-c="en">Electronegativity</button>
-        <button data-c="ie">Ionization energy</button>
-        <button data-c="mass">Atomic mass</button>
-        <button data-c="den">Density</button>
-        <button data-c="melt">Melting point</button>
+      <div class="segwrap" id="colorSeg">
+        <div class="seg-cluster"><span class="seg-cap">Categories</span>
+          <div class="seg">
+            <button data-c="cat" class="on">Family</button>
+            <button data-c="phase">State</button>
+          </div></div>
+        <div class="seg-cluster"><span class="seg-cap">Periodic trends</span>
+          <div class="seg">
+            <button data-c="en">Electronegativity</button>
+            <button data-c="ie">Ionization energy</button>
+            <button data-c="zeff">Effective charge</button>
+          </div></div>
+        <div class="seg-cluster"><span class="seg-cap">Physical</span>
+          <div class="seg">
+            <button data-c="den">Density</button>
+            <button data-c="melt">Melting point</button>
+            <button data-c="mass">Atomic mass</button>
+          </div></div>
       </div>
     </div>
     <div class="ctl-group search">
@@ -345,6 +366,8 @@
 <script>
 const CELL=64, TILE=56, RND_S=0.76;
 const VW=32*CELL, VH=11.2*CELL;
+// Wave arrangement geometry (see rawPos 'wave' + drawWaveAxis)
+const WAVE={left:80, right:34, top:48, bottom:66, gutter:34, s:0.34};
 let ELEMENTS=[], TILES={}, periodLen={}, periodIdx={}, spiralPos={};
 let curLayout='standard', curColor='cat', selected=null, locked=false, activeCat=null;
 let highlightSet=null, highlightLabel='';   // arbitrary custom element set (?highlight=)
@@ -355,6 +378,7 @@ const COLOR_NOTES={
   phase:'Nearly everything is <b>solid</b> at 0&nbsp;°C. Only mercury and bromine are liquid; the gases cluster at the top-right among the nonmetals and noble gases.',
   en:'<b>Electronegativity rises toward the top-right</b>, peaking at fluorine, and falls toward the bottom-left. It measures how hard an atom pulls bonding electrons — strongest when the nucleus is small and exposed.',
   ie:'<b>Ionization energy rises toward the top-right</b> (hardest to ionize: helium, neon, fluorine) and drops down each group. Pulling an electron off is hardest when it sits close to a strong, well-shielded nucleus.',
+  zeff:'<b>Effective nuclear charge is the pull a valence electron actually feels</b> — the full nuclear charge minus the screening of inner electrons. It climbs left→right across a period (protons added to the same shell) and resets down each group (a new shell begins). <b>Compare it with Ionization energy — the two maps look alike, and that is the reason behind the trend.</b> Estimated here with Slater\'s rules.',
   mass:'<b>Atomic mass climbs steadily with atomic number</b> — rightward and downward — as each step adds protons and neutrons. A few neighbours invert (e.g. argon/potassium), which is exactly why the table is ordered by atomic number, not mass.',
   den:'<b>Density peaks in the middle of the d-block</b> — osmium and iridium are the densest elements — and is lowest for the gases up top. Watch the heavy transition metals near the centre glow.',
   melt:'<b>Melting points peak among the central transition metals</b> (tungsten melts at 3695&nbsp;K) and bottom out at the noble gases, which barely condense. Carbon is the standout nonmetal that stays solid to extreme heat.'
@@ -378,10 +402,43 @@ const PHASE_COLORS={'Solid':'#9ad0ff','Liquid':'#7ce0c0','Gas':'#ff9ec7','':'#5a
 const NUM={
   en:{label:'Electronegativity',unit:'(Pauling)',fmt:v=>v.toFixed(2)},
   ie:{label:'1st ionization energy',unit:'kJ/mol',fmt:v=>Math.round(v)},
+  zeff:{label:'Effective charge',unit:'(Zₑff · Slater est.)',fmt:v=>'+'+v.toFixed(2)},
   mass:{label:'Atomic mass',unit:'u',fmt:v=>v.toFixed(1)},
   den:{label:'Density',unit:'g/cm³',fmt:v=>v<1?v.toFixed(3):v.toFixed(2)},
   melt:{label:'Melting point',unit:'K',fmt:v=>Math.round(v)}
 };
+/* Effective nuclear charge felt by the valence electron, via Slater's rules.
+   Computed from the electron configuration (noble-gas core expanded) — an
+   estimate, not a measured value. Zeff = Z − S (screening constant). */
+const NG_CORE={He:'1s2',Ne:'1s2 2s2 2p6',Ar:'1s2 2s2 2p6 3s2 3p6',
+  Kr:'1s2 2s2 2p6 3s2 3p6 3d10 4s2 4p6',
+  Xe:'1s2 2s2 2p6 3s2 3p6 3d10 4s2 4p6 4d10 5s2 5p6',
+  Rn:'1s2 2s2 2p6 3s2 3p6 3d10 4s2 4p6 4d10 5s2 5p6 4f14 5d10 6s2 6p6'};
+const L_IDX={s:0,p:1,d:2,f:3};
+function parseCfg(cfg){
+  if(!cfg) return [];
+  cfg=cfg.replace(/\[(\w+)\]/,(m,x)=>NG_CORE[x]||'');
+  const out=[];
+  cfg.trim().split(/\s+/).forEach(tok=>{
+    const m=tok.match(/^(\d+)([spdf])(\d+)$/); if(m) out.push({n:+m[1],l:L_IDX[m[2]],c:+m[3]});
+  });
+  return out;
+}
+function slaterZeff(el){
+  const ss=parseCfg(el.cfg); if(!ss.length) return null;
+  const nmax=Math.max(...ss.map(s=>s.n));
+  const sameSP=ss.filter(s=>s.n===nmax&&s.l<=1).reduce((a,s)=>a+s.c,0); // valence s/p electrons
+  if(!sameSP) return null;
+  let S=(sameSP-1)*(nmax===1?0.30:0.35);        // same group, minus the electron itself
+  for(const s of ss){
+    if(s.n===nmax&&s.l<=1) continue;
+    if(s.n===nmax-1) S+=s.c*0.85;                // one shell in
+    else if(s.n<=nmax-2) S+=s.c*1.00;            // deeper shells fully screen
+    else if(s.n===nmax&&s.l>=2) S+=s.c*1.00;     // same-n d/f treated as core
+  }
+  return +(el.n-S).toFixed(2);
+}
+function computeZeff(){ for(const el of ELEMENTS) el.zeff=slaterZeff(el); }
 // emission-spectrum ramp (violet → red): the instrument's signature scale
 const SCALE=[[122,77,255],[59,107,255],[43,215,224],[52,209,122],[242,225,75],[255,154,60],[255,77,94]];
 function lerp(a,b,t){return a+(b-a)*t;}
@@ -435,6 +492,22 @@ function rawPos(el){
       const r=36+el.period*38;
       return {cx:r*Math.cos(a), cy:r*Math.sin(a), s:RND_S};
     }
+    case 'wave':{
+      // unroll by atomic number along X; mapped property as height on Y.
+      // returns ABSOLUTE board coordinates (applyLayout skips re-centering).
+      const plotW=VW-WAVE.left-WAVE.right, plotH=VH-WAVE.top-WAVE.bottom;
+      const cx=WAVE.left + (el.n-1)/117 * plotW;
+      const v=el[curColor], r=numRange[curColor];
+      let cy;
+      if(v==null || !r || r.max===r.min){
+        cy=VH-WAVE.gutter/2;              // null-data → hatched gutter, not Y=0
+      }else{
+        let t=(v-r.min)/(r.max-r.min);
+        if(curColor==='den'||curColor==='mass') t=Math.pow(t,0.4); // match color skew
+        cy=WAVE.top + (1-t)*plotH;        // high value sits high
+      }
+      return {cx, cy, s:WAVE.s};
+    }
   }
 }
 function applyLayout(){
@@ -447,10 +520,12 @@ function applyLayout(){
     miny=Math.min(miny,p.cy-h); maxy=Math.max(maxy,p.cy+h);
   }
   const round = curLayout==='spiral'||curLayout==='sun';
+  const abs = curLayout==='wave';
+  // wave: coordinates are already absolute in board space (its own axis frame).
   // round layouts: center on true polar origin (0,0) so rings stay concentric.
   // grid layouts: center the bounding box.
-  const shx = round ? VW/2 : (VW-(maxx-minx))/2 - minx;
-  const shy = round ? VH/2 : (VH-(maxy-miny))/2 - miny;
+  const shx = abs ? 0 : round ? VW/2 : (VW-(maxx-minx))/2 - minx;
+  const shy = abs ? 0 : round ? VH/2 : (VH-(maxy-miny))/2 - miny;
   for(const el of ELEMENTS){
     const p=pos[el.n], s=p.s;
     const x=p.cx+shx-TILE*s/2, y=p.cy+shy-TILE*s/2;
@@ -464,6 +539,7 @@ let guides=[];
 function drawGuides(shx,shy){
   const board=document.getElementById('board');
   guides.forEach(g=>g.remove()); guides=[];
+  if(curLayout==='wave'){ drawWaveAxis(board); return; }
   const gridLayout = curLayout==='standard'||curLayout==='long'||curLayout==='left';
   if(!gridLayout) return;
   // period numbers down the left
@@ -477,6 +553,44 @@ function drawGuides(shx,shy){
               : (function(){let m=99;ELEMENTS.forEach(e=>{if(e.ly===r)m=Math.min(m,e.lx)});return m;})())-1 )*CELL+shx;
     lab.style.transform=`translate(${xx-2}px,${yy-7}px)`;
     board.appendChild(lab); guides.push(lab);
+  }
+}
+
+/* axis frame for the Wave arrangement: gridlines, min/max value labels,
+   property title, and a hatched gutter for elements with no data. */
+function drawWaveAxis(board){
+  const m=NUM[curColor], r=numRange[curColor];
+  if(!m||!r) return;
+  const plotW=VW-WAVE.left-WAVE.right, plotH=VH-WAVE.top-WAVE.bottom;
+  const baseY=WAVE.top+plotH;
+  const add=(el)=>{ board.appendChild(el); guides.push(el); };
+  const line=(y)=>{ const d=document.createElement('div');
+    d.style.cssText=`position:absolute;left:${WAVE.left}px;top:${y}px;width:${plotW}px;height:1px;background:var(--hair);pointer-events:none;`;
+    add(d); };
+  // three reference gridlines; label only the endpoints (honest for skewed maps)
+  line(WAVE.top); line(WAVE.top+plotH*0.5); line(baseY);
+  const vlabel=(text,y)=>{ const d=document.createElement('div'); d.className='glabel';
+    d.textContent=text; d.style.width='62px'; d.style.textAlign='right';
+    d.style.transform=`translate(${WAVE.left-68}px,${y-6}px)`; add(d); };
+  vlabel(m.fmt(r.max),WAVE.top);
+  vlabel(m.fmt(r.min),baseY);
+  // property title (top-left of the plot)
+  const title=document.createElement('div'); title.className='glabel';
+  title.innerHTML=`${m.label} <span style="color:var(--faint)">${m.unit}</span>`;
+  title.style.color='var(--dim)'; title.style.transform=`translate(${WAVE.left}px,${WAVE.top-26}px)`;
+  add(title);
+  // x-axis hint
+  const xl=document.createElement('div'); xl.className='glabel'; xl.textContent='atomic number  Z →';
+  xl.style.transform=`translate(${VW-WAVE.right-150}px,${VH-16}px)`; add(xl);
+  // hatched "no data" gutter, only when the current property has gaps
+  if(ELEMENTS.some(e=>e[curColor]==null)){
+    const band=document.createElement('div');
+    band.style.cssText=`position:absolute;left:${WAVE.left}px;top:${VH-WAVE.gutter}px;width:${plotW}px;height:${WAVE.gutter}px;`
+      +`background:repeating-linear-gradient(45deg,#141821,#141821 5px,#1a1e28 5px,#1a1e28 10px);opacity:.6;`
+      +`border-top:1px dashed var(--hair-bright);pointer-events:none;`;
+    add(band);
+    const gl=document.createElement('div'); gl.className='glabel'; gl.textContent='no data';
+    gl.style.transform=`translate(${WAVE.left+6}px,${VH-WAVE.gutter+5}px)`; add(gl);
   }
 }
 
@@ -602,15 +716,69 @@ function showDetail(el){
         ${row('State · 0 °C',el.phase||'—')}
         ${row('Electronegativity',f(el.en,2))}
         ${row('Ionization',f(el.ie,0,' kJ/mol'))}
+        ${row('Effective charge',el.zeff!=null?'+'+el.zeff.toFixed(2)+' <span style="color:var(--faint)">est.</span>':'—')}
         ${row('Density',f(el.den,null,' g/cm³'))}
         ${row('Melting point',f(el.melt,0,' K'))}
         ${row('Boiling point',f(el.boil,0,' K'))}
       </div>
       <div class="rd-cfg"><span class="rd-k">Electron configuration</span><code>${el.cfg||'—'}</code></div>
       <svg id="shell" width="190" height="190"></svg>
+      <div class="rd-zeff">
+        <span class="rd-k">Effective nuclear charge <span style="color:var(--faint)">· Slater estimate</span></span>
+        <svg id="zeff" width="276" height="58"></svg>
+        <div class="rd-zcap" id="zcap"></div>
+      </div>
       <div class="rd-sum">${el.sum||''}</div>
     </div>`;
   drawShell(el);
+  drawZeffViz(el);
+}
+/* mechanism micro-viz: the net inward pull (Zeff) a valence electron feels,
+   after the core electrons screen most of the +Z nucleus. */
+function drawZeffViz(el){
+  const svg=document.getElementById('zeff'); if(!svg) return;
+  svg.innerHTML='';
+  const NS='http://www.w3.org/2000/svg', mk=t=>document.createElementNS(NS,t);
+  const zeff=el.zeff, r=numRange.zeff;
+  const cap=document.getElementById('zcap');
+  if(zeff==null||!r){ if(cap) cap.textContent='No configuration data.'; return; }
+  const cy=29, nucX=30, valX=250;
+  const core=el.n-(function(){const ss=parseCfg(el.cfg),nmax=Math.max(...ss.map(s=>s.n));
+    return ss.filter(s=>s.n===nmax&&s.l<=1).reduce((a,s)=>a+s.c,0);})();
+  // baseline track
+  const track=mk('line'); track.setAttribute('x1',nucX);track.setAttribute('y1',cy);
+  track.setAttribute('x2',valX);track.setAttribute('y2',cy);
+  track.setAttribute('stroke','#2c313d');track.setAttribute('stroke-width','1');svg.appendChild(track);
+  // shielding cloud (core electrons) hugging the nucleus
+  const cloud=mk('ellipse'); cloud.setAttribute('cx',nucX+34);cloud.setAttribute('cy',cy);
+  cloud.setAttribute('rx',46);cloud.setAttribute('ry',20);
+  cloud.setAttribute('fill','rgba(116,231,255,.08)');cloud.setAttribute('stroke','rgba(116,231,255,.16)');
+  svg.appendChild(cloud);
+  // nucleus
+  const nuc=mk('circle'); nuc.setAttribute('cx',nucX);nuc.setAttribute('cy',cy);nuc.setAttribute('r',12);
+  nuc.setAttribute('fill','#F2C14E');svg.appendChild(nuc);
+  const nt=mk('text'); nt.setAttribute('x',nucX);nt.setAttribute('y',cy+3.3);nt.setAttribute('text-anchor','middle');
+  nt.setAttribute('font-size','9.5');nt.setAttribute('font-weight','800');nt.setAttribute('fill','#08090C');
+  nt.setAttribute('font-family',"'IBM Plex Mono',monospace");nt.textContent='+'+el.n;svg.appendChild(nt);
+  // valence electron
+  const ve=mk('circle'); ve.setAttribute('cx',valX);ve.setAttribute('cy',cy);ve.setAttribute('r',4.5);
+  ve.setAttribute('fill','#74E7FF');svg.appendChild(ve);
+  // net-pull arrow: from valence toward nucleus, length ∝ Zeff
+  const frac=Math.max(0.14,Math.min(1,zeff/r.max));
+  const x2=valX-8-frac*(valX-nucX-26);
+  const arrow=mk('line'); arrow.setAttribute('x1',valX-8);arrow.setAttribute('y1',cy);
+  arrow.setAttribute('x2',x2);arrow.setAttribute('y2',cy);
+  arrow.setAttribute('stroke','#74E7FF');arrow.setAttribute('stroke-width','2');
+  arrow.setAttribute('marker-end','url(#zarrow)');svg.appendChild(arrow);
+  const defs=mk('defs'),mkr=mk('marker');
+  mkr.setAttribute('id','zarrow');mkr.setAttribute('markerWidth','7');mkr.setAttribute('markerHeight','7');
+  mkr.setAttribute('refX','5');mkr.setAttribute('refY','3');mkr.setAttribute('orient','auto');
+  const pth=mk('path');pth.setAttribute('d','M0,0 L6,3 L0,6 Z');pth.setAttribute('fill','#74E7FF');
+  mkr.appendChild(pth);defs.appendChild(mkr);svg.appendChild(defs);
+  const zt=mk('text'); zt.setAttribute('x',(valX+x2)/2);zt.setAttribute('y',cy-7);zt.setAttribute('text-anchor','middle');
+  zt.setAttribute('font-size','10');zt.setAttribute('font-weight','700');zt.setAttribute('fill','#74E7FF');
+  zt.setAttribute('font-family',"'IBM Plex Mono',monospace");zt.textContent='+'+zeff.toFixed(2);svg.appendChild(zt);
+  if(cap) cap.innerHTML=`Its valence electron feels <b>+${zeff.toFixed(2)}</b>, not the full <b>+${el.n}</b> — ${core} inner electron${core===1?'':'s'} screen the rest.`;
 }
 function drawShell(el){
   const svg=document.getElementById('shell'); if(!svg) return;
@@ -687,6 +855,7 @@ function build(){
     });
     board.appendChild(t); TILES[el.n]=t;
   }
+  computeZeff();
   computeRanges();
   applyLayout(); recolor(); resize();
   // robustly react to the viewport settling / window changes
@@ -724,21 +893,40 @@ const HINTS={
   long:'LONG FORM — the f-block restored to its true home between groups 2 and 3.',
   left:'LEFT-STEP — ordered by orbital filling. Top-right: <b>helium now sits above beryllium</b>.',
   spiral:'SPIRAL — one unbroken thread from hydrogen outward; atomic number never skips.',
-  sun:'ORBITS — each ring is a period. Alkali metals line up at the top; noble gases close each ring.'
+  sun:'ORBITS — each ring is a period. Alkali metals line up at the top; noble gases close each ring.',
+  wave:'WAVE — the table unrolled by atomic number, the mapped property as height. <b>Watch the pattern repeat</b> — that recurrence is what "periodic" means.'
 };
 
 /* ---------- controls ---------- */
+// Wave needs a numeric height axis; a categorical map has none.
+function enforceWaveNumeric(){
+  if(curLayout==='wave' && !NUM[curColor]){
+    curColor='ie';
+    document.querySelectorAll('#colorSeg button').forEach(x=>x.classList.toggle('on',x.dataset.c==='ie'));
+  }
+}
+function setLayoutButtons(l){
+  document.querySelectorAll('#layoutSeg button').forEach(x=>x.classList.toggle('on',x.dataset.l===l));
+}
 function wire(){
   document.getElementById('layoutSeg').addEventListener('click',e=>{
     const b=e.target.closest('button'); if(!b) return;
-    document.querySelectorAll('#layoutSeg button').forEach(x=>x.classList.remove('on'));
-    b.classList.add('on'); curLayout=b.dataset.l; applyLayout();
+    setLayoutButtons(b.dataset.l); curLayout=b.dataset.l;
+    enforceWaveNumeric(); recolor(); applyLayout();
     document.getElementById('hint').innerHTML=HINTS[curLayout];
   });
   document.getElementById('colorSeg').addEventListener('click',e=>{
     const b=e.target.closest('button'); if(!b) return;
     document.querySelectorAll('#colorSeg button').forEach(x=>x.classList.remove('on'));
-    b.classList.add('on'); curColor=b.dataset.c; activeCat=null; recolor(); restoreBase();
+    b.classList.add('on'); curColor=b.dataset.c; activeCat=null;
+    let repos=false;
+    // a categorical map is spatial, not a trend curve — leave Wave for the grid
+    if(curLayout==='wave' && !NUM[curColor]){
+      curLayout='standard'; setLayoutButtons('standard');
+      document.getElementById('hint').innerHTML=HINTS.standard; repos=true;
+    }
+    recolor(); restoreBase();
+    if(curLayout==='wave'||repos) applyLayout();   // re-morph heights to the new property
     if(locked&&selected) showDetail(ELEMENTS.find(x=>x.n===selected));
   });
   document.getElementById('search').addEventListener('input',e=>{ activeCat=null; highlightSet=null; showSetBanner(); runSearch(e.target.value); });
@@ -752,6 +940,7 @@ function applyInitialParams(){
     document.querySelectorAll('#layoutSeg button').forEach(x=>x.classList.toggle('on',x.dataset.l===l)); }
   if(c && (c==='cat'||c==='phase'||NUM[c])){ curColor=c;
     document.querySelectorAll('#colorSeg button').forEach(x=>x.classList.toggle('on',x.dataset.c===c)); }
+  enforceWaveNumeric();
 }
 fetch('elements.json').then(r=>r.json()).then(data=>{
   ELEMENTS=data; applyInitialParams(); build(); wire();

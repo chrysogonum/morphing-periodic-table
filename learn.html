@@ -251,7 +251,133 @@
   <b class="gloss" tabindex="0" data-note="The address of every electron: shell number + orbital letter + count. '3p⁵' means five electrons in the p-orbital of the third shell — shown in every element's readout panel.">electron configuration</b> in a readout reads as shell-number, orbital-letter, count. Click any element and the
   “P-BLOCK” tag or the <code>3p⁵</code> in its profile is this, made concrete.</p>
 
-  <h2><span class="idx">03</span> Reading the property maps</h2>
+  <h2><span class="idx">03</span> The order the shells fill — aufbau</h2>
+  <p class="sect-lede">§02 showed <i>what</i> the orbitals are and <i>how many</i> electrons each holds. The other
+  half of the story is the <i>order</i> they fill — and that order is the engine behind an element's electron
+  configuration, behind the <b>left-step</b> arrangement (which literally sorts by it), and behind the block
+  sequence itself. It runs by the <b class="gloss" tabindex="0" data-note="German for 'building up': electrons fill the lowest-energy orbital available before starting a higher one, stacking the atom from the bottom up.">aufbau principle</b> — lowest energy first.</p>
+
+  <div class="orbcard">
+    <svg viewBox="0 0 318 288" role="img" aria-label="The Madelung diagram: subshells arranged by principal shell (rows 1 to 7) and orbital type (columns s, p, d, f), with diagonal arrows showing the fill order. Each subshell carries its fill rank; 4s is rank 6 and 3d is rank 7, so 4s fills first even though it sits in a higher row.">
+      <defs><marker id="madh" markerWidth="7.5" markerHeight="7.5" refX="5.6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#74E7FF" fill-opacity=".85"/></marker></defs>
+      <text x="60" y="20" text-anchor="middle" font-size="11" fill="#5C6373" font-family="'IBM Plex Mono',monospace">s</text>
+      <text x="130" y="20" text-anchor="middle" font-size="11" fill="#5C6373" font-family="'IBM Plex Mono',monospace">p</text>
+      <text x="200" y="20" text-anchor="middle" font-size="11" fill="#5C6373" font-family="'IBM Plex Mono',monospace">d</text>
+      <text x="270" y="20" text-anchor="middle" font-size="11" fill="#5C6373" font-family="'IBM Plex Mono',monospace">f</text>
+      <!-- cells -->
+      <rect x="36" y="33" width="48" height="30" rx="5" fill="#ff9ec7" fill-opacity=".13" stroke="#ff9ec7" stroke-opacity=".45"/><text x="60" y="52" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="600" fill="#EDEFF4">1s</text><text x="41" y="45" font-family="'IBM Plex Mono',monospace" font-size="7.5" fill="#9AA1B2">1</text>
+      <rect x="36" y="68" width="48" height="30" rx="5" fill="#ff9ec7" fill-opacity=".13" stroke="#ff9ec7" stroke-opacity=".45"/><text x="60" y="87" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="600" fill="#EDEFF4">2s</text><text x="41" y="80" font-family="'IBM Plex Mono',monospace" font-size="7.5" fill="#9AA1B2">2</text>
+      <rect x="106" y="68" width="48" height="30" rx="5" fill="#74e08a" fill-opacity=".13" stroke="#74e08a" stroke-opacity=".45"/><text x="130" y="87" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="600" fill="#EDEFF4">2p</text><text x="111" y="80" font-family="'IBM Plex Mono',monospace" font-size="7.5" fill="#9AA1B2">3</text>
+      <rect x="36" y="103" width="48" height="30" rx="5" fill="#ff9ec7" fill-opacity=".13" stroke="#ff9ec7" stroke-opacity=".45"/><text x="60" y="122" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="600" fill="#EDEFF4">3s</text><text x="41" y="115" font-family="'IBM Plex Mono',monospace" font-size="7.5" fill="#9AA1B2">4</text>
+      <rect x="106" y="103" width="48" height="30" rx="5" fill="#74e08a" fill-opacity=".13" stroke="#74e08a" stroke-opacity=".45"/><text x="130" y="122" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="600" fill="#EDEFF4">3p</text><text x="111" y="115" font-family="'IBM Plex Mono',monospace" font-size="7.5" fill="#9AA1B2">5</text>
+      <rect x="176" y="103" width="48" height="30" rx="5" fill="#ffd64d" fill-opacity=".30" stroke="#ffd64d" stroke-opacity="1" stroke-width="1.8"/><text x="200" y="122" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="600" fill="#EDEFF4">3d</text><text x="181" y="115" font-family="'IBM Plex Mono',monospace" font-size="8.5" font-weight="600" fill="#74E7FF">7</text>
+      <rect x="36" y="138" width="48" height="30" rx="5" fill="#ff9ec7" fill-opacity=".30" stroke="#ff9ec7" stroke-opacity="1" stroke-width="1.8"/><text x="60" y="157" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="600" fill="#EDEFF4">4s</text><text x="41" y="150" font-family="'IBM Plex Mono',monospace" font-size="8.5" font-weight="600" fill="#74E7FF">6</text>
+      <rect x="106" y="138" width="48" height="30" rx="5" fill="#74e08a" fill-opacity=".13" stroke="#74e08a" stroke-opacity=".45"/><text x="130" y="157" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="600" fill="#EDEFF4">4p</text><text x="111" y="150" font-family="'IBM Plex Mono',monospace" font-size="7.5" fill="#9AA1B2">8</text>
+      <rect x="176" y="138" width="48" height="30" rx="5" fill="#ffd64d" fill-opacity=".13" stroke="#ffd64d" stroke-opacity=".45"/><text x="200" y="157" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="600" fill="#EDEFF4">4d</text><text x="181" y="150" font-family="'IBM Plex Mono',monospace" font-size="7.5" fill="#9AA1B2">10</text>
+      <rect x="246" y="138" width="48" height="30" rx="5" fill="#d68bff" fill-opacity=".13" stroke="#d68bff" stroke-opacity=".45"/><text x="270" y="157" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="600" fill="#EDEFF4">4f</text><text x="251" y="150" font-family="'IBM Plex Mono',monospace" font-size="7.5" fill="#9AA1B2">13</text>
+      <rect x="36" y="173" width="48" height="30" rx="5" fill="#ff9ec7" fill-opacity=".13" stroke="#ff9ec7" stroke-opacity=".45"/><text x="60" y="192" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="600" fill="#EDEFF4">5s</text><text x="41" y="185" font-family="'IBM Plex Mono',monospace" font-size="7.5" fill="#9AA1B2">9</text>
+      <rect x="106" y="173" width="48" height="30" rx="5" fill="#74e08a" fill-opacity=".13" stroke="#74e08a" stroke-opacity=".45"/><text x="130" y="192" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="600" fill="#EDEFF4">5p</text><text x="111" y="185" font-family="'IBM Plex Mono',monospace" font-size="7.5" fill="#9AA1B2">11</text>
+      <rect x="176" y="173" width="48" height="30" rx="5" fill="#ffd64d" fill-opacity=".13" stroke="#ffd64d" stroke-opacity=".45"/><text x="200" y="192" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="600" fill="#EDEFF4">5d</text><text x="181" y="185" font-family="'IBM Plex Mono',monospace" font-size="7.5" fill="#9AA1B2">14</text>
+      <rect x="246" y="173" width="48" height="30" rx="5" fill="#d68bff" fill-opacity=".13" stroke="#d68bff" stroke-opacity=".45"/><text x="270" y="192" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="600" fill="#EDEFF4">5f</text><text x="251" y="185" font-family="'IBM Plex Mono',monospace" font-size="7.5" fill="#9AA1B2">17</text>
+      <rect x="36" y="208" width="48" height="30" rx="5" fill="#ff9ec7" fill-opacity=".13" stroke="#ff9ec7" stroke-opacity=".45"/><text x="60" y="227" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="600" fill="#EDEFF4">6s</text><text x="41" y="220" font-family="'IBM Plex Mono',monospace" font-size="7.5" fill="#9AA1B2">12</text>
+      <rect x="106" y="208" width="48" height="30" rx="5" fill="#74e08a" fill-opacity=".13" stroke="#74e08a" stroke-opacity=".45"/><text x="130" y="227" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="600" fill="#EDEFF4">6p</text><text x="111" y="220" font-family="'IBM Plex Mono',monospace" font-size="7.5" fill="#9AA1B2">15</text>
+      <rect x="176" y="208" width="48" height="30" rx="5" fill="#ffd64d" fill-opacity=".13" stroke="#ffd64d" stroke-opacity=".45"/><text x="200" y="227" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="600" fill="#EDEFF4">6d</text><text x="181" y="220" font-family="'IBM Plex Mono',monospace" font-size="7.5" fill="#9AA1B2">18</text>
+      <rect x="36" y="243" width="48" height="30" rx="5" fill="#ff9ec7" fill-opacity=".13" stroke="#ff9ec7" stroke-opacity=".45"/><text x="60" y="262" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="600" fill="#EDEFF4">7s</text><text x="41" y="255" font-family="'IBM Plex Mono',monospace" font-size="7.5" fill="#9AA1B2">16</text>
+      <rect x="106" y="243" width="48" height="30" rx="5" fill="#74e08a" fill-opacity=".13" stroke="#74e08a" stroke-opacity=".45"/><text x="130" y="262" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="13" font-weight="600" fill="#EDEFF4">7p</text><text x="111" y="255" font-family="'IBM Plex Mono',monospace" font-size="7.5" fill="#9AA1B2">19</text>
+      <!-- diagonal fill-order arrows -->
+      <line x1="81" y1="37" x2="45" y2="59" stroke="#74E7FF" stroke-opacity=".5" stroke-width="1.5" marker-end="url(#madh)"/>
+      <line x1="81" y1="72" x2="45" y2="94" stroke="#74E7FF" stroke-opacity=".5" stroke-width="1.5" marker-end="url(#madh)"/>
+      <line x1="151" y1="72" x2="39" y2="129" stroke="#74E7FF" stroke-opacity=".5" stroke-width="1.5" marker-end="url(#madh)"/>
+      <line x1="151" y1="107" x2="39" y2="164" stroke="#74E7FF" stroke-opacity=".5" stroke-width="1.5" marker-end="url(#madh)"/>
+      <line x1="221" y1="107" x2="39" y2="199" stroke="#74E7FF" stroke-opacity=".65" stroke-width="1.6" marker-end="url(#madh)"/>
+      <line x1="221" y1="142" x2="39" y2="234" stroke="#74E7FF" stroke-opacity=".5" stroke-width="1.5" marker-end="url(#madh)"/>
+      <line x1="291" y1="142" x2="39" y2="269" stroke="#74E7FF" stroke-opacity=".5" stroke-width="1.5" marker-end="url(#madh)"/>
+      <line x1="291" y1="177" x2="109" y2="269" stroke="#74E7FF" stroke-opacity=".5" stroke-width="1.5" marker-end="url(#madh)"/>
+    </svg>
+    <div class="orbcap">Follow the arrows top to bottom: <b>1s, 2s, 2p, 3s, 3p, 4s, 3d, 4p …</b> — the small number in each
+    box is its fill rank. This is the <b class="gloss" tabindex="0" data-note="Orbitals fill in order of n+l (shell number plus orbital type: s=0, p=1, d=2, f=3); ties broken by the lower n. It predicts 4s fills before 3d.">Madelung rule</b>: each <b class="gloss" tabindex="0" data-note="One orbital type within a shell — like 3p or 4s. A shell (n) is split into s, p, d and f subshells of slightly different energy.">subshell</b> fills in order of <b>n + l</b>. The famous quirk is
+    the boxed pair: <b style="color:#74E7FF">4s (rank 6) fills before 3d (rank 7)</b>, even though 3d sits a row higher —
+    a fourth-shell orbital slips in ahead of a third-shell one. This crossover is exactly why the left-step table
+    sorts the way it does.</div>
+  </div>
+
+  <div class="card" style="border-left:2px solid #ffd64d;">
+    <div class="tag">Where the rule bends — and it does</div>
+    <h3>Chromium and copper break Madelung on purpose</h3>
+    <p>Madelung predicts the configuration of most elements, but not all — about twenty break it. The two everyone
+    learns sit in the d-block: <b>chromium is [Ar]3d⁵4s¹</b>, not the predicted 3d⁴4s²; and <b>copper is
+    [Ar]3d¹⁰4s¹</b>, not 3d⁹4s². A <i>half</i>-filled d-subshell (5 electrons) and a <i>completely</i>-filled one (10)
+    are each extra stable — stable enough that the atom borrows an electron from 4s to reach them. The rule is an
+    excellent predictor, not a law of nature; these exceptions are real chemistry, worth knowing rather than
+    hiding. It ties straight back to the orbitals in §02: the block an element lives in <i>is</i> the subshell its
+    outermost electrons are filling, in this order.</p>
+  </div>
+
+  <h2><span class="idx">04</span> Isotopes — why the masses aren't whole numbers</h2>
+  <p class="sect-lede">Nearly every section here is about electrons. This one is about the nucleus, and it answers a
+  question the property maps quietly raise: chlorine's mass reads <b>35.45</b> — so what is 0.45 of an atom? Nothing.
+  The atomic mass on the table is an <i>average</i>.</p>
+
+  <div class="card">
+    <p style="margin:0;color:#c8d0de;line-height:1.6;">Atoms of one element always have the same number of protons, but they can carry
+    different numbers of neutrons. Those variants are <b class="gloss" tabindex="0" data-note="Atoms of the same element — same proton count — but different numbers of neutrons, and so different masses. Chlorine is a fixed mix of two: chlorine-35 and chlorine-37.">isotopes</b>. Chlorine comes as two: chlorine-35 and chlorine-37
+    (the number is the <b class="gloss" tabindex="0" data-note="The total count of protons plus neutrons in one atom. Chlorine-35 has 17 protons and 18 neutrons; chlorine-37 has 17 protons and 20 neutrons.">mass number</b> — protons plus neutrons). A natural sample is a fixed <b>3-to-1 mix</b> of
+    the two, so the mass on the table is their <b class="gloss" tabindex="0" data-note="An average that counts each isotope by how common it is. A 3-to-1 mix of masses 35 and 37 averages to about 35.5, not 36.">weighted average</b> — pulled toward 35 because 35 is three times as common.</p>
+  </div>
+
+  <div class="orbcard">
+    <svg viewBox="0 0 480 226" role="img" aria-label="Chlorine's two isotopes as bars sized by abundance: chlorine-35 at about 75.8 percent is a tall bar, chlorine-37 at about 24.2 percent is a short bar. The weighted-average pointer lands at 35.45, close to 35 because chlorine-35 dominates.">
+      <line x1="55" y1="180" x2="445" y2="180" stroke="#333A48" stroke-width="1"/>
+      <!-- bars -->
+      <rect x="65" y="66" width="60" height="114" rx="3" fill="#74E7FF" fill-opacity=".82"/>
+      <rect x="375" y="144" width="60" height="36" rx="3" fill="#FF6B9A" fill-opacity=".85"/>
+      <text x="95" y="58" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="12" font-weight="600" fill="#74E7FF">≈75.8%</text>
+      <text x="405" y="136" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="12" font-weight="600" fill="#FF6B9A">≈24.2%</text>
+      <text x="95" y="172" text-anchor="middle" font-family="'Archivo Expanded',sans-serif" font-size="14" font-weight="700" fill="#08090C">³⁵Cl</text>
+      <text x="405" y="172" text-anchor="middle" font-family="'Archivo Expanded',sans-serif" font-size="14" font-weight="700" fill="#08090C">³⁷Cl</text>
+      <!-- axis ticks -->
+      <line x1="95" y1="180" x2="95" y2="185" stroke="#5C6373"/><text x="95" y="199" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10.5" fill="#5C6373">35</text>
+      <line x1="250" y1="180" x2="250" y2="185" stroke="#5C6373"/><text x="250" y="199" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10.5" fill="#5C6373">36</text>
+      <line x1="405" y1="180" x2="405" y2="185" stroke="#5C6373"/><text x="405" y="199" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10.5" fill="#5C6373">37</text>
+      <text x="250" y="216" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10" fill="#5C6373">mass number  →</text>
+      <!-- weighted-average needle at 35.45 -->
+      <path d="M159,42 L171,42 L165,52 Z" fill="#EDEFF4"/>
+      <line x1="165" y1="52" x2="165" y2="180" stroke="#EDEFF4" stroke-opacity=".85" stroke-width="1.4" stroke-dasharray="3 3"/>
+      <text x="165" y="34" text-anchor="middle" font-family="'Archivo Expanded',sans-serif" font-size="15" font-weight="800" fill="#EDEFF4">35.45</text>
+    </svg>
+    <div class="orbcap">The white pointer is the <b>weighted average</b> — the number on the table. It lands at <b>35.45</b>,
+    sitting much closer to the tall <b>³⁵Cl</b> bar than to <b>³⁷Cl</b>, because chlorine-35 is three times as
+    abundant. It is <b>not a half-atom</b>; no single chlorine atom weighs 35.45. It is what you get when you weigh a
+    real, mixed sample.</div>
+  </div>
+
+  <div class="card" style="margin-top:16px;border-left:2px solid #74e7ff;">
+    <div class="tag">The payoff — why the table isn't ordered by weight</div>
+    <h3>Argon outweighs potassium, yet comes before it</h3>
+    <div class="orbcard" style="margin-top:6px;background:transparent;border:0;padding:0;">
+      <svg viewBox="0 0 480 148" role="img" aria-label="Two element tiles side by side. Argon has 18 protons and atomic mass 39.95; potassium has 19 protons and atomic mass 39.10. Argon has fewer protons but is heavier.">
+        <rect x="90" y="24" width="110" height="100" rx="8" fill="#151922" stroke="#333A48"/>
+        <text x="100" y="44" font-family="'IBM Plex Mono',monospace" font-size="11" fill="#9AA1B2">18</text>
+        <text x="145" y="88" text-anchor="middle" font-family="'Archivo Expanded',sans-serif" font-size="34" font-weight="800" fill="#EDEFF4">Ar</text>
+        <text x="145" y="112" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="12" font-weight="600" fill="#74E7FF">39.95</text>
+        <rect x="280" y="24" width="110" height="100" rx="8" fill="#151922" stroke="#333A48"/>
+        <text x="290" y="44" font-family="'IBM Plex Mono',monospace" font-size="11" fill="#9AA1B2">19</text>
+        <text x="335" y="88" text-anchor="middle" font-family="'Archivo Expanded',sans-serif" font-size="34" font-weight="800" fill="#EDEFF4">K</text>
+        <text x="335" y="112" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="12" fill="#9AA1B2">39.10</text>
+        <text x="145" y="16" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="9.5" fill="#5C6373">fewer protons · heavier</text>
+        <text x="335" y="16" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="9.5" fill="#5C6373">more protons · lighter</text>
+        <text x="240" y="80" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="16" fill="#FF6B9A">→</text>
+      </svg>
+    </div>
+    <p>Argon has <b>18 protons</b> and potassium <b>19</b>, so potassium comes later on the table. Yet argon is the
+    <i>heavier</i> of the two (39.95 vs 39.10) — because argon's dominant isotope, <b>argon-40</b>, carries more
+    neutrons than potassium's <b>potassium-39</b>. Weight puts them in the wrong order; <b>proton count</b> puts them
+    right. That single inversion is why the modern table is ordered by atomic number, not mass — the beat the
+    <a href="history.html">history page</a> is built on, and the anomaly the atomic-mass map flags in
+    <a href="index.html?color=mass&amp;sel=18">Experiment 04</a>.</p>
+  </div>
+
+  <h2><span class="idx">05</span> Reading the property maps</h2>
   <p class="sect-lede">Color is where the table stops being a list and becomes a map. Each mode paints all 118
   elements on one scale at once, so a trend that takes a paragraph to state becomes a gradient you can read in a
   second. Open any of them, then switch arrangements while the colors hold.</p>
@@ -322,7 +448,7 @@
     <a class="try alt" href="index.html?layout=standard&amp;color=zeff&amp;sel=17"><span class="ar">▸</span>Now map the cause</a>
   </div>
 
-  <h2><span class="idx">04</span> Periodic trends — quick reference</h2>
+  <h2><span class="idx">06</span> Periodic trends — quick reference</h2>
   <p class="sect-lede">Four trends explain most of chemistry's behaviour. Each comes down to a tug-of-war between
   how strongly the nucleus pulls and how far away (and how shielded) the outer electrons are. Two words do the
   heavy lifting below: a <b>period</b> is a <i>row</i> (read left to right across one), a <b>group</b> is a
@@ -339,7 +465,7 @@
       <td>Easily-lost outer electrons make metals; the metalloid staircase marks the hand-off to nonmetals.</td></tr>
   </table>
 
-  <h2><span class="idx">05</span> Two-minute experiments</h2>
+  <h2><span class="idx">07</span> Two-minute experiments</h2>
   <p class="sect-lede">The fastest way to learn from the instrument is to ask it a question and watch it answer.
   Each one opens already set up — give it a try, then poke around from there.</p>
 

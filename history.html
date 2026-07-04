@@ -155,7 +155,12 @@
     box-shadow:inset 0 0 0 1px #1b2029;transition:background-color .5s ease,color .5s ease,box-shadow .3s;}
   .wtile.lit{box-shadow:inset 0 0 0 1px rgba(255,255,255,.14),0 2px 6px rgba(0,0,0,.4);}
   .wave-ctl{display:flex;gap:12px;align-items:center;margin:18px 2px 0;flex-wrap:wrap;}
-  .wave-ctl input[type=range]{flex:1;min-width:180px;accent-color:var(--signal);cursor:pointer;}
+  .wave-ctl input[type=range]{flex:1;min-width:150px;accent-color:var(--signal);cursor:pointer;}
+  .wave-speed{display:inline-flex;gap:2px;background:var(--surface);border:1px solid var(--hair);border-radius:8px;padding:3px;}
+  .wave-speed .sl{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);align-self:center;padding:0 6px 0 4px;}
+  .wave-speed button{border:0;background:transparent;color:var(--dim);font-family:var(--mono);font-size:11px;padding:6px 9px;border-radius:5px;cursor:pointer;transition:.15s;}
+  .wave-speed button.on{background:var(--ink);color:var(--void);font-weight:600;}
+  .wave-speed button:hover:not(.on){color:var(--ink);}
   .wave-legend{display:flex;flex-wrap:wrap;gap:7px 14px;margin:14px 2px 0;}
   .wlg{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10.5px;color:var(--dim);}
   .wlg .sw{width:11px;height:11px;border-radius:2px;}
@@ -186,6 +191,17 @@
     read: Mendeleev's 1871 bets scored against the elements that later filled his gaps, and — further
     back — Newlands' 1865 near-miss rebuilt on the instrument. Each one shown honestly: why it looked
     real, and exactly where it broke.</p>
+    <p class="lede" style="margin-top:16px"><b>The moment.</b> For most of history, chemists knew barely
+    a dozen elements; by the 1860s the count had blown past sixty, as new methods — electrolysis, then
+    spectroscopy (you can watch this in section 03) — pried them loose faster than anyone could organize
+    them. Then in 1860 the <b>Karlsruhe Congress</b> finally settled a consistent set of <b>atomic
+    weights</b>, and that lit the fuse: within a decade a handful of people, working independently, reached
+    for that one newly-reliable number to find the hidden order — a French geologist (<b>de Chancourtois</b>,
+    1862), a London sugar-refinery chemist (<b>John Newlands</b>, 1865), and two chemists who landed on it
+    within a year of each other (<b>Mendeleev</b>, 1869; <b>Lothar Meyer</b>, 1870). Weight was the best
+    ruler they had. This page is what each of them saw with it — and, at the heavy elements whose weights
+    were still wrong, where it failed them. The fix came in 1913, when a 26-year-old physicist,
+    <b>Henry Moseley</b>, swapped weight for atomic <i>number</i>.</p>
   </section>
 
   <h2><span class="idx">01</span> The prediction machine</h2>
@@ -244,6 +260,10 @@
     <div id="ptboard"></div>
     <div class="wave-ctl">
       <button class="btn" id="waveplay" type="button">▶ Play 1660 → 2020</button>
+      <span class="wave-speed" id="wavespeed">
+        <span class="sl">speed</span>
+        <button data-sp="0" type="button">0.5×</button><button data-sp="1" type="button">1×</button><button data-sp="2" class="on" type="button">2×</button><button data-sp="3" type="button">4×</button>
+      </span>
       <input type="range" id="wavescrub" min="1660" max="2020" step="1" value="1660" aria-label="year" />
       <button class="btn ghost" id="wavereset" type="button">Reset</button>
     </div>
@@ -447,7 +467,8 @@ const METHOD={
   spectroscopy:{c:'#d68bff',t:'#08090C',lab:'Spectroscopy'},
   radioactivity:{c:'#5BE08A',t:'#08090C',lab:'Radioactivity'},
   accelerator:{c:'#F2C14E',t:'#08090C',lab:'Accelerator / synthetic'}};
-let waveTiles={}, curYear=1660, playTimer=null;
+const SPEEDS=[{step:1,ms:66},{step:2,ms:55},{step:4,ms:50},{step:8,ms:45}];  // 0.5× · 1× · 2× · 4×
+let waveTiles={}, curYear=1660, playTimer=null, waveSpeed=SPEEDS[2];
 function renderWaves(all){
   const board=document.getElementById('ptboard'); if(!board) return;
   const cell=30, W=18*cell, Hb=10.6*cell;
@@ -468,6 +489,12 @@ function renderWaves(all){
   document.getElementById('wavescrub').addEventListener('input',e=>{stopPlay();setYear(+e.target.value);});
   document.getElementById('waveplay').addEventListener('click',playWaves);
   document.getElementById('wavereset').addEventListener('click',()=>{stopPlay();setYear(1660);});
+  document.getElementById('wavespeed').addEventListener('click',e=>{
+    const b=e.target.closest('button'); if(!b) return;
+    waveSpeed=SPEEDS[+b.dataset.sp];
+    document.querySelectorAll('#wavespeed button').forEach(x=>x.classList.toggle('on',x===b));
+    if(playTimer) playWaves();   // restart mid-play at the new speed
+  });
   setYear(1660);
   const qy=new URLSearchParams(location.search).get('year'); if(qy) setYear(+qy);   // deep-link a year
 }
@@ -488,7 +515,7 @@ function setYear(y){
   document.getElementById('wavecap').innerHTML=msg;
 }
 function playWaves(){ stopPlay(); if(curYear>=2020) setYear(1660);
-  playTimer=setInterval(()=>{ let y=curYear+4; if(y>=2020){setYear(2020);stopPlay();return;} setYear(y); },70); }
+  playTimer=setInterval(()=>{ let y=curYear+waveSpeed.step; if(y>=2020){setYear(2020);stopPlay();return;} setYear(y); }, waveSpeed.ms); }
 function stopPlay(){ if(playTimer){clearInterval(playTimer);playTimer=null;} }
 
 /* 1865-era atomic weights for the heavies Mendeleev most famously re-weighted (sourced);

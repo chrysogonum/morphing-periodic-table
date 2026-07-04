@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Newlands' Octaves, 1865 — a reconstruction</title>
-<meta name="description" content="Reconstructing John Newlands' 1865 law of octaves on the periodic-table instrument: the elements known in 1865, ordered by atomic weight, with Meyer's atomic-volume curve as height and chemical family as color — showing both why the pattern looked real and exactly where it broke." />
+<title>How the periodic table predicted the future — a history</title>
+<meta name="description" content="An interactive history of the periodic table: Mendeleev's 1871 predictions scored against the elements that filled his gaps, and Newlands' 1865 law of octaves rebuilt on the wave — showing both why each pattern looked real and exactly where it broke." />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Expanded:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -37,7 +37,7 @@
     color:var(--dim);text-decoration:none;padding:7px 11px;border-radius:7px;transition:.15s;border:1px solid transparent;}
   .tnav a:hover{color:var(--ink);}
   .tnav a.active{color:var(--ink);border-color:var(--hair-bright);background:var(--surface-2);}
-  .wrap{max-width:1300px;margin:0 auto;padding:0 22px 64px;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 22px 64px;}
   .masthead{padding:44px 0 8px;}
   .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--faint);}
   h1{font-family:var(--disp);font-weight:800;font-size:clamp(28px,4.6vw,50px);line-height:1;letter-spacing:-.01em;
@@ -45,7 +45,82 @@
   h1 .glow{color:#fff;}
   .lede{font-size:clamp(15px,1.5vw,17px);line-height:1.55;color:var(--dim);max-width:70ch;margin:18px 0 0;}
   .lede b{color:var(--ink);font-weight:600;}
-  .chartcard{margin-top:26px;background:radial-gradient(120% 100% at 50% 0%,rgba(255,255,255,.025),transparent 60%),var(--surface);
+  h2{font-family:var(--disp);font-weight:700;font-size:clamp(20px,2.6vw,28px);margin:52px 0 0;color:var(--ink);
+    display:flex;align-items:baseline;gap:12px;}
+  h2 .idx{font-family:var(--mono);font-size:13px;color:var(--signal);font-weight:500;}
+  .sect-lede{font-size:15.5px;line-height:1.6;color:var(--dim);max-width:72ch;margin:12px 0 0;}
+  .sect-lede b{color:var(--ink);}
+
+  /* ---------- centerpiece: the 1869 holes ---------- */
+  .centre{margin-top:22px;background:radial-gradient(120% 100% at 50% 0%,rgba(255,255,255,.025),transparent 60%),var(--surface);
+    border:1px solid var(--hair);border-radius:12px;padding:20px 20px 16px;position:relative;overflow:hidden;}
+  .centre::before{content:'';position:absolute;left:20px;right:20px;top:0;height:8px;pointer-events:none;
+    background:repeating-linear-gradient(90deg,var(--hair-bright) 0 1px,transparent 1px 22px);opacity:.5;}
+  .centre-h{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:10px;margin:2px 2px 16px;}
+  .centre-t{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);}
+  .frag{display:grid;grid-template-columns:repeat(4,72px);grid-auto-rows:72px;gap:10px;justify-content:center;margin:6px 0 4px;}
+  .cell{border-radius:6px;display:flex;flex-direction:column;justify-content:center;align-items:center;position:relative;
+    font-family:var(--disp);}
+  .cell.known{background:#2a3350;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);color:#dfe6f5;}
+  .cell.known .sym{font-size:22px;font-weight:700;line-height:1;}
+  .cell.known .z{position:absolute;top:5px;left:6px;font-family:var(--mono);font-size:9px;opacity:.6;font-weight:500;}
+  .cell.known .w{position:absolute;bottom:4px;font-family:var(--mono);font-size:8.5px;opacity:.7;}
+  .cell.empty{grid-column:var(--gc);}
+  .hole{border:1px dashed var(--warm);border-radius:6px;background:rgba(242,193,78,.05);color:var(--warm);
+    display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:4px;
+    transition:opacity .5s,transform .6s cubic-bezier(.22,.61,.25,1);}
+  .hole .q{font-family:var(--disp);font-size:24px;font-weight:800;line-height:1;}
+  .hole .lab{font-family:var(--mono);font-size:8px;letter-spacing:.04em;margin-top:4px;line-height:1.25;}
+  .drop{position:absolute;inset:0;border-radius:6px;display:flex;flex-direction:column;justify-content:center;
+    align-items:center;color:#08090C;opacity:0;transform:translateY(-46px);
+    transition:opacity .5s ease,transform .7s cubic-bezier(.22,.61,.25,1);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12),0 8px 20px rgba(0,0,0,.5);}
+  .drop.in{opacity:1;transform:translateY(0);}
+  .drop .z{position:absolute;top:5px;left:6px;font-family:var(--mono);font-size:9px;opacity:.7;font-weight:600;}
+  .drop .sym{font-family:var(--disp);font-size:22px;font-weight:800;line-height:1;}
+  .drop .w{position:absolute;bottom:4px;font-family:var(--mono);font-size:8.5px;opacity:.85;font-weight:500;}
+  .holewrap{position:relative;}
+  .centre-ctl{display:flex;gap:10px;align-items:center;margin-top:16px;flex-wrap:wrap;}
+  .btn{font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:var(--void);background:var(--ink);
+    border:0;border-radius:7px;padding:9px 15px;cursor:pointer;transition:.15s;font-weight:600;}
+  .btn:hover{filter:brightness(1.08);}
+  .btn.ghost{background:var(--surface-2);color:var(--dim);border:1px solid var(--hair-bright);}
+  .btn.ghost:hover{color:var(--ink);}
+  .centre-cap{font-family:var(--mono);font-size:11.5px;color:var(--faint);line-height:1.6;margin:14px 2px 0;min-height:16px;}
+  .centre-cap b{color:var(--dim);}
+
+  /* ---------- scorecard ---------- */
+  .scorehead{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin:26px 2px 8px;}
+  .scorehead .st{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);}
+  .scorehead .sax{font-family:var(--mono);font-size:10.5px;color:var(--faint);}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;}
+  .scard{background:var(--surface);border:1px solid var(--hair);border-radius:10px;padding:15px 16px;}
+  .scard.hit{border-left:2px solid var(--pos);}
+  .scard.lag{border-left:2px solid var(--warm);}
+  .scard.miss{border-left:2px solid var(--neg);}
+  .scard h3{font-family:var(--disp);font-weight:700;font-size:16px;margin:0;color:var(--ink);}
+  .scard .meta{font-family:var(--mono);font-size:10px;letter-spacing:.04em;color:var(--faint);margin:4px 0 12px;text-transform:uppercase;}
+  .prow{display:grid;grid-template-columns:74px 1fr 48px;align-items:center;gap:8px;padding:5px 0;border-top:1px solid var(--hair);}
+  .prow .pk{font-family:var(--mono);font-size:10.5px;color:var(--faint);text-transform:uppercase;letter-spacing:.04em;}
+  .prow .pv{font-family:var(--mono);font-size:11px;color:var(--dim);}
+  .prow .pv b{color:var(--ink);font-weight:600;}
+  .prow .pe{font-family:var(--mono);font-size:11px;text-align:right;color:var(--dim);}
+  .bar{position:relative;height:12px;background:var(--surface-2);border-radius:3px;overflow:hidden;box-shadow:inset 0 0 0 1px var(--hair);}
+  .bar .fill{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,var(--signal),#4bb8d6);border-radius:3px;}
+  .bar .exact{position:absolute;left:0;top:0;bottom:0;display:flex;align-items:center;padding-left:6px;
+    font-family:var(--mono);font-size:8.5px;color:var(--pos);letter-spacing:.06em;}
+  .barwrap{grid-column:2;}
+  .scard .note{font-family:var(--mono);font-size:10px;color:var(--faint);line-height:1.55;margin-top:11px;}
+  .scard .note b{color:var(--dim);}
+  /* lag timeline */
+  .lagbar{position:relative;height:22px;margin:8px 0 4px;}
+  .lagbar .track{position:absolute;left:0;right:0;top:10px;height:2px;background:var(--hair-bright);}
+  .lagbar .fillt{position:absolute;left:0;top:10px;height:2px;background:var(--warm);}
+  .lagbar .dot{position:absolute;top:6px;width:10px;height:10px;border-radius:50%;transform:translateX(-50%);}
+  .lagbar .lab{position:absolute;top:-3px;font-family:var(--mono);font-size:9px;color:var(--dim);transform:translateX(-50%);}
+  .lagbar .lab.r{color:var(--warm);}
+
+  /* ---------- Newlands chart (from the spike) ---------- */
+  .chartcard{margin-top:22px;background:radial-gradient(120% 100% at 50% 0%,rgba(255,255,255,.025),transparent 60%),var(--surface);
     border:1px solid var(--hair);border-radius:12px;padding:18px 18px 10px;position:relative;overflow:hidden;}
   .chartcard::before{content:'';position:absolute;left:18px;right:18px;top:0;height:8px;pointer-events:none;
     background:repeating-linear-gradient(90deg,var(--hair-bright) 0 1px,transparent 1px 22px);opacity:.5;}
@@ -61,12 +136,11 @@
   .readout::before{content:'READOUT';font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;color:var(--faint);
     display:block;margin-bottom:6px;}
   .readout b{color:var(--ink);font-weight:600;}
-  .readout .hold{color:var(--pos);font-weight:600;}
-  .readout .drift{color:var(--warm);font-weight:600;}
+  .readout .hold{color:var(--pos);font-weight:600;} .readout .drift{color:var(--warm);font-weight:600;}
   .note{margin-top:14px;font-family:var(--mono);font-size:11.5px;line-height:1.7;color:var(--faint);}
   .note b{color:var(--dim);}
   footer{color:var(--faint);font-family:var(--mono);font-size:11px;line-height:1.8;letter-spacing:.02em;
-    margin-top:26px;border-top:1px solid var(--hair);padding-top:18px;}
+    margin-top:40px;border-top:1px solid var(--hair);padding-top:18px;}
   footer a{color:var(--dim);}
   footer .copy{display:block;color:var(--ink);letter-spacing:.08em;margin-bottom:8px;}
   :focus-visible{outline:2px solid var(--signal);outline-offset:2px;}
@@ -82,15 +156,47 @@
 
 <div class="wrap">
   <section class="masthead">
-    <div class="eyebrow">Field study · the law of octaves · 1865</div>
-    <h1>What <span class="glow">Newlands</span> saw — and where it broke</h1>
-    <p class="lede">In 1865 John Newlands lined the known elements up by atomic weight and noticed that
-    properties seemed to repeat every eighth one — a "law of octaves," like a musical scale. The Royal
-    Society refused to publish it and a colleague asked whether he'd tried arranging them alphabetically.
-    Here is his claim rebuilt on this instrument: the <b>63 elements known in 1865</b>, ordered by weight,
-    with <b>atomic volume as height</b> (Lothar Meyer's 1870 curve) and <b>chemical family as color</b>.
-    Watch the octave hold — then watch exactly where it fails.</p>
+    <div class="eyebrow">Field study · how the pattern was found</div>
+    <h1>A table that <span class="glow">predicted the future</span></h1>
+    <p class="lede">The periodic table is a <b>law</b>, not a filing cabinet — and the proof is that it
+    described elements that did not yet exist, and was right. This is that story, operated rather than
+    read: Mendeleev's 1871 bets scored against the elements that later filled his gaps, and — further
+    back — Newlands' 1865 near-miss rebuilt on the instrument. Each one shown honestly: why it looked
+    real, and exactly where it broke.</p>
   </section>
+
+  <h2><span class="idx">01</span> The prediction machine</h2>
+  <p class="sect-lede">In 1869–71 Mendeleev left <b>holes</b> in his table and, for some of them, wrote
+  down the atomic weight, density, and oxide of whatever would fill them — years before anyone found it.
+  Here is the most famous case: two gaps under aluminium and silicon.</p>
+
+  <div class="centre">
+    <div class="centre-h">
+      <span class="centre-t">Mendeleev's table, 1871 · two gaps and their predictions</span>
+      <span class="centre-t" style="color:var(--faint)" id="centreyear">— before discovery —</span>
+    </div>
+    <div class="frag" id="frag"></div>
+    <div class="centre-ctl">
+      <button class="btn" id="playbtn" type="button">▶ Fill the gaps (1875 · 1886)</button>
+      <button class="btn ghost" id="resetbtn" type="button">Reset to 1871</button>
+    </div>
+    <div class="centre-cap" id="centrecap"></div>
+  </div>
+
+  <div class="scorehead">
+    <span class="st">Scorecard · predicted vs. found</span>
+    <span class="sax">every bar on one scale — length = % off, full width = 5% · shorter is a better bet</span>
+  </div>
+  <div class="cards" id="cards"></div>
+
+  <p class="note" id="prov"></p>
+
+  <h2><span class="idx">02</span> Newlands' octaves, 1865 — the near-miss before Mendeleev</h2>
+  <p class="sect-lede">Six years earlier, John Newlands lined the known elements up by atomic weight and
+  heard a <b>tune</b>: properties seemed to repeat every eighth element, a "law of octaves." He was
+  ridiculed. Rebuilt on the wave — the 63 elements known in 1865, height = atomic volume (Meyer's 1870
+  curve), color = family — you can see he was right that the pattern is real, and see exactly where it
+  broke.</p>
 
   <div class="chartcard">
     <div class="chart-h">
@@ -101,126 +207,226 @@
       aria-label="Atomic volume plotted against atomic-weight rank for the 63 elements known in 1865"></svg>
     <div class="legendrow" id="legend"></div>
   </div>
-
   <p class="readout" id="readout"></p>
-
   <p class="note" id="datanote"></p>
 
   <footer>
     <span class="copy">© 2026 Peter Repetti · All rights reserved</span>
-    A reconstruction of Newlands' 1865 law of octaves. Element data from the open
+    A history of the periodic table. Element data from the open
     <a href="https://github.com/Bowserinator/Periodic-Table-JSON" target="_blank" rel="noopener">Periodic-Table-JSON</a>
-    dataset (CC-BY-SA). Atomic volume computed as molar mass ÷ density. The 1865 known-set is a working
-    reconstruction pending source verification.
+    dataset (CC-BY-SA). Mendeleev's 1871 predictions verified against published comparisons; atomic volume
+    computed as molar mass ÷ density. The 1865 known-set is a working reconstruction pending source verification.
   </footer>
 </div>
 
 <script>
-/* Elements known by 1865 — working reconstruction [UNVERIFIED, to source before locking].
-   Excludes the famous post-1865 gaps (gallium 1875, scandium 1879, germanium 1886), the noble gases,
-   the heavy lanthanides, and every radioactive/synthetic element. Ordering uses modern atomic weights
-   as a faithful proxy for the 1865 values (the alkali spacing this page turns on is unaffected). */
+/* ============ locked Mendeleev prediction data (see FACT_LOCK.md) ============
+   Fast hits are delta-scored on ONE shared % scale (never per-bar normalized —
+   the spread between the bets is the lesson). */
+const SCALE_MAX=5;                 // percent; shared across every scorecard bar
+const HITS=[
+  {sym:'Ge', name:'eka-silicon → germanium', meta:'predicted 1871 · found 1886 · Winkler', cls:'hit',
+   props:[
+     {k:'Atomic wt', p:72,  a:72.63, u:''},
+     {k:'Density',   p:5.5, a:5.32,  u:' g/cm³'},
+     {k:'Oxide ρ',   p:4.7, a:4.70,  u:' g/cm³'},
+     {k:'Chloride ρ',p:1.9, a:1.879, u:' g/cm³'},
+   ],
+   note:'Grey metal, refractory dioxide, volatile chloride boiling under 100 °C (found: 86.5 °C) — all called in advance. Oxide density is a near-exact 4.7 vs 4.70 (the contemporaneous value, not the modern polymorph).'},
+  {sym:'Ga', name:'eka-aluminium → gallium', meta:'predicted 1871 · found 1875 · Boisbaudran', cls:'hit',
+   props:[
+     {k:'Atomic wt', p:68,  a:69.72, u:''},
+     {k:'Density',   p:5.9, a:5.904, u:' g/cm³'},
+   ],
+   note:'Boisbaudran first measured the density as 4.7; Mendeleev wrote suggesting he remeasure, and it came back 5.9 — exactly the prediction. Melting point called "low"; gallium melts at 29.8 °C, in the hand.'},
+  {sym:'Sc', name:'eka-boron → scandium', meta:'predicted 1871 · found 1879 · Nilson', cls:'hit',
+   props:[
+     {k:'Atomic wt', p:44,  a:44.96, u:''},
+   ],
+   note:'The thin one — Mendeleev said less about eka-boron, so only the atomic weight is scored. Padding it with unattested numbers would be the dishonest move; a real prediction with one clean line beats an inflated one.'},
+];
+const LAGS=[
+  {sym:'Tc', name:'eka-manganese → technetium', pred:1871, found:1937, note:'First synthetic element — no stable isotope exists on Earth, so it waited for a cyclotron. Predicted atomic weight 100 (Tc ≈ 97–98).'},
+  {sym:'Re', name:'dvi-manganese → rhenium',    pred:1871, found:1925, note:'Last naturally-occurring element discovered. The same 1925 paper also claimed "masurium" (element 43) — rejected; element 43 stayed technetium, found in 1937.'},
+];
+const MISSES=[
+  {name:'The sub-hydrogen phantoms', sub:'newtonium · coronium',
+   note:'Mendeleev also proposed elements lighter than hydrogen — a world-ether and "coronium," to explain a green line in the Sun\'s corona. Neither exists: the green line was later shown by Grotrian and Edlén to come from highly ionized iron (Fe XIV). A law that only shows its hits is propaganda; this was a real miss.'},
+];
+
+/* ---- centerpiece: the 1871 fragment, gaps that fill on play ---- */
+const FRAG=[
+  // row 1 (period 3, known in 1871)
+  {t:'known', sym:'Al', z:13, w:'27',  gc:2},
+  {t:'known', sym:'Si', z:14, w:'28',  gc:3},
+  // row 2 (period 4)
+  {t:'known', sym:'Zn', z:30, w:'65',  gc:1},
+  {t:'hole',  sym:'Ga', z:31, q:'?', predlab:'eka-aluminium<br>predicted ≈ 68', w:'69.7', gc:2},
+  {t:'hole',  sym:'Ge', z:32, q:'?', predlab:'eka-silicon<br>predicted ≈ 72', w:'72.6', gc:3},
+  {t:'known', sym:'As', z:33, w:'75',  gc:4},
+];
+const CAT='#ffd64d';
+function buildFrag(){
+  const f=document.getElementById('frag'); f.innerHTML='';
+  FRAG.forEach(c=>{
+    if(c.t==='known'){
+      const d=document.createElement('div'); d.className='cell known'; d.style.gridColumn=c.gc;
+      d.innerHTML=`<span class="z">${c.z}</span><span class="sym">${c.sym}</span><span class="w">${c.w}</span>`;
+      f.appendChild(d);
+    }else{
+      const wrap=document.createElement('div'); wrap.className='holewrap'; wrap.style.gridColumn=c.gc;
+      wrap.innerHTML=
+        `<div class="hole" data-sym="${c.sym}"><span class="q">${c.q}</span><span class="lab">${c.predlab}</span></div>`+
+        `<div class="drop" data-sym="${c.sym}" style="background:${CAT}"><span class="z">${c.z}</span><span class="sym">${c.sym}</span><span class="w">${c.w}</span></div>`;
+      f.appendChild(wrap);
+    }
+  });
+}
+function fillGaps(){
+  document.getElementById('centreyear').textContent='— 1886 —';
+  document.querySelectorAll('.hole').forEach(h=>{h.style.opacity='0';h.style.transform='scale(.8)';});
+  const drops=[...document.querySelectorAll('.drop')];
+  drops.forEach((d,i)=>setTimeout(()=>d.classList.add('in'), 250+i*550));
+  setTimeout(()=>{
+    document.getElementById('centrecap').innerHTML=
+      `<b>Gallium</b> (1875) and <b>germanium</b> (1886) dropped into the exact slots Mendeleev had marked — `+
+      `with the weights he named. The gaps weren't ignorance; they were <b>predictions</b>. Scorecard below.`;
+  }, 250+drops.length*550+300);
+}
+function resetGaps(){
+  document.getElementById('centreyear').textContent='— before discovery —';
+  document.querySelectorAll('.hole').forEach(h=>{h.style.opacity='';h.style.transform='';});
+  document.querySelectorAll('.drop').forEach(d=>d.classList.remove('in'));
+  document.getElementById('centrecap').innerHTML=
+    `Two gaps sit under aluminium and silicon. Mendeleev didn't leave them blank for lack of data — he `+
+    `filled in each one's predicted atomic weight and waited. Press play to bring 1875 and 1886.`;
+}
+
+/* ---- scorecard on a shared % scale ---- */
+function pct(p,a){return Math.abs(p-a)/Math.abs(a)*100;}
+function renderCards(){
+  const C=document.getElementById('cards'); C.innerHTML='';
+  HITS.forEach(h=>{
+    const card=document.createElement('div'); card.className='scard '+h.cls;
+    let rows='';
+    h.props.forEach(pr=>{
+      const e=pct(pr.p,pr.a), w=Math.min(e/SCALE_MAX*100,100), exact=e<0.2;
+      rows+=`<div class="prow"><span class="pk">${pr.k}</span>`+
+        `<div class="barwrap"><div class="bar">`+
+          (exact?`<span class="exact">≈ exact</span>`:`<span class="fill" style="width:${w.toFixed(1)}%"></span>`)+
+        `</div></div>`+
+        `<span class="pe">${e<0.05?'0.0':e.toFixed(1)}%</span></div>`+
+        `<div class="prow" style="border-top:0;padding-top:0"><span class="pk"></span>`+
+          `<span class="pv" style="grid-column:2">pred <b>${pr.p}${pr.u}</b> → got <b>${pr.a}${pr.u}</b></span><span></span></div>`;
+    });
+    card.innerHTML=`<h3>${h.sym} · ${h.name.split('→')[1].trim()}</h3><div class="meta">${h.meta}</div>${rows}<div class="note">${h.note}</div>`;
+    C.appendChild(card);
+  });
+  // slow hits as time-lag cards
+  LAGS.forEach(l=>{
+    const span=l.found-l.pred, frac=(l.found-l.pred)/(1950-1871);
+    const card=document.createElement('div'); card.className='scard lag';
+    card.innerHTML=`<h3>${l.sym} · ${l.name.split('→')[1].trim()}</h3>`+
+      `<div class="meta">slow hit · ${span} years to collect</div>`+
+      `<div class="lagbar"><div class="track"></div><div class="fillt" style="width:${(frac*100).toFixed(0)}%"></div>`+
+        `<div class="dot" style="left:0;background:var(--signal)"></div><div class="lab" style="left:0">predicted ${l.pred}</div>`+
+        `<div class="dot" style="left:${(frac*100).toFixed(0)}%;background:var(--warm)"></div><div class="lab r" style="left:${(frac*100).toFixed(0)}%">found ${l.found}</div></div>`+
+      `<div class="note" style="margin-top:16px">${l.note}</div>`;
+    C.appendChild(card);
+  });
+  // misses
+  MISSES.forEach(m=>{
+    const card=document.createElement('div'); card.className='scard miss';
+    card.innerHTML=`<h3>${m.name}</h3><div class="meta">miss · ${m.sub}</div><div class="note" style="margin-top:4px">${m.note}</div>`;
+    C.appendChild(card);
+  });
+  document.getElementById('prov').innerHTML=
+    `<b>On the scale.</b> Every bar measures the same thing — percent off, against one fixed 5% axis — so a `+
+    `near-bullseye reads short and a looser bet reads long. Germanium's oxide density (4.7 → 4.70) and gallium's `+
+    `density (5.9 → 5.904) land as “exact”; gallium's atomic weight (68 → 69.72) is the loosest of the three, and `+
+    `should look it. Predictions 1871, verified against published comparisons and cross-checked for provenance.`;
+}
+
+/* ================= Newlands section (from the spike) ================= */
 const KNOWN1865=['H','Li','Be','B','C','N','O','F','Na','Mg','Al','Si','P','S','Cl',
 'K','Ca','Ti','V','Cr','Mn','Fe','Co','Ni','Cu','Zn','As','Se','Br',
 'Rb','Sr','Y','Zr','Nb','Mo','Ru','Rh','Pd','Ag','Cd','In','Sn','Sb','Te','I',
 'Cs','Ba','La','Ce','Er','Tb','Ta','W','Os','Ir','Pt','Au','Hg','Tl','Pb','Bi','Th','U'];
-const CAT_COLORS={
-  'alkali metal':'#ff7a7a','alkaline earth metal':'#ffb057','transition metal':'#ffd64d',
+const CAT_COLORS={'alkali metal':'#ff7a7a','alkaline earth metal':'#ffb057','transition metal':'#ffd64d',
   'post-transition metal':'#74e08a','metalloid':'#37d6b0','diatomic nonmetal':'#5bb6ff',
   'polyatomic nonmetal':'#8aa0ff','noble gas':'#d68bff','lanthanide':'#ff8fc4','actinide':'#e0a0ff'};
 const CAT_LABELS={'alkali metal':'Alkali metal','alkaline earth metal':'Alkaline earth',
   'transition metal':'Transition','post-transition metal':'Post-transition','metalloid':'Metalloid',
   'diatomic nonmetal':'Nonmetal','polyatomic nonmetal':'Nonmetal','lanthanide':'Rare earth','actinide':'Actinide'};
 const NS='http://www.w3.org/2000/svg';
-const el=(t,a)=>{const n=document.createElementNS(NS,t);for(const k in a)n.setAttribute(k,a[k]);return n;};
+const svgEl=(t,a)=>{const n=document.createElementNS(NS,t);for(const k in a)n.setAttribute(k,a[k]);return n;};
 
 fetch('elements.json').then(r=>r.json()).then(data=>{
   const by={}; data.forEach(e=>by[e.sym]=e);
   const set=KNOWN1865.map(s=>by[s]).filter(Boolean).sort((a,b)=>a.mass-b.mass)
     .map((e,i)=>({...e, ord:i+1, vol:(e.den? e.mass/e.den : null)}));
-  const N=set.length;
-  render(set,N);
-});
+  renderNewlands(set,set.length);
+}).catch(()=>{ document.getElementById('setmeta').textContent='could not load element data'; });
 
-function render(set,N){
-  const svg=document.getElementById('chart');
-  const W=1180,H=520, L=58,R=28,T=34,B=92;
-  const pw=W-L-R, ph=H-T-B, baseY=T+ph;
-  const volMax=70;                       // Cs ≈ 69; fixed for a stable axis
-  const x=ord=>L+(ord-1)/(N-1)*pw;
-  const y=v=>T+(1-Math.min(v,volMax)/volMax)*ph;
-
-  // y gridlines + labels
+function renderNewlands(set,N){
+  const svg=document.getElementById('chart'); svg.innerHTML='';
+  const W=1180,H=520, L=58,R=28,T=34,B=92, pw=W-L-R, ph=H-T-B, baseY=T+ph, volMax=70;
+  const x=o=>L+(o-1)/(N-1)*pw, y=v=>T+(1-Math.min(v,volMax)/volMax)*ph;
   [0,17.5,35,52.5,70].forEach(v=>{
-    svg.appendChild(el('line',{x1:L,y1:y(v),x2:L+pw,y2:y(v),stroke:'#1b2029','stroke-width':1}));
-    const t=el('text',{x:L-8,y:y(v)+3,'text-anchor':'end','font-size':10,fill:'#5C6373','font-family':'var(--mono)'});
+    svg.appendChild(svgEl('line',{x1:L,y1:y(v),x2:L+pw,y2:y(v),stroke:'#1b2029','stroke-width':1}));
+    const t=svgEl('text',{x:L-8,y:y(v)+3,'text-anchor':'end','font-size':10,fill:'#5C6373','font-family':'var(--mono)'});
     t.textContent=v; svg.appendChild(t);
   });
-  const yl=el('text',{x:L-40,y:T-14,'font-size':10.5,fill:'#9AA1B2','font-family':'var(--mono)'});
-  yl.textContent='atomic volume  (cm³/mol)  =  Meyer, 1870'; svg.appendChild(yl);
-
-  // Meyer curve — polyline through the volume points
+  const yl=svgEl('text',{x:L-40,y:T-14,'font-size':10.5,fill:'#9AA1B2','font-family':'var(--mono)'});
+  yl.textContent='atomic volume (cm³/mol) = Meyer, 1870'; svg.appendChild(yl);
   const pts=set.filter(e=>e.vol!=null);
-  const path=pts.map(e=>`${x(e.ord).toFixed(1)},${y(e.vol).toFixed(1)}`).join(' ');
-  svg.appendChild(el('polyline',{points:path,fill:'none',stroke:'#3a4658','stroke-width':1.5,opacity:.8}));
-
-  // alkali metals: drop-lines + peak markers, plus the spacing story
+  svg.appendChild(svgEl('polyline',{points:pts.map(e=>`${x(e.ord).toFixed(1)},${y(e.vol).toFixed(1)}`).join(' '),
+    fill:'none',stroke:'#3a4658','stroke-width':1.5,opacity:.8}));
   const alk=set.filter(e=>e.cat==='alkali metal');
   for(let i=0;i<alk.length;i++){
     const a=alk[i];
-    svg.appendChild(el('line',{x1:x(a.ord),y1:y(a.vol),x2:x(a.ord),y2:baseY,
-      stroke:'#ff7a7a','stroke-width':1,'stroke-dasharray':'2 3',opacity:.55}));
-    // gap bracket to previous alkali
+    svg.appendChild(svgEl('line',{x1:x(a.ord),y1:y(a.vol),x2:x(a.ord),y2:baseY,stroke:'#ff7a7a','stroke-width':1,'stroke-dasharray':'2 3',opacity:.55}));
     if(i>0){
-      const p=alk[i-1], gap=a.ord-p.ord, hold=gap<=8;
-      const xm=(x(p.ord)+x(a.ord))/2, yb=baseY+26, col=hold?'#5BE08A':'#F2C14E';
-      svg.appendChild(el('line',{x1:x(p.ord),y1:yb,x2:x(a.ord),y2:yb,stroke:col,'stroke-width':1.4}));
-      svg.appendChild(el('line',{x1:x(p.ord),y1:yb-4,x2:x(p.ord),y2:yb+4,stroke:col,'stroke-width':1.4}));
-      svg.appendChild(el('line',{x1:x(a.ord),y1:yb-4,x2:x(a.ord),y2:yb+4,stroke:col,'stroke-width':1.4}));
-      const gt=el('text',{x:xm,y:yb-6,'text-anchor':'middle','font-size':11,'font-weight':700,fill:col,'font-family':'var(--mono)'});
-      gt.textContent=hold?'≈8':'≈2×'; svg.appendChild(gt);   // behavior, not exact counts (set unverified)
-      const cap=el('text',{x:xm,y:yb+16,'text-anchor':'middle','font-size':8.5,fill:col,'font-family':'var(--mono)',opacity:.85});
+      const p=alk[i-1], gap=a.ord-p.ord, hold=gap<=8, xm=(x(p.ord)+x(a.ord))/2, yb=baseY+26, col=hold?'#5BE08A':'#F2C14E';
+      svg.appendChild(svgEl('line',{x1:x(p.ord),y1:yb,x2:x(a.ord),y2:yb,stroke:col,'stroke-width':1.4}));
+      svg.appendChild(svgEl('line',{x1:x(p.ord),y1:yb-4,x2:x(p.ord),y2:yb+4,stroke:col,'stroke-width':1.4}));
+      svg.appendChild(svgEl('line',{x1:x(a.ord),y1:yb-4,x2:x(a.ord),y2:yb+4,stroke:col,'stroke-width':1.4}));
+      const gt=svgEl('text',{x:xm,y:yb-6,'text-anchor':'middle','font-size':11,'font-weight':700,fill:col,'font-family':'var(--mono)'});
+      gt.textContent=hold?'≈8':'≈2×'; svg.appendChild(gt);
+      const cap=svgEl('text',{x:xm,y:yb+16,'text-anchor':'middle','font-size':8.5,fill:col,'font-family':'var(--mono)',opacity:.85});
       cap.textContent=hold?'octave':'off-grid'; svg.appendChild(cap);
     }
   }
-
-  // element dots, colored by family
   set.forEach(e=>{
     if(e.vol==null) return;
     const isAlk=e.cat==='alkali metal';
-    svg.appendChild(el('circle',{cx:x(e.ord),cy:y(e.vol),r:isAlk?5.5:3.4,
-      fill:CAT_COLORS[e.cat]||'#7a86b8',stroke:isAlk?'#fff':'none','stroke-width':isAlk?1.2:0}));
-    if(isAlk){
-      const s=el('text',{x:x(e.ord),y:y(e.vol)-10,'text-anchor':'middle','font-size':11,'font-weight':700,
-        fill:'#fff','font-family':'var(--disp)'}); s.textContent=e.sym; svg.appendChild(s);
-    }
+    svg.appendChild(svgEl('circle',{cx:x(e.ord),cy:y(e.vol),r:isAlk?5.5:3.4,fill:CAT_COLORS[e.cat]||'#7a86b8',
+      stroke:isAlk?'#fff':'none','stroke-width':isAlk?1.2:0}));
+    if(isAlk){const s=svgEl('text',{x:x(e.ord),y:y(e.vol)-10,'text-anchor':'middle','font-size':11,'font-weight':700,fill:'#fff','font-family':'var(--disp)'});s.textContent=e.sym;svg.appendChild(s);}
   });
-
-  // x-axis caption
-  const xl=el('text',{x:L+pw,y:H-6,'text-anchor':'end','font-size':10,fill:'#5C6373','font-family':'var(--mono)'});
-  xl.textContent='elements in order of increasing atomic weight  →'; svg.appendChild(xl);
-
-  // meta + legend + readout
+  svg.appendChild(svgEl('text',{x:L+pw,y:H-6,'text-anchor':'end','font-size':10,fill:'#5C6373','font-family':'var(--mono)'})).textContent='elements in order of increasing atomic weight  →';
   document.getElementById('setmeta').textContent=N+' elements · Li · Na · K · Rb · Cs marked';
-  const lg=document.getElementById('legend'); const seenLabel=new Set();
-  set.map(e=>e.cat).forEach(c=>{
-    const label=CAT_LABELS[c]||c; if(seenLabel.has(label)) return; seenLabel.add(label);
+  const lg=document.getElementById('legend'), seen=new Set();
+  set.map(e=>e.cat).forEach(c=>{const label=CAT_LABELS[c]||c; if(seen.has(label))return; seen.add(label);
     const d=document.createElement('div');d.className='lg';
     d.innerHTML=`<span class="sw" style="background:${CAT_COLORS[c]||'#7a86b8'}"></span>${label}`;lg.appendChild(d);});
-
   document.getElementById('readout').innerHTML=
     `Reading left to right, the alkali metals — the tall peaks — arrive like clockwork at first: `+
     `<b>lithium → sodium → potassium</b>, spaced <span class="hold">close to every eighth element</span>. `+
     `That steady beat is the "octave" Newlands heard, and he was right that the pattern is real. Then it stretches: `+
     `<b>rubidium</b> and <b>caesium</b> arrive <span class="drift">roughly twice as far apart</span> — because the `+
     `fourth row of the table runs 18 wide, not 8. The recurrence never stopped; the fixed <i>period of 8</i> did. `+
-    `Fixing that took atomic <i>number</i> (Moseley, 1913) — the next chapter. Newlands heard a real tune and `+
-    `guessed the wrong time signature.`;
-
+    `Fixing that took atomic <i>number</i> (Moseley, 1913). Newlands heard a real tune and guessed the wrong time signature.`;
   document.getElementById('datanote').innerHTML=
     `<b>Note.</b> The 63-element 1865 set is a working reconstruction (marked for source verification); `+
     `ordering uses modern atomic weights as a proxy. Atomic volume = molar mass ÷ density.`;
 }
+
+/* boot */
+buildFrag(); resetGaps(); renderCards();
+document.getElementById('playbtn').addEventListener('click',()=>{resetGaps();buildFrag();setTimeout(fillGaps,60);});
+document.getElementById('resetbtn').addEventListener('click',()=>{buildFrag();resetGaps();});
+if(new URLSearchParams(location.search).get('auto')==='1') setTimeout(fillGaps,200);  // deep-link to filled state
 </script>
 </body>
 </html>

@@ -45,6 +45,19 @@
   h1 .glow{color:#fff;}
   .lede{font-size:clamp(15px,1.5vw,17px);line-height:1.55;color:var(--dim);max-width:70ch;margin:18px 0 0;}
   .lede b{color:var(--ink);font-weight:600;}
+  /* hover/focus glosses — matched to the instrument palette */
+  .gloss{color:var(--signal);border-bottom:1px dotted rgba(116,231,255,.55);cursor:help;position:relative;
+    font-weight:600;}
+  .gloss::after{content:attr(data-note);position:absolute;left:50%;bottom:calc(100% + 10px);
+    transform:translateX(-50%) translateY(4px);width:min(20rem,74vw);
+    background:var(--surface-2);color:var(--ink);border:1px solid var(--hair-bright);
+    font-family:var(--body);font-weight:400;font-size:12.5px;line-height:1.5;text-align:left;letter-spacing:normal;
+    padding:9px 12px;border-radius:7px;box-shadow:0 16px 34px -12px rgba(0,0,0,.8);
+    opacity:0;pointer-events:none;transition:opacity .2s ease,transform .2s ease;z-index:60;}
+  .gloss:hover::after,.gloss:focus::after{opacity:1;transform:translateX(-50%) translateY(0);}
+  .gloss:focus-visible{outline:2px solid var(--signal);outline-offset:2px;border-radius:2px;}
+  @keyframes tpulse{0%{transform:scale(1);}35%{transform:scale(1.4);box-shadow:0 0 0 2px #fff,0 0 16px rgba(255,255,255,.55);}100%{transform:scale(1);}}
+  .wtile.pulse{animation:tpulse .9s ease;z-index:6;}
   h2{font-family:var(--disp);font-weight:700;font-size:clamp(20px,2.6vw,28px);margin:52px 0 0;color:var(--ink);
     display:flex;align-items:baseline;gap:12px;}
   h2 .idx{font-family:var(--mono);font-size:13px;color:var(--signal);font-weight:500;}
@@ -154,8 +167,10 @@
     font-family:var(--disp);font-weight:700;font-size:11px;background:#111620;color:#3a4353;
     box-shadow:inset 0 0 0 1px #1b2029;transition:background-color .5s ease,color .5s ease,box-shadow .3s;}
   .wtile.lit{box-shadow:inset 0 0 0 1px rgba(255,255,255,.14),0 2px 6px rgba(0,0,0,.4);}
-  .wave-ctl{display:flex;gap:12px;align-items:center;margin:18px 2px 0;flex-wrap:wrap;}
-  .wave-ctl input[type=range]{flex:1;min-width:150px;accent-color:var(--signal);cursor:pointer;}
+  .wave-ctl{display:flex;gap:10px;align-items:center;margin:14px 2px 0;flex-wrap:wrap;}
+  .wave-ctl input[type=range]{flex:1;min-width:140px;accent-color:var(--signal);cursor:pointer;}
+  .wave-steps{display:inline-flex;gap:2px;}
+  .wave-steps .btn{padding:9px 12px;}
   .wave-speed{display:inline-flex;gap:2px;background:var(--surface);border:1px solid var(--hair);border-radius:8px;padding:3px;}
   .wave-speed .sl{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);align-self:center;padding:0 6px 0 4px;}
   .wave-speed button{border:0;background:transparent;color:var(--dim);font-family:var(--mono);font-size:11px;padding:6px 9px;border-radius:5px;cursor:pointer;transition:.15s;}
@@ -194,14 +209,15 @@
     <p class="lede" style="margin-top:16px"><b>The moment.</b> For most of history, chemists knew barely
     a dozen elements; by the 1860s the count had blown past sixty, as new methods — electrolysis, then
     spectroscopy (you can watch this in section 03) — pried them loose faster than anyone could organize
-    them. Then in 1860 the <b>Karlsruhe Congress</b> finally settled a consistent set of <b>atomic
-    weights</b>, and that lit the fuse: within a decade a handful of people, working independently, reached
-    for that one newly-reliable number to find the hidden order — a French geologist (<b>de Chancourtois</b>,
-    1862), a London sugar-refinery chemist (<b>John Newlands</b>, 1865), and two chemists who landed on it
-    within a year of each other (<b>Mendeleev</b>, 1869; <b>Lothar Meyer</b>, 1870). Weight was the best
+    them. Then in 1860 the <b class="gloss" tabindex="0" data-note="The first international chemistry conference — Karlsruhe, Germany, September 1860 — called to end decades of chaos over atomic weights and formulas. Cannizzaro's argument there won chemists over to one consistent set of weights.">Karlsruhe Congress</b>
+    finally settled a consistent set of <b class="gloss" tabindex="0" data-note="The relative mass of an atom — the one number 19th-century chemists could measure to order the elements. Trustworthy for the light elements, but still wrong or uncertain for the heavy ones, which is why every early table breaks at the heavy end.">atomic weights</b>, and that lit the
+    fuse: within a decade a handful of people, working independently, reached for that one newly-reliable
+    number to find the hidden order — a French geologist (<b class="gloss" tabindex="0" data-note="Alexandre-Émile Béguyer de Chancourtois (1820–1886), a French geologist. His 1862 telluric screw was the first true periodic system — but the journal printed it without its diagram, and chemists ignored a geologist's idea.">de Chancourtois</b>, 1862), a London
+    sugar-refinery chemist (<b class="gloss" tabindex="0" data-note="English chemist (1837–1898), an analyst at a sugar refinery. His 1865 law of octaves was ridiculed by the Royal Society — one fellow asked whether he had tried ordering the elements alphabetically.">John Newlands</b>, 1865), and two chemists who landed on it within a
+    year of each other (<b class="gloss" tabindex="0" data-note="Dmitri Mendeleev (1834–1907), Russian chemist. His 1869 table left deliberate gaps and predicted the weight, density and chemistry of the elements that would fill them.">Mendeleev</b>, 1869; <b class="gloss" tabindex="0" data-note="Julius Lothar Meyer (1830–1895), German chemist who reached a periodic table independently around 1870 — best known for the atomic-volume curve plotted in section 02.">Lothar Meyer</b>, 1870). Weight was the best
     ruler they had. This page is what each of them saw with it — and, at the heavy elements whose weights
     were still wrong, where it failed them. The fix came in 1913, when a 26-year-old physicist,
-    <b>Henry Moseley</b>, swapped weight for atomic <i>number</i>.</p>
+    <b class="gloss" tabindex="0" data-note="English physicist (1887–1915). In 1913 he showed the elements' true order is atomic number — nuclear charge — not weight, resolving every anomaly at once. Killed at Gallipoli two years later, aged 27.">Henry Moseley</b>, swapped weight for atomic <i>number</i>.</p>
   </section>
 
   <h2><span class="idx">01</span> The prediction machine</h2>
@@ -258,17 +274,18 @@
   <div class="wavecard">
     <div class="wave-h"><span class="wave-t">Discovery method · press play or drag the year</span><span class="yearbig" id="yearbig">1660</span></div>
     <div id="ptboard"></div>
+    <div class="wave-cap" id="wavecap"></div>
     <div class="wave-ctl">
-      <button class="btn" id="waveplay" type="button">▶ Play 1660 → 2020</button>
+      <button class="btn" id="waveplay" type="button">▶ Play</button>
+      <span class="wave-steps"><button class="btn ghost" id="stepprev" type="button" title="previous moment">◀</button><button class="btn ghost" id="stepnext" type="button">Next moment ▶</button></span>
       <span class="wave-speed" id="wavespeed">
-        <span class="sl">speed</span>
-        <button data-sp="0" type="button">0.5×</button><button data-sp="1" type="button">1×</button><button data-sp="2" class="on" type="button">2×</button><button data-sp="3" type="button">4×</button>
+        <span class="sl">pace</span>
+        <button data-sp="0" type="button">0.5×</button><button data-sp="1" class="on" type="button">0.25×</button><button data-sp="2" type="button">0.1×</button>
       </span>
       <input type="range" id="wavescrub" min="1660" max="2020" step="1" value="1660" aria-label="year" />
       <button class="btn ghost" id="wavereset" type="button">Reset</button>
     </div>
     <div class="wave-legend" id="wavelegend"></div>
-    <div class="wave-cap" id="wavecap"></div>
   </div>
   <p class="note">Method buckets curated from the sourced discoverer/era data; each element lights on the date it
   was first obtained <i>by its crediting method</i> — electrolysis on isolation (so Davy's cluster bursts at
@@ -278,7 +295,7 @@
   <h2><span class="idx">04</span> The telluric screw, 1862 — the diagram they didn't print</h2>
   <p class="sect-lede">Seven years before Mendeleev, Alexandre-Émile de Chancourtois wound the elements up a
   cylinder by atomic weight — one full turn every <b>16 units</b> (oxygen's weight) — so elements 16 apart
-  stack in a vertical column. His <i>vis tellurique</i> was the first real periodic system. The journal
+  stack in a vertical column. His <b class="gloss" tabindex="0" data-note="French for 'telluric screw' — de Chancourtois named it for tellurium, which sits near the middle of his cylinder. He was a geologist; 'telluric' (of the earth) was his native vocabulary.">vis tellurique</b> was the first real periodic system. The journal
   published it <b>without the diagram</b>, and the idea sank for a decade. Here it is rebuilt — the cylinder
   unrolled, each element at its weight (down) and its wrap-position (across).</p>
   <div class="chartcard">
@@ -467,8 +484,9 @@ const METHOD={
   spectroscopy:{c:'#d68bff',t:'#08090C',lab:'Spectroscopy'},
   radioactivity:{c:'#5BE08A',t:'#08090C',lab:'Radioactivity'},
   accelerator:{c:'#F2C14E',t:'#08090C',lab:'Accelerator / synthetic'}};
-const SPEEDS=[{step:1,ms:66},{step:2,ms:55},{step:4,ms:50},{step:8,ms:45}];  // 0.5× · 1× · 2× · 4×
-let waveTiles={}, curYear=1660, playTimer=null, waveSpeed=SPEEDS[2];
+const SPEEDS=[{step:1,ms:100},{step:1,ms:200},{step:1,ms:500}];  // 0.5× (fastest) · 0.25× · 0.1×
+const MOMENTS=[1660,1669,1808,1860,1898,1939,2020];             // era thresholds for chapter stepping
+let waveTiles={}, curYear=1660, playTimer=null, waveSpeed=SPEEDS[1];   // default 0.25×
 function renderWaves(all){
   const board=document.getElementById('ptboard'); if(!board) return;
   const cell=30, W=18*cell, Hb=10.6*cell;
@@ -495,6 +513,8 @@ function renderWaves(all){
     document.querySelectorAll('#wavespeed button').forEach(x=>x.classList.toggle('on',x===b));
     if(playTimer) playWaves();   // restart mid-play at the new speed
   });
+  document.getElementById('stepnext').addEventListener('click',()=>stepMoment(1));
+  document.getElementById('stepprev').addEventListener('click',()=>stepMoment(-1));
   setYear(1660);
   const qy=new URLSearchParams(location.search).get('year'); if(qy) setYear(+qy);   // deep-link a year
 }
@@ -517,6 +537,17 @@ function setYear(y){
 function playWaves(){ stopPlay(); if(curYear>=2020) setYear(1660);
   playTimer=setInterval(()=>{ let y=curYear+waveSpeed.step; if(y>=2020){setYear(2020);stopPlay();return;} setYear(y); }, waveSpeed.ms); }
 function stopPlay(){ if(playTimer){clearInterval(playTimer);playTimer=null;} }
+/* chapter stepping — jump between eras and pause, pulsing the tiles that just appeared
+   so the caption's words tie to the actual elements lighting up */
+function stepMoment(dir){
+  stopPlay();
+  const prev=curYear; let target;
+  if(dir>0){ target=MOMENTS.find(m=>m>curYear+0.5); if(target==null) target=2020; }
+  else { const b=MOMENTS.filter(m=>m<curYear-0.5); target=b.length?b[b.length-1]:1660; }
+  setYear(target);
+  if(dir>0){ for(const s in waveTiles){ const ry=+waveTiles[s].dataset.yr; if(ry>0&&ry>prev&&ry<=target) pulseTile(waveTiles[s]); } }
+}
+function pulseTile(t){ t.classList.remove('pulse'); void t.offsetWidth; t.classList.add('pulse'); }
 
 /* 1865-era atomic weights for the heavies Mendeleev most famously re-weighted (sourced);
    the rest stay modern (disclosed). Indium: 75.6 from the wrong InO stoichiometry (→113).

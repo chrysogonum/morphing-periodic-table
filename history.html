@@ -216,8 +216,9 @@
     <span class="copy">© 2026 Peter Repetti · All rights reserved</span>
     A history of the periodic table. Element data from the open
     <a href="https://github.com/Bowserinator/Periodic-Table-JSON" target="_blank" rel="noopener">Periodic-Table-JSON</a>
-    dataset (CC-BY-SA). Mendeleev's 1871 predictions verified against published comparisons; atomic volume
-    computed as molar mass ÷ density. The 1865 known-set is a working reconstruction pending source verification.
+    dataset (CC-BY-SA). Mendeleev's 1871 predictions verified against published comparisons; the 1865 known-set
+    sourced from Wikipedia's element-discovery timeline (parsed from wikitext, validated against known dates).
+    Atomic volume computed as molar mass ÷ density.
   </footer>
 </div>
 
@@ -430,8 +431,11 @@ function renderNewlands(set,N){
     `fourth row of the table runs 18 wide, not 8. The recurrence never stopped; the fixed <i>period of 8</i> did. `+
     `Fixing that took atomic <i>number</i> (Moseley, 1913). Newlands heard a real tune and guessed the wrong time signature.`;
   document.getElementById('datanote').innerHTML=
-    `<b>Note.</b> The 63-element 1865 set is a working reconstruction (marked for source verification); `+
-    `ordering uses modern atomic weights as a proxy. Atomic volume = molar mass ÷ density.`;
+    `<b>Note.</b> The set is the 63 elements known by 1865 — discovery dates sourced from Wikipedia's element `+
+    `timeline (parsed from wikitext, validated against known dates). "Didymium" is excluded: it wasn't split into `+
+    `praseodymium and neodymium until 1885. Ordering uses <i>modern</i> atomic weights as a proxy — exact for the `+
+    `light elements the octave turns on, but it misplaces a few heavies (uranium was reckoned ~120 in 1865, not 238). `+
+    `Atomic volume = molar mass ÷ density.`;
 }
 
 /* boot */

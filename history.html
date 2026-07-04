@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Newlands' Octaves, 1865 — a reconstruction</title>
+<meta name="description" content="Reconstructing John Newlands' 1865 law of octaves on the periodic-table instrument: the elements known in 1865, ordered by atomic weight, with Meyer's atomic-volume curve as height and chemical family as color — showing both why the pattern looked real and exactly where it broke." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Expanded:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --void:#08090C; --surface:#0E1116; --surface-2:#151922; --hair:#222732; --hair-bright:#333A48;
+    --ink:#EDEFF4; --dim:#9AA1B2; --faint:#5C6373; --signal:#74E7FF; --warm:#F2C14E; --pos:#5BE08A; --neg:#FF6B7A;
+    --disp:'Archivo Expanded','Archivo',sans-serif; --body:'Archivo',system-ui,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;overflow-x:hidden;background:var(--void);color:var(--ink);
+    font-family:var(--body);-webkit-font-smoothing:antialiased;}
+  body{background-color:var(--void);background-image:
+      linear-gradient(rgba(255,255,255,.016) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.016) 1px,transparent 1px);
+    background-size:46px 46px;background-position:center -1px;min-height:100vh;}
+  .topbar{position:sticky;top:0;z-index:50;border-bottom:1px solid var(--hair);
+    background:rgba(8,9,12,.78);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);}
+  .topbar-in{max-width:1500px;margin:0 auto;padding:0 22px;height:54px;display:flex;align-items:center;
+    justify-content:space-between;gap:16px;}
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand .mk{width:22px;height:22px;flex:none;display:grid;place-items:center;color:var(--void);
+    background:conic-gradient(from 200deg,#7A4DFF,#2BD7E0,#34D17A,#F2E14B,#FF9A3C,#FF4D5E,#7A4DFF);
+    clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);font-weight:800;font-size:11px;}
+  .brand .nm{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;color:var(--ink);font-weight:500;}
+  .brand .nm .sep{color:var(--faint);margin:0 2px;}
+  .tnav{display:flex;align-items:center;gap:4px;}
+  .tnav a{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--dim);text-decoration:none;padding:7px 11px;border-radius:7px;transition:.15s;border:1px solid transparent;}
+  .tnav a:hover{color:var(--ink);}
+  .tnav a.active{color:var(--ink);border-color:var(--hair-bright);background:var(--surface-2);}
+  .wrap{max-width:1300px;margin:0 auto;padding:0 22px 64px;}
+  .masthead{padding:44px 0 8px;}
+  .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--faint);}
+  h1{font-family:var(--disp);font-weight:800;font-size:clamp(28px,4.6vw,50px);line-height:1;letter-spacing:-.01em;
+    margin:14px 0 0;color:var(--ink);max-width:20ch;}
+  h1 .glow{color:#fff;}
+  .lede{font-size:clamp(15px,1.5vw,17px);line-height:1.55;color:var(--dim);max-width:70ch;margin:18px 0 0;}
+  .lede b{color:var(--ink);font-weight:600;}
+  .chartcard{margin-top:26px;background:radial-gradient(120% 100% at 50% 0%,rgba(255,255,255,.025),transparent 60%),var(--surface);
+    border:1px solid var(--hair);border-radius:12px;padding:18px 18px 10px;position:relative;overflow:hidden;}
+  .chartcard::before{content:'';position:absolute;left:18px;right:18px;top:0;height:8px;pointer-events:none;
+    background:repeating-linear-gradient(90deg,var(--hair-bright) 0 1px,transparent 1px 22px);opacity:.5;}
+  .chart-h{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin:2px 4px 6px;}
+  .chart-t{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);}
+  .chart-s{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;color:var(--faint);}
+  svg{display:block;width:100%;height:auto;}
+  .legendrow{display:flex;flex-wrap:wrap;gap:7px 13px;align-items:center;margin:8px 6px 4px;}
+  .lg{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10.5px;color:var(--dim);}
+  .lg .sw{width:10px;height:10px;border-radius:2px;}
+  .readout{margin-top:16px;font-size:14.5px;line-height:1.6;color:var(--dim);background:var(--surface);
+    border:1px solid var(--hair);border-left:2px solid var(--signal);border-radius:8px;padding:14px 17px;}
+  .readout::before{content:'READOUT';font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;color:var(--faint);
+    display:block;margin-bottom:6px;}
+  .readout b{color:var(--ink);font-weight:600;}
+  .readout .hold{color:var(--pos);font-weight:600;}
+  .readout .drift{color:var(--warm);font-weight:600;}
+  .note{margin-top:14px;font-family:var(--mono);font-size:11.5px;line-height:1.7;color:var(--faint);}
+  .note b{color:var(--dim);}
+  footer{color:var(--faint);font-family:var(--mono);font-size:11px;line-height:1.8;letter-spacing:.02em;
+    margin-top:26px;border-top:1px solid var(--hair);padding-top:18px;}
+  footer a{color:var(--dim);}
+  footer .copy{display:block;color:var(--ink);letter-spacing:.08em;margin-bottom:8px;}
+  :focus-visible{outline:2px solid var(--signal);outline-offset:2px;}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-in">
+    <div class="brand"><span class="mk">Z</span><span class="nm">PERIODIC<span class="sep">/</span>SPECTROMETER</span></div>
+    <nav class="tnav"><a href="index.html">Explore</a><a href="learn.html">Guide</a><a href="history.html" class="active">History</a></nav>
+  </div>
+</div>
+
+<div class="wrap">
+  <section class="masthead">
+    <div class="eyebrow">Field study · the law of octaves · 1865</div>
+    <h1>What <span class="glow">Newlands</span> saw — and where it broke</h1>
+    <p class="lede">In 1865 John Newlands lined the known elements up by atomic weight and noticed that
+    properties seemed to repeat every eighth one — a "law of octaves," like a musical scale. The Royal
+    Society refused to publish it and a colleague asked whether he'd tried arranging them alphabetically.
+    Here is his claim rebuilt on this instrument: the <b>63 elements known in 1865</b>, ordered by weight,
+    with <b>atomic volume as height</b> (Lothar Meyer's 1870 curve) and <b>chemical family as color</b>.
+    Watch the octave hold — then watch exactly where it fails.</p>
+  </section>
+
+  <div class="chartcard">
+    <div class="chart-h">
+      <span class="chart-t">Atomic volume vs. atomic-weight rank · elements known 1865</span>
+      <span class="chart-s" id="setmeta"></span>
+    </div>
+    <svg id="chart" viewBox="0 0 1180 520" preserveAspectRatio="xMidYMid meet" role="img"
+      aria-label="Atomic volume plotted against atomic-weight rank for the 63 elements known in 1865"></svg>
+    <div class="legendrow" id="legend"></div>
+  </div>
+
+  <p class="readout" id="readout"></p>
+
+  <p class="note" id="datanote"></p>
+
+  <footer>
+    <span class="copy">© 2026 Peter Repetti · All rights reserved</span>
+    A reconstruction of Newlands' 1865 law of octaves. Element data from the open
+    <a href="https://github.com/Bowserinator/Periodic-Table-JSON" target="_blank" rel="noopener">Periodic-Table-JSON</a>
+    dataset (CC-BY-SA). Atomic volume computed as molar mass ÷ density. The 1865 known-set is a working
+    reconstruction pending source verification.
+  </footer>
+</div>
+
+<script>
+/* Elements known by 1865 — working reconstruction [UNVERIFIED, to source before locking].
+   Excludes the famous post-1865 gaps (gallium 1875, scandium 1879, germanium 1886), the noble gases,
+   the heavy lanthanides, and every radioactive/synthetic element. Ordering uses modern atomic weights
+   as a faithful proxy for the 1865 values (the alkali spacing this page turns on is unaffected). */
+const KNOWN1865=['H','Li','Be','B','C','N','O','F','Na','Mg','Al','Si','P','S','Cl',
+'K','Ca','Ti','V','Cr','Mn','Fe','Co','Ni','Cu','Zn','As','Se','Br',
+'Rb','Sr','Y','Zr','Nb','Mo','Ru','Rh','Pd','Ag','Cd','In','Sn','Sb','Te','I',
+'Cs','Ba','La','Ce','Er','Tb','Ta','W','Os','Ir','Pt','Au','Hg','Tl','Pb','Bi','Th','U'];
+const CAT_COLORS={
+  'alkali metal':'#ff7a7a','alkaline earth metal':'#ffb057','transition metal':'#ffd64d',
+  'post-transition metal':'#74e08a','metalloid':'#37d6b0','diatomic nonmetal':'#5bb6ff',
+  'polyatomic nonmetal':'#8aa0ff','noble gas':'#d68bff','lanthanide':'#ff8fc4','actinide':'#e0a0ff'};
+const CAT_LABELS={'alkali metal':'Alkali metal','alkaline earth metal':'Alkaline earth',
+  'transition metal':'Transition','post-transition metal':'Post-transition','metalloid':'Metalloid',
+  'diatomic nonmetal':'Nonmetal','polyatomic nonmetal':'Nonmetal','lanthanide':'Rare earth','actinide':'Actinide'};
+const NS='http://www.w3.org/2000/svg';
+const el=(t,a)=>{const n=document.createElementNS(NS,t);for(const k in a)n.setAttribute(k,a[k]);return n;};
+
+fetch('elements.json').then(r=>r.json()).then(data=>{
+  const by={}; data.forEach(e=>by[e.sym]=e);
+  const set=KNOWN1865.map(s=>by[s]).filter(Boolean).sort((a,b)=>a.mass-b.mass)
+    .map((e,i)=>({...e, ord:i+1, vol:(e.den? e.mass/e.den : null)}));
+  const N=set.length;
+  render(set,N);
+});
+
+function render(set,N){
+  const svg=document.getElementById('chart');
+  const W=1180,H=520, L=58,R=28,T=34,B=92;
+  const pw=W-L-R, ph=H-T-B, baseY=T+ph;
+  const volMax=70;                       // Cs ≈ 69; fixed for a stable axis
+  const x=ord=>L+(ord-1)/(N-1)*pw;
+  const y=v=>T+(1-Math.min(v,volMax)/volMax)*ph;
+
+  // y gridlines + labels
+  [0,17.5,35,52.5,70].forEach(v=>{
+    svg.appendChild(el('line',{x1:L,y1:y(v),x2:L+pw,y2:y(v),stroke:'#1b2029','stroke-width':1}));
+    const t=el('text',{x:L-8,y:y(v)+3,'text-anchor':'end','font-size':10,fill:'#5C6373','font-family':'var(--mono)'});
+    t.textContent=v; svg.appendChild(t);
+  });
+  const yl=el('text',{x:L-40,y:T-14,'font-size':10.5,fill:'#9AA1B2','font-family':'var(--mono)'});
+  yl.textContent='atomic volume  (cm³/mol)  =  Meyer, 1870'; svg.appendChild(yl);
+
+  // Meyer curve — polyline through the volume points
+  const pts=set.filter(e=>e.vol!=null);
+  const path=pts.map(e=>`${x(e.ord).toFixed(1)},${y(e.vol).toFixed(1)}`).join(' ');
+  svg.appendChild(el('polyline',{points:path,fill:'none',stroke:'#3a4658','stroke-width':1.5,opacity:.8}));
+
+  // alkali metals: drop-lines + peak markers, plus the spacing story
+  const alk=set.filter(e=>e.cat==='alkali metal');
+  for(let i=0;i<alk.length;i++){
+    const a=alk[i];
+    svg.appendChild(el('line',{x1:x(a.ord),y1:y(a.vol),x2:x(a.ord),y2:baseY,
+      stroke:'#ff7a7a','stroke-width':1,'stroke-dasharray':'2 3',opacity:.55}));
+    // gap bracket to previous alkali
+    if(i>0){
+      const p=alk[i-1], gap=a.ord-p.ord, hold=gap<=8;
+      const xm=(x(p.ord)+x(a.ord))/2, yb=baseY+26, col=hold?'#5BE08A':'#F2C14E';
+      svg.appendChild(el('line',{x1:x(p.ord),y1:yb,x2:x(a.ord),y2:yb,stroke:col,'stroke-width':1.4}));
+      svg.appendChild(el('line',{x1:x(p.ord),y1:yb-4,x2:x(p.ord),y2:yb+4,stroke:col,'stroke-width':1.4}));
+      svg.appendChild(el('line',{x1:x(a.ord),y1:yb-4,x2:x(a.ord),y2:yb+4,stroke:col,'stroke-width':1.4}));
+      const gt=el('text',{x:xm,y:yb-6,'text-anchor':'middle','font-size':11,'font-weight':700,fill:col,'font-family':'var(--mono)'});
+      gt.textContent=(hold?'':'')+gap; svg.appendChild(gt);
+      const cap=el('text',{x:xm,y:yb+16,'text-anchor':'middle','font-size':8.5,fill:col,'font-family':'var(--mono)',opacity:.85});
+      cap.textContent=hold?'octave':'off-grid'; svg.appendChild(cap);
+    }
+  }
+
+  // element dots, colored by family
+  set.forEach(e=>{
+    if(e.vol==null) return;
+    const isAlk=e.cat==='alkali metal';
+    svg.appendChild(el('circle',{cx:x(e.ord),cy:y(e.vol),r:isAlk?5.5:3.4,
+      fill:CAT_COLORS[e.cat]||'#7a86b8',stroke:isAlk?'#fff':'none','stroke-width':isAlk?1.2:0}));
+    if(isAlk){
+      const s=el('text',{x:x(e.ord),y:y(e.vol)-10,'text-anchor':'middle','font-size':11,'font-weight':700,
+        fill:'#fff','font-family':'var(--disp)'}); s.textContent=e.sym; svg.appendChild(s);
+    }
+  });
+
+  // x-axis caption
+  const xl=el('text',{x:L+pw,y:H-6,'text-anchor':'end','font-size':10,fill:'#5C6373','font-family':'var(--mono)'});
+  xl.textContent='elements in order of increasing atomic weight  →'; svg.appendChild(xl);
+
+  // meta + legend + readout
+  document.getElementById('setmeta').textContent=N+' elements · Li · Na · K · Rb · Cs marked';
+  const lg=document.getElementById('legend'); const seenLabel=new Set();
+  set.map(e=>e.cat).forEach(c=>{
+    const label=CAT_LABELS[c]||c; if(seenLabel.has(label)) return; seenLabel.add(label);
+    const d=document.createElement('div');d.className='lg';
+    d.innerHTML=`<span class="sw" style="background:${CAT_COLORS[c]||'#7a86b8'}"></span>${label}`;lg.appendChild(d);});
+
+  const gaps=[]; for(let i=1;i<alk.length;i++) gaps.push(alk[i].ord-alk[i-1].ord);
+  document.getElementById('readout').innerHTML=
+    `Reading left to right, the alkali metals — the tall peaks — arrive like clockwork at first: `+
+    `<b>lithium → sodium → potassium</b>, each about <span class="hold">${gaps[0]} then ${gaps[1]}</span> `+
+    `elements apart. That steady beat is the "octave" Newlands heard, and he was right that the pattern is real. `+
+    `Then it breaks: <b>rubidium</b> lands not 7 later but <span class="drift">${gaps[2]}</span>, and <b>caesium</b> `+
+    `<span class="drift">${gaps[3]}</span> — because the fourth row of the table is 18 wide, not 8. The recurrence `+
+    `never stopped; the fixed <i>period of 8</i> did. Fixing that took atomic <i>number</i> (Moseley, 1913) — the `+
+    `next chapter. Newlands heard a real tune and guessed the wrong time signature.`;
+
+  document.getElementById('datanote').innerHTML=
+    `<b>Note.</b> The 63-element 1865 set is a working reconstruction (marked for source verification); `+
+    `ordering uses modern atomic weights as a proxy. Atomic volume = molar mass ÷ density.`;
+}
+</script>
+</body>
+</html>

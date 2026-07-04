@@ -505,7 +505,7 @@ function renderWaves(all){
     const d=document.createElement('div'); d.className='wlg';
     d.innerHTML=`<span class="sw" style="background:${METHOD[k].c}"></span>${METHOD[k].lab}`; L.appendChild(d);});
   document.getElementById('wavescrub').addEventListener('input',e=>{stopPlay();setYear(+e.target.value);});
-  document.getElementById('waveplay').addEventListener('click',playWaves);
+  document.getElementById('waveplay').addEventListener('click',()=>{ playTimer?stopPlay():playWaves(); });
   document.getElementById('wavereset').addEventListener('click',()=>{stopPlay();setYear(1660);});
   document.getElementById('wavespeed').addEventListener('click',e=>{
     const b=e.target.closest('button'); if(!b) return;
@@ -534,9 +534,11 @@ function setYear(y){
   else msg='Before 1669: only the elements known since antiquity — the workable metals, plus carbon and sulfur. Press play to watch the methods arrive.';
   document.getElementById('wavecap').innerHTML=msg;
 }
+function setPlayLabel(playing){ const b=document.getElementById('waveplay'); if(b) b.textContent=playing?'❚❚ Pause':'▶ Play'; }
 function playWaves(){ stopPlay(); if(curYear>=2020) setYear(1660);
-  playTimer=setInterval(()=>{ let y=curYear+waveSpeed.step; if(y>=2020){setYear(2020);stopPlay();return;} setYear(y); }, waveSpeed.ms); }
-function stopPlay(){ if(playTimer){clearInterval(playTimer);playTimer=null;} }
+  playTimer=setInterval(()=>{ let y=curYear+waveSpeed.step; if(y>=2020){setYear(2020);stopPlay();return;} setYear(y); }, waveSpeed.ms);
+  setPlayLabel(true); }
+function stopPlay(){ if(playTimer){clearInterval(playTimer);playTimer=null;} setPlayLabel(false); }
 /* chapter stepping — jump between eras and pause, pulsing the tiles that just appeared
    so the caption's words tie to the actual elements lighting up */
 function stepMoment(dir){

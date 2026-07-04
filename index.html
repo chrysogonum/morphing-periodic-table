@@ -714,7 +714,7 @@ function showDetail(el){
         <div class="rd-id"><div class="rd-name">${el.name}</div><div class="rd-cat">${el.cat}</div></div>
         <div class="rd-z"><span>Z</span>${el.n}</div>
       </div>
-      <div class="rd-coord">GROUP ${el.group||'—'} · PERIOD ${el.period} · ${(el.block||'').toUpperCase()}-BLOCK</div>
+      <div class="rd-coord" title="Group = column (elements with similar chemistry). Period = row (one shell filling, alkali metal → noble gas). Block = which orbital its outer electron is in.">GROUP ${el.group||'—'} · PERIOD ${el.period} · ${(el.block||'').toUpperCase()}-BLOCK</div>
       <div class="rd-rows">
         ${row('Atomic mass',f(el.mass,3,' u'))}
         ${row('State · 0 °C',el.phase||'—')}

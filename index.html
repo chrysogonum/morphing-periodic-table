@@ -190,6 +190,12 @@
   #zeff{display:block;margin:2px 0 6px;}
   .rd-zcap{font-size:12px;line-height:1.55;color:var(--dim);}
   .rd-zcap b{color:var(--ink);font-weight:600;}
+  .rd-ie{margin-top:12px;padding-top:12px;border-top:1px solid var(--hair);}
+  .rd-ie .rd-k{display:block;margin-bottom:6px;}
+  #iechart{display:block;margin:2px 0 6px;}
+  .rd-icap{font-size:12px;line-height:1.55;color:var(--dim);}
+  .rd-icap b{color:var(--ink);font-weight:600;}
+  .rd-icap .core{color:var(--warm);font-weight:600;}
   .rd-sum{margin-top:12px;font-size:12.5px;line-height:1.6;color:#c2cad9;max-height:148px;overflow:auto;}
 
   /* ---------- legend ---------- */
@@ -733,10 +739,16 @@ function showDetail(el){
         <svg id="zeff" width="276" height="58"></svg>
         <div class="rd-zcap" id="zcap"></div>
       </div>
+      ${el.ies&&el.ies.length>1?`<div class="rd-ie">
+        <span class="rd-k">Successive ionization energies <span style="color:var(--faint)">· log kJ/mol · measured</span></span>
+        <svg id="iechart" width="276" height="128"></svg>
+        <div class="rd-icap" id="icap"></div>
+      </div>`:''}
       <div class="rd-sum">${el.sum||''}</div>
     </div>`;
   drawShell(el);
   drawZeffViz(el);
+  drawIEChart(el);
 }
 /* mechanism micro-viz: the net inward pull (Zeff) a valence electron feels,
    after the core electrons screen most of the +Z nucleus. */
@@ -784,6 +796,78 @@ function drawZeffViz(el){
   zt.setAttribute('font-size','10');zt.setAttribute('font-weight','700');zt.setAttribute('fill','#74E7FF');
   zt.setAttribute('font-family',"'IBM Plex Mono',monospace");zt.textContent='+'+zeff.toFixed(2);svg.appendChild(zt);
   if(cap) cap.innerHTML=`Its valence electron feels <b>+${zeff.toFixed(2)}</b>, not the full <b>+${el.n}</b> — ${core} inner electron${core===1?'':'s'} screen the rest.`;
+}
+/* successive ionization energies: the staircase of shells made visible.
+   Each electron pulled off costs more; a wall appears at every shell boundary.
+   The FIRST wall — after the valence electrons — is the noble-gas core, and for
+   the reactive metals it is exactly the ion charge they form. We highlight that
+   valence→core bar (NOT the globally largest ratio, which for Al–Ca is a deeper
+   K-shell wall and would mislabel the core boundary). */
+function drawIEChart(el){
+  const svg=document.getElementById('iechart'); if(!svg) return;
+  svg.innerHTML='';
+  const NS='http://www.w3.org/2000/svg', mk=t=>document.createElementNS(NS,t);
+  const ies=el.ies||[]; if(ies.length<2) return;
+  const cap=document.getElementById('icap');
+  const W=276,H=128, L=6,R=6,T=14,B=22, pw=W-L-R, ph=H-T-B;
+  const n=ies.length, pitch=pw/n, bw=Math.min(pitch*0.66,18);
+  const v=(el.shells&&el.shells.length)?el.shells[el.shells.length-1]:null; // valence electrons
+  const coreIdx=(v!=null&&v<n)?v:-1;   // bar index of the first electron taken from the core
+  // log scale with a little head/foot room
+  const lo=Math.log10(Math.min(...ies)*0.82), hi=Math.log10(Math.max(...ies)*1.15);
+  const yOf=val=>T+(1-(Math.log10(val)-lo)/(hi-lo))*ph;
+  const baseY=T+ph;
+  // two faint log gridlines (order-of-magnitude feel, unlabeled — honest for a wide range)
+  for(const gv of [100,1000,10000,100000]){
+    if(gv< Math.pow(10,lo)||gv>Math.pow(10,hi)) continue;
+    const gl=mk('line'); const y=yOf(gv);
+    gl.setAttribute('x1',L);gl.setAttribute('x2',W-R);gl.setAttribute('y1',y);gl.setAttribute('y2',y);
+    gl.setAttribute('stroke','#20242e');gl.setAttribute('stroke-width','1');svg.appendChild(gl);
+  }
+  ies.forEach((val,i)=>{
+    const x=L+i*pitch+(pitch-bw)/2, y=yOf(val);
+    const bar=mk('rect'); bar.setAttribute('x',x);bar.setAttribute('y',y);
+    bar.setAttribute('width',bw);bar.setAttribute('height',baseY-y);bar.setAttribute('rx',1.5);
+    const isCore=i===coreIdx;
+    bar.setAttribute('fill',isCore?'#F2C14E':'#3f8fa6');
+    if(isCore) bar.setAttribute('filter','url(#ieglow)');
+    svg.appendChild(bar);
+  });
+  // glow def for the core bar
+  const defs=mk('defs'); defs.innerHTML='<filter id="ieglow" x="-50%" y="-50%" width="200%" height="200%">'
+    +'<feDropShadow dx="0" dy="0" stdDeviation="2.4" flood-color="#F2C14E" flood-opacity="0.7"/></filter>';
+  svg.appendChild(defs);
+  // wall annotation: bracket between the last valence bar and the first core bar
+  if(coreIdx>0){
+    const xGap=L+coreIdx*pitch;
+    const br=mk('line'); br.setAttribute('x1',xGap);br.setAttribute('x2',xGap);
+    br.setAttribute('y1',T-2);br.setAttribute('y2',baseY);
+    br.setAttribute('stroke','#F2C14E');br.setAttribute('stroke-opacity','0.5');
+    br.setAttribute('stroke-width','1');br.setAttribute('stroke-dasharray','2 2');svg.appendChild(br);
+    const lab=mk('text'); lab.setAttribute('x',Math.min(xGap+3,W-2));lab.setAttribute('y',T+7);
+    lab.setAttribute('font-size','8.5');lab.setAttribute('font-family',"'IBM Plex Mono',monospace");
+    lab.setAttribute('fill','#F2C14E');lab.textContent='core';svg.appendChild(lab);
+  }
+  // x labels: IE1, the core removal, and the last shown
+  const xlab=(i,txt)=>{const t=mk('text');t.setAttribute('x',L+i*pitch+pitch/2);t.setAttribute('y',H-7);
+    t.setAttribute('text-anchor','middle');t.setAttribute('font-size','8');
+    t.setAttribute('font-family',"'IBM Plex Mono',monospace");t.setAttribute('fill','#5C6373');
+    t.textContent=txt;svg.appendChild(t);};
+  xlab(0,'IE1');
+  if(coreIdx>0) xlab(coreIdx,'IE'+(coreIdx+1));
+  if(n-1!==0&&n-1!==coreIdx) xlab(n-1,'IE'+n);
+  // caption — honest per element type
+  if(cap){
+    if(coreIdx<0){ cap.innerHTML=`Only ${n} electron${n>1?'s':''} to remove; the noble-gas core lies beyond this range.`; }
+    else {
+      const CATION={Li:1,Be:2,Na:1,Mg:2,Al:3,K:1,Ca:2};
+      const noble=el.cat==='Noble gas'||/noble/i.test(el.cat||'');
+      let s=`The <span class="core">jump</span> after ${v} electron${v>1?'s':''} is the <b>noble-gas core</b> — the next electron must come from a filled inner shell.`;
+      if(CATION[el.sym]) s+=` That is exactly why ${el.name} forms a <b>+${v} ion</b>.`;
+      else if(noble) s+=` That full outer shell is why the noble gases barely react.`;
+      cap.innerHTML=s;
+    }
+  }
 }
 function drawShell(el){
   const svg=document.getElementById('shell'); if(!svg) return;
@@ -947,8 +1031,15 @@ function applyInitialParams(){
     document.querySelectorAll('#colorSeg button').forEach(x=>x.classList.toggle('on',x.dataset.c===c)); }
   enforceWaveNumeric();
 }
-fetch('elements.json').then(r=>r.json()).then(data=>{
-  ELEMENTS=data; applyInitialParams(); build(); wire();
+Promise.all([
+  fetch('elements.json').then(r=>r.json()),
+  // supplemental: successive ionization energies (Z 1–20), sourced separately, keyed by Z.
+  // Vendored dataset is never modified; a fetch failure just hides the IE chart.
+  fetch('ie_successive.json').then(r=>r.ok?r.json():{}).catch(()=>({}))
+]).then(([data,ieData])=>{
+  ELEMENTS=data;
+  for(const el of ELEMENTS){ if(ieData[el.n]) el.ies=ieData[el.n]; }
+  applyInitialParams(); build(); wire();
   const params=new URLSearchParams(location.search);
   const sel=params.get('sel');
   if(sel){ const el=ELEMENTS.find(x=>x.n==sel||x.sym.toLowerCase()===String(sel).toLowerCase());

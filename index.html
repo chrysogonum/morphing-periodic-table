@@ -229,6 +229,30 @@
     color:var(--dim);font-family:var(--mono);font-size:11px;padding:5px 10px;border-radius:6px;cursor:pointer;transition:.15s;}
   .setbanner .sb-clear:hover{color:var(--ink);border-color:var(--pos);}
 
+  /* guided tours */
+  #tourSeg button{color:var(--signal);}
+  #tourSeg button:hover{background:rgba(116,231,255,.10);color:var(--ink);}
+  .tourbar{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:45;
+    width:min(680px,calc(100vw - 28px));background:rgba(14,17,22,.97);
+    border:1px solid var(--hair-bright);border-left:2px solid var(--signal);border-radius:11px;
+    padding:13px 16px 14px;box-shadow:0 18px 46px -12px rgba(0,0,0,.85);
+    backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);}
+  .tourbar[hidden]{display:none;}
+  .tb-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:6px;}
+  .tb-title{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--signal);}
+  .tb-step{font-family:var(--mono);font-size:10.5px;color:var(--faint);white-space:nowrap;}
+  .tb-cap{font-size:13.5px;line-height:1.55;color:var(--ink);}
+  .tb-cap b{color:#fff;font-weight:600;}
+  .tb-cap .cf{color:var(--warm);font-weight:600;}
+  .tb-nav{display:flex;gap:8px;margin-top:12px;align-items:center;}
+  .tb-nav button{font-family:var(--mono);font-size:11px;letter-spacing:.05em;padding:7px 13px;border-radius:7px;
+    border:1px solid var(--hair-bright);background:var(--surface-2);color:var(--dim);cursor:pointer;transition:.15s;}
+  .tb-nav button:hover:not(:disabled){color:var(--ink);border-color:var(--signal);}
+  .tb-nav button:disabled{opacity:.38;cursor:default;}
+  .tb-nav .tb-next{margin-left:auto;color:var(--ink);border-color:var(--signal);}
+  .tb-nav .tb-exit{color:var(--faint);}
+  @media(max-width:680px){ .tourbar{bottom:10px;} }
+
   details.about{margin-top:18px;background:var(--surface);border:1px solid var(--hair);border-radius:9px;
     padding:2px 16px;}
   details.about summary{cursor:pointer;padding:13px 0;font-family:var(--mono);font-size:12px;
@@ -327,6 +351,14 @@
       <span class="ctl-label">Locate</span>
       <input id="search" placeholder="Name, symbol, or number…" autocomplete="off" />
     </div>
+    <div class="ctl-group">
+      <span class="ctl-label">Guided tours</span>
+      <div class="seg" id="tourSeg">
+        <button data-t="ie" type="button">Read the ion charge</button>
+        <button data-t="number" type="button">Number, not mass</button>
+        <button data-t="breaks" type="button">Where trends break</button>
+      </div>
+    </div>
   </div>
   <p class="hint" id="hint"></p>
 
@@ -341,6 +373,7 @@
   </div>
 
   <div id="setbanner" class="setbanner" hidden></div>
+  <div class="tourbar" id="tourbar" role="region" aria-label="Guided tour" hidden></div>
   <div class="legend" id="legend"></div>
   <p class="trendnote" id="trendnote"></p>
 
@@ -1019,7 +1052,81 @@ function wire(){
     if(locked&&selected) showDetail(ELEMENTS.find(x=>x.n===selected));
   });
   document.getElementById('search').addEventListener('input',e=>{ activeCat=null; highlightSet=null; showSetBanner(); runSearch(e.target.value); });
+  document.getElementById('tourSeg').addEventListener('click',e=>{
+    const b=e.target.closest('button'); if(!b) return; startTour(b.dataset.t);
+  });
+  document.addEventListener('keydown',e=>{
+    if(!tour) return;
+    if(e.key==='Escape'){ exitTour(); return; }
+    if(document.activeElement && document.activeElement.tagName==='INPUT') return;
+    const t=TOURS[tour];
+    if(e.key==='ArrowRight' && tourStep<t.steps.length-1){ tourStep++; renderTour(); }
+    else if(e.key==='ArrowLeft' && tourStep>0){ tourStep--; renderTour(); }
+  });
   document.getElementById('hint').innerHTML=HINTS[curLayout];
+}
+
+/* ---------- guided tours ----------
+   Each tour is an ordered list of deep-link states (arrangement + property + selected
+   element) with a caption. Rides the existing rendering — no bespoke views. Shareable
+   via ?tour=<id>&step=<n>, written with history.replaceState as you move. */
+const TOURS={
+  ie:{title:'Read the ion charge from the evidence', steps:[
+    {sel:11,color:'ie',layout:'standard',cap:`<b>Sodium.</b> Find <b>Successive ionization energies</b> in the readout. The first electron comes off cheap — then a <b>9× wall</b>. That <span class="cf">jump</span> after one electron is the noble-gas core. Read it straight off: sodium is <b>+1</b>.`},
+    {sel:12,color:'ie',layout:'standard',cap:`<b>Magnesium.</b> Now the wall comes after <b>two</b> electrons — two loose outer electrons, then the core. That is why magnesium is <b>+2</b>. You are deriving the charge from measured data, not memorising it.`},
+    {sel:13,color:'ie',layout:'standard',cap:`<b>Aluminium.</b> The wall is after <b>three</b>. The position of the wall is the ion charge, every time. (See the second, deeper wall far right? That is the next shell down — the tool flags only the first, chemically meaningful one.)`}
+  ]},
+  number:{title:'Why atomic number, not mass', steps:[
+    {sel:18,color:'mass',layout:'standard',cap:`<b>Argon</b> — 18 protons, mass <b>39.95</b>. The map is atomic mass. Now look one step right, to potassium.`},
+    {sel:19,color:'mass',layout:'standard',cap:`<b>Potassium</b> has <b>one more proton</b> than argon (19 vs 18) — yet it is <b>lighter</b> (39.10 vs 39.95). Argon's common isotope, argon-40, carries more neutrons. Mass ordered them backwards.`},
+    {sel:27,color:'mass',layout:'standard',cap:`Same flip at <b>cobalt (27)</b>: it outweighs its neighbour nickel (28), though cobalt has fewer protons.`},
+    {sel:52,color:'mass',layout:'standard',cap:`And <b>tellurium (52)</b> outweighs iodine (53). Three inversions, one lesson: the table is ordered by <b>atomic number</b>, because weight is the wrong ruler — exactly what Moseley proved.`}
+  ]},
+  breaks:{title:'Where the trend breaks', steps:[
+    {sel:5,color:'ie',layout:'wave',cap:`Ionization energy as <b>height</b> (the wave). It climbs across period 2 — but <b>boron (5) dips</b> below beryllium. Boron's lone 2p electron is easier to pull off than beryllium's filled 2s pair.`},
+    {sel:8,color:'ie',layout:'wave',cap:`<b>Oxygen (8) dips</b> below nitrogen. Nitrogen's half-filled 2p³ is steady; oxygen's fourth 2p electron must pair up in an orbital, and that repulsion makes it easier to remove.`},
+    {sel:24,color:'cat',layout:'standard',cap:`<b>Chromium</b> — the readout shows <b>[Ar] 3d⁵ 4s¹</b>, not the predicted 3d⁴4s². The usual "half-filled shells are extra stable" story is shaky, though: tungsten, chromium's heavier cousin, ignores it entirely (5d⁴6s²).`},
+    {sel:29,color:'cat',layout:'standard',cap:`<b>Copper</b> — <b>[Ar] 3d¹⁰ 4s¹</b>, not 3d⁹4s². The filled-shell pattern (copper, silver, gold) is more robust than the half-filled one, but neither is magic: both come from how close the 4s and 3d energies sit.`}
+  ]}
+};
+let tour=null, tourStep=0;
+function goToState(s){
+  if(s.layout && HINTS[s.layout]){ curLayout=s.layout; setLayoutButtons(s.layout);
+    document.getElementById('hint').innerHTML=HINTS[curLayout]; }
+  if(s.color){ curColor=s.color; activeCat=null; highlightSet=null; showSetBanner();
+    document.querySelectorAll('#colorSeg button').forEach(x=>x.classList.toggle('on',x.dataset.c===s.color)); }
+  enforceWaveNumeric();
+  recolor();
+  const el = s.sel!=null ? ELEMENTS.find(e=>e.n==s.sel) : null;
+  if(el){
+    if(selected && TILES[selected]) TILES[selected].classList.remove('sel');
+    selected=el.n; locked=true; TILES[el.n].classList.add('sel');
+    showDetail(el); applyLayout(); highlight(el);
+  } else { applyLayout(); restoreBase(); }
+}
+function renderTour(){
+  const t=TOURS[tour]; if(!t) return;
+  tourStep=Math.max(0,Math.min(t.steps.length-1,tourStep));
+  goToState(t.steps[tourStep]);
+  const last=tourStep===t.steps.length-1;
+  const bar=document.getElementById('tourbar'); bar.hidden=false;
+  bar.innerHTML=`<div class="tb-head"><span class="tb-title">${t.title}</span><span class="tb-step">${tourStep+1} / ${t.steps.length}</span></div>`
+    +`<div class="tb-cap">${t.steps[tourStep].cap}</div>`
+    +`<div class="tb-nav"><button class="tb-prev" type="button"${tourStep===0?' disabled':''}>◀ Prev</button>`
+    +`<button class="tb-next" type="button">${last?'Finish ✓':'Next ▶'}</button>`
+    +`<button class="tb-exit" type="button">Exit ✕</button></div>`;
+  bar.querySelector('.tb-prev').onclick=()=>{ tourStep--; renderTour(); };
+  bar.querySelector('.tb-next').onclick=()=>{ if(last) exitTour(); else { tourStep++; renderTour(); } };
+  bar.querySelector('.tb-exit').onclick=exitTour;
+  writeTourUrl();
+}
+function startTour(id){ if(!TOURS[id]) return; tour=id; tourStep=0; renderTour(); }
+function exitTour(){ tour=null; document.getElementById('tourbar').hidden=true; writeTourUrl(); }
+function writeTourUrl(){
+  const p=new URLSearchParams();
+  if(tour){ p.set('tour',tour); p.set('step',tourStep+1); }
+  const qs=p.toString();
+  history.replaceState(null,'', location.pathname + (qs?'?'+qs:''));
 }
 
 function applyInitialParams(){
@@ -1056,6 +1163,9 @@ Promise.all([
       const el=/^\d+$/.test(tok)?byNum[+tok]:bySym[tok.toLowerCase()]; if(el) set.add(el.n); });
     if(set.size){ activeCat=null; highlightSet=set; highlightLabel=params.get('label')||''; restoreBase(); }
   }
+  // ?tour=<id>&step=<n> — resume a guided tour at a step (overrides sel/color above)
+  const tParam=params.get('tour');
+  if(tParam && TOURS[tParam]){ tour=tParam; tourStep=(parseInt(params.get('step'),10)||1)-1; renderTour(); }
 }).catch(err=>{
   document.getElementById('side').innerHTML='<div class="ph">Could not load element data.<br>'+err+'</div>';
 });

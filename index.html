@@ -253,6 +253,41 @@
   .tb-nav .tb-exit{color:var(--faint);}
   @media(max-width:680px){ .tourbar{bottom:10px;} }
 
+  /* aufbau fill animation */
+  .fillbtn{position:absolute;top:12px;left:12px;z-index:8;font-family:var(--mono);font-size:11px;
+    letter-spacing:.05em;color:#ffd64d;background:rgba(14,17,22,.92);border:1px solid var(--hair-bright);
+    border-radius:8px;padding:8px 13px;cursor:pointer;transition:.15s;}
+  .fillbtn:hover{border-color:#ffd64d;box-shadow:0 0 0 1px #ffd64d;}
+  .fillbtn[hidden]{display:none;}
+  .fillbar{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:45;
+    width:min(760px,calc(100vw - 28px));background:rgba(14,17,22,.98);
+    border:1px solid var(--hair-bright);border-left:2px solid #ffd64d;border-radius:11px;
+    padding:12px 16px 13px;box-shadow:0 18px 46px -12px rgba(0,0,0,.85);
+    backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);}
+  .fillbar[hidden]{display:none;}
+  .fb-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:8px;}
+  .fb-title{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:#ffd64d;}
+  .fb-step{font-family:var(--mono);font-size:10.5px;color:var(--faint);white-space:nowrap;}
+  .fb-chips{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:9px;}
+  .fb-chip{font-family:var(--mono);font-size:10px;padding:3px 6px;border-radius:5px;cursor:pointer;
+    color:var(--dim);background:var(--surface-2);border:1px solid var(--hair);transition:.12s;}
+  .fb-chip.done{color:#08090C;background:var(--bc);border-color:transparent;opacity:.5;}
+  .fb-chip.on{color:#08090C;background:var(--bc);border:1px solid #fff;font-weight:600;box-shadow:0 0 10px -1px var(--bc);}
+  .fb-now{display:flex;align-items:baseline;gap:9px;margin-bottom:5px;}
+  .fb-sub{font-family:var(--disp);font-weight:800;font-size:20px;color:var(--ink);}
+  .fb-meta{font-family:var(--mono);font-size:11px;color:var(--dim);}
+  .fb-cap{font-size:12.5px;line-height:1.5;color:var(--ink);min-height:34px;}
+  .fb-cap b{color:#fff;font-weight:600;} .fb-cap .cf{color:#ffd64d;font-weight:600;}
+  .fb-nav{display:flex;gap:7px;margin-top:10px;align-items:center;}
+  .fb-nav button{font-family:var(--mono);font-size:11px;padding:6px 11px;border-radius:7px;
+    border:1px solid var(--hair-bright);background:var(--surface-2);color:var(--dim);cursor:pointer;transition:.15s;}
+  .fb-nav button:hover{color:var(--ink);border-color:#ffd64d;}
+  .fb-nav .fb-play{color:var(--ink);border-color:#ffd64d;min-width:84px;}
+  .fb-nav .fb-exit{margin-left:auto;color:var(--faint);}
+  .tile.fill-now{box-shadow:0 0 0 2px #fff,0 0 16px 2px rgba(255,255,255,.35);z-index:5;}
+  .tile.fill-anom{outline:2px dashed #ff6b9a;outline-offset:1px;}
+  @media(max-width:680px){ .fillbar{bottom:10px;} }
+
   details.about{margin-top:18px;background:var(--surface);border:1px solid var(--hair);border-radius:9px;
     padding:2px 16px;}
   details.about summary{cursor:pointer;padding:13px 0;font-family:var(--mono);font-size:12px;
@@ -366,6 +401,7 @@
     <div id="viewport">
       <span class="corner tl"></span><span class="corner tr"></span>
       <span class="corner bl"></span><span class="corner br"></span>
+      <button id="fillBtn" class="fillbtn" type="button" hidden>▸ Play the orbital fill</button>
       <div id="board"></div>
     </div>
     <aside id="side"><div class="ph"><span class="pk">Readout</span>Hover or tap any element to load its full
@@ -374,6 +410,7 @@
 
   <div id="setbanner" class="setbanner" hidden></div>
   <div class="tourbar" id="tourbar" role="region" aria-label="Guided tour" hidden></div>
+  <div class="fillbar" id="fillbar" role="region" aria-label="Aufbau fill" hidden></div>
   <div class="legend" id="legend"></div>
   <p class="trendnote" id="trendnote"></p>
 
@@ -968,9 +1005,10 @@ function build(){
     const t=document.createElement('div'); t.className='tile';
     if(!reduce) t.style.opacity='0';
     t.innerHTML=`<span class="num">${el.n}</span><span class="sym">${el.sym}</span><span class="val"></span>`;
-    t.addEventListener('mouseenter',()=>{ highlight(el); if(!locked) showDetail(el); });
-    t.addEventListener('mouseleave',()=>restoreBase());
+    t.addEventListener('mouseenter',()=>{ if(filling) return; highlight(el); if(!locked) showDetail(el); });
+    t.addEventListener('mouseleave',()=>{ if(filling) return; restoreBase(); });
     t.addEventListener('click',()=>{
+      if(filling) return;
       if(selected===el.n && locked){ locked=false; TILES[el.n].classList.remove('sel'); return; }
       if(selected) TILES[selected].classList.remove('sel');
       selected=el.n; locked=true; t.classList.add('sel'); showDetail(el);
@@ -1034,11 +1072,18 @@ function wire(){
   document.getElementById('layoutSeg').addEventListener('click',e=>{
     const b=e.target.closest('button'); if(!b) return;
     setLayoutButtons(b.dataset.l); curLayout=b.dataset.l;
+    const canFill=(curLayout==='left'||curLayout==='spiral');
+    if(filling){
+      if(canFill){ applyLayout(); paintFill(); document.getElementById('hint').innerHTML=HINTS[curLayout]; return; }
+      exitFill();
+    }
     enforceWaveNumeric(); recolor(); applyLayout();
     document.getElementById('hint').innerHTML=HINTS[curLayout];
+    document.getElementById('fillBtn').hidden=!canFill;
   });
   document.getElementById('colorSeg').addEventListener('click',e=>{
     const b=e.target.closest('button'); if(!b) return;
+    if(filling) exitFill();
     document.querySelectorAll('#colorSeg button').forEach(x=>x.classList.remove('on'));
     b.classList.add('on'); curColor=b.dataset.c; activeCat=null;
     let repos=false;
@@ -1055,6 +1100,7 @@ function wire(){
   document.getElementById('tourSeg').addEventListener('click',e=>{
     const b=e.target.closest('button'); if(!b) return; startTour(b.dataset.t);
   });
+  document.getElementById('fillBtn').addEventListener('click',startFill);
   document.addEventListener('keydown',e=>{
     if(!tour) return;
     if(e.key==='Escape'){ exitTour(); return; }
@@ -1120,13 +1166,108 @@ function renderTour(){
   bar.querySelector('.tb-exit').onclick=exitTour;
   writeTourUrl();
 }
-function startTour(id){ if(!TOURS[id]) return; tour=id; tourStep=0; renderTour(); }
+function startTour(id){ if(!TOURS[id]) return; if(filling) exitFill(); tour=id; tourStep=0; renderTour(); }
 function exitTour(){ tour=null; document.getElementById('tourbar').hidden=true; writeTourUrl(); }
 function writeTourUrl(){
   const p=new URLSearchParams();
   if(tour){ p.set('tour',tour); p.set('step',tourStep+1); }
   const qs=p.toString();
   history.replaceState(null,'', location.pathname + (qs?'?'+qs:''));
+}
+
+/* ---------- aufbau fill animation (Spiral + Left-step only) ----------
+   HONEST FRAMING: this is a BOOKKEEPING rule that predicts configurations, NOT an
+   energy ladder that fills bottom-up. There is deliberately no energy axis — the
+   sweep only shows which orbital "address" fills next, in Madelung (n+l, then n)
+   order. It flags where the rule breaks (Cr, Cu, the whole f-block), and ends on
+   the payoff: once the d-block starts, 3d drops below 4s, which is why transition
+   metals lose their 4s electrons first. The order is a rule, not a fixed ladder. */
+const BLOCKCOL={s:'#ff9ec7',p:'#74e08a',d:'#ffd64d',f:'#d68bff'};
+const FILL_ORDER=[
+  {sub:'1s',block:'s',n:1,l:0,z0:1,z1:2},   {sub:'2s',block:'s',n:2,l:0,z0:3,z1:4},
+  {sub:'2p',block:'p',n:2,l:1,z0:5,z1:10},  {sub:'3s',block:'s',n:3,l:0,z0:11,z1:12},
+  {sub:'3p',block:'p',n:3,l:1,z0:13,z1:18}, {sub:'4s',block:'s',n:4,l:0,z0:19,z1:20},
+  {sub:'3d',block:'d',n:3,l:2,z0:21,z1:30}, {sub:'4p',block:'p',n:4,l:1,z0:31,z1:36},
+  {sub:'5s',block:'s',n:5,l:0,z0:37,z1:38}, {sub:'4d',block:'d',n:4,l:2,z0:39,z1:48},
+  {sub:'5p',block:'p',n:5,l:1,z0:49,z1:54}, {sub:'6s',block:'s',n:6,l:0,z0:55,z1:56},
+  {sub:'4f',block:'f',n:4,l:3,z0:57,z1:70}, {sub:'5d',block:'d',n:5,l:2,z0:71,z1:80},
+  {sub:'6p',block:'p',n:6,l:1,z0:81,z1:86}, {sub:'7s',block:'s',n:7,l:0,z0:87,z1:88},
+  {sub:'5f',block:'f',n:5,l:3,z0:89,z1:102},{sub:'6d',block:'d',n:6,l:2,z0:103,z1:112},
+  {sub:'7p',block:'p',n:7,l:1,z0:113,z1:118}
+];
+const Z_FILLSTEP={};
+FILL_ORDER.forEach((s,i)=>{ for(let z=s.z0;z<=s.z1;z++) Z_FILLSTEP[z]=i; });
+const FILL_NOTES={
+  5:'<b>4s fills before 3d</b> — its n+l (4) beats 3d\'s (5). The lower sum wins: that is the entire Madelung rule.',
+  6:'<b>3d</b> — the transition metals. Two break the rule: <span class="cf">chromium</span> ([Ar]3d⁵4s¹) and <span class="cf">copper</span> ([Ar]3d¹⁰4s¹), dashed below. The tidy "half-filled shells are stable" story is shaky — tungsten, chromium\'s heavier twin, ignores it (5d⁴6s²).',
+  12:'The <b>f-block</b> fills here — and breaks the rule more than anywhere else. Lanthanum, cerium, gadolinium and others borrow a d-electron. Treat the staircase as a guide, not a law.'
+};
+const FILL_PAYOFF='All 118 placed. You filled <b>4s before 3d</b> — yet once the d-block starts, 3d drops <b>below</b> 4s. That is why transition metals shed their <span class="cf">4s</span> electrons <i>first</i> when they ionise. The fill order is a bookkeeping rule, not a fixed energy ladder — the energies themselves shift element to element.';
+let filling=false, fillIdx=0, fillTimer=null, fillPlaying=false, fillSpeed=1;
+
+function paintFill(){
+  const done = fillIdx>=FILL_ORDER.length;
+  for(const el of ELEMENTS){
+    const t=TILES[el.n], step=Z_FILLSTEP[el.n]; t.classList.remove('fill-now');
+    if(done || step<fillIdx){ t.style.background=BLOCKCOL[FILL_ORDER[step].block]; t.style.opacity='0.82'; t.style.color='#08090C'; }
+    else if(step===fillIdx){ t.style.background=BLOCKCOL[FILL_ORDER[step].block]; t.style.opacity='1'; t.style.color='#08090C'; t.classList.add('fill-now'); }
+    else { t.style.background='#12151c'; t.style.opacity='0.16'; t.style.color='#4a5160'; }
+  }
+}
+function fillCaption(){
+  if(fillIdx>=FILL_ORDER.length) return FILL_PAYOFF;
+  const s=FILL_ORDER[fillIdx];
+  const base=`Filling <span class="cf">${s.sub}</span> · ${s.block}-block · n+l = ${s.n+s.l} · elements ${s.z0}–${s.z1}.`;
+  return base + (FILL_NOTES[fillIdx] ? ' '+FILL_NOTES[fillIdx] : '');
+}
+function renderFillBar(){
+  const bar=document.getElementById('fillbar'); bar.hidden=false;
+  const done=fillIdx>=FILL_ORDER.length;
+  const chips=FILL_ORDER.map((s,i)=>`<span class="fb-chip${i===fillIdx?' on':''}${(done||i<fillIdx)?' done':''}" data-i="${i}" style="--bc:${BLOCKCOL[s.block]}">${s.sub}</span>`).join('');
+  const cur=done?{sub:'done',n:0,l:0}:FILL_ORDER[fillIdx];
+  bar.innerHTML=`<div class="fb-head"><span class="fb-title">Aufbau fill · by n+l (Madelung), the way the guide's §02 diagram reads</span><span class="fb-step">${Math.min(fillIdx+1,FILL_ORDER.length)} / ${FILL_ORDER.length}</span></div>`
+    +`<div class="fb-chips">${chips}</div>`
+    +(done?'':`<div class="fb-now"><span class="fb-sub">${cur.sub}</span><span class="fb-meta">n + l = ${cur.n+cur.l}</span></div>`)
+    +`<div class="fb-cap">${fillCaption()}</div>`
+    +`<div class="fb-nav"><button class="fb-stepb" data-d="-1" type="button">◀</button>`
+    +`<button class="fb-play" type="button">${fillPlaying?'⏸ Pause':(done?'↺ Replay':'▶ Play')}</button>`
+    +`<button class="fb-stepb" data-d="1" type="button">▶</button>`
+    +`<button class="fb-speed" type="button">${fillSpeed}×</button>`
+    +`<button class="fb-exit" type="button">Exit ✕</button></div>`;
+  bar.querySelectorAll('.fb-chip').forEach(c=>c.onclick=()=>{ pauseFill(); fillIdx=+c.dataset.i; paintFill(); renderFillBar(); });
+  bar.querySelectorAll('.fb-stepb').forEach(b=>b.onclick=()=>stepFill(+b.dataset.d));
+  bar.querySelector('.fb-play').onclick=()=>{ if(fillPlaying){ pauseFill(); } else { if(fillIdx>=FILL_ORDER.length) fillIdx=0; playFill(); } };
+  bar.querySelector('.fb-speed').onclick=()=>{ fillSpeed = fillSpeed===1?2:(fillSpeed===2?0.5:1); if(fillPlaying) playFill(); else renderFillBar(); };
+  bar.querySelector('.fb-exit').onclick=exitFill;
+}
+function startFill(){
+  if(!(curLayout==='left'||curLayout==='spiral')) return;
+  if(tour) exitTour();
+  filling=true; fillIdx=0;
+  clearHighlight();
+  ELEMENTS.forEach(el=>{ TILES[el.n].querySelector('.val').textContent=''; });
+  TILES[24].classList.add('fill-anom'); TILES[29].classList.add('fill-anom');
+  document.getElementById('fillBtn').hidden=true;
+  paintFill(); renderFillBar();
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches){ renderFillBar(); } else { playFill(); }
+}
+function playFill(){
+  clearInterval(fillTimer); fillPlaying=true;
+  fillTimer=setInterval(()=>{
+    if(fillIdx>=FILL_ORDER.length){ pauseFill(); return; }
+    fillIdx++; paintFill(); renderFillBar();
+    if(fillIdx>=FILL_ORDER.length) pauseFill();
+  }, Math.round(950/fillSpeed));
+  renderFillBar();
+}
+function pauseFill(){ clearInterval(fillTimer); fillTimer=null; fillPlaying=false; if(filling) renderFillBar(); }
+function stepFill(d){ pauseFill(); fillIdx=Math.max(0,Math.min(FILL_ORDER.length,fillIdx+d)); paintFill(); renderFillBar(); }
+function exitFill(){
+  filling=false; pauseFill();
+  document.getElementById('fillbar').hidden=true;
+  for(const el of ELEMENTS){ const t=TILES[el.n]; t.style.opacity=''; t.style.color=''; t.classList.remove('fill-now','fill-anom'); }
+  recolor(); applyLayout(); restoreBase();
+  document.getElementById('fillBtn').hidden=!(curLayout==='left'||curLayout==='spiral');
 }
 
 function applyInitialParams(){
@@ -1163,9 +1304,13 @@ Promise.all([
       const el=/^\d+$/.test(tok)?byNum[+tok]:bySym[tok.toLowerCase()]; if(el) set.add(el.n); });
     if(set.size){ activeCat=null; highlightSet=set; highlightLabel=params.get('label')||''; restoreBase(); }
   }
+  // fill button is available only in the two fill-ordered arrangements
+  document.getElementById('fillBtn').hidden=!(curLayout==='left'||curLayout==='spiral');
   // ?tour=<id>&step=<n> — resume a guided tour at a step (overrides sel/color above)
   const tParam=params.get('tour');
   if(tParam && TOURS[tParam]){ tour=tParam; tourStep=(parseInt(params.get('step'),10)||1)-1; renderTour(); }
+  // ?fill=1 — auto-start the aufbau fill (Left-step / Spiral only)
+  if(params.get('fill')==='1' && (curLayout==='left'||curLayout==='spiral')) startFill();
 }).catch(err=>{
   document.getElementById('side').innerHTML='<div class="ph">Could not load element data.<br>'+err+'</div>';
 });

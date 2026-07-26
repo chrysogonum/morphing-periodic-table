@@ -1,0 +1,13 @@
+{
+  "name": "morphtable",
+  "compatibility_date": "2026-07-20",
+  "assets": {
+    "directory": "."
+  },
+  "routes": [
+    { "pattern": "morphtable.ppr3.com", "custom_domain": true }
+  ],
+  "observability": {
+    "enabled": true
+  }
+}

@@ -1,0 +1,11 @@
+.git/**
+.wrangler/**
+node_modules/**
+wrangler.jsonc
+.assetsignore
+.nojekyll
+.gitignore
+*.md
+
+# Private source data — deliberately kept out of the public site (see .gitignore)
+discovery_years.sourced.json

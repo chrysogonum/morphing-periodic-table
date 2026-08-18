@@ -117,6 +117,17 @@
   footer .copy a{color:inherit;text-decoration:none;border-bottom:1px solid var(--hair);}
   footer .copy a:hover{border-bottom-color:currentColor;}
   :focus-visible{outline:2px solid var(--signal);outline-offset:2px;}
+
+  /* contents strip + anchor offset for the sticky bar */
+  h2[id]{scroll-margin-top:72px;}
+  .toc{margin-top:22px;background:var(--surface);border:1px solid var(--hair);border-radius:11px;padding:14px 16px;}
+  .toc .gl{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin:0 0 9px;}
+  .toc .chips{display:flex;flex-wrap:wrap;gap:7px;}
+  .chip{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;
+    color:var(--dim);text-decoration:none;padding:6px 10px;border:1px solid var(--hair);border-radius:999px;background:var(--surface-2);transition:.15s;}
+  .chip .n{color:var(--signal);font-weight:600;}
+  .chip:hover{color:var(--ink);border-color:var(--hair-bright);}
+  .chip.go{border-color:rgba(255,107,154,.35);} .chip.go .n{color:var(--rose);}
   @media(max-width:680px){ .grid2{grid-template-columns:1fr;} }
 </style>
 </head>
@@ -124,7 +135,7 @@
 <div class="topbar">
   <div class="topbar-in">
     <div class="brand"><span class="mk">Z</span><span class="nm">PERIODIC<span class="sep">/</span>SPECTROMETER</span></div>
-    <nav class="tnav"><a href="index.html">Explore</a><a href="learn.html" class="active">Guide</a><a href="history.html">History</a></nav>
+    <nav class="tnav"><a href="index.html">Explore</a><a href="learn.html" class="active">Guide</a><a href="experiments.html">Experiments</a><a href="history.html">History</a></nav>
   </div>
 </div>
 
@@ -138,7 +149,22 @@
     <div class="ribbon" aria-hidden="true"></div>
   </section>
 
-  <h2><span class="idx">00</span> The 30-second operation</h2>
+  <nav class="toc" aria-label="Contents">
+    <p class="gl">Contents</p>
+    <div class="chips">
+      <a class="chip" href="#s00"><span class="n">00</span>30-second operation</a>
+      <a class="chip" href="#s01"><span class="n">01</span>the six arrangements</a>
+      <a class="chip" href="#s02"><span class="n">02</span>shells & orbitals</a>
+      <a class="chip" href="#s03"><span class="n">03</span>aufbau</a>
+      <a class="chip" href="#s04"><span class="n">04</span>isotopes</a>
+      <a class="chip" href="#s05"><span class="n">05</span>the property maps</a>
+      <a class="chip" href="#s06"><span class="n">06</span>trends, quick reference</a>
+      <a class="chip" href="#s07"><span class="n">07</span>isoelectronic</a>
+      <a class="chip go" href="experiments.html"><span class="n">08</span>two-minute experiments ▸</a>
+    </div>
+  </nav>
+
+  <h2 id="s00"><span class="idx">00</span> The 30-second operation</h2>
   <ol class="steps">
     <li><b>Pick an arrangement.</b> The same 118 tiles fly into a new shape — standard, long form, left-step,
       spiral, orbits, or the wave. The motion is the lesson: nothing is added or removed, only refolded.</li>
@@ -156,7 +182,7 @@
   </ol>
   <a class="try" href="index.html"><span class="ar">▸</span>Open the instrument</a>
 
-  <h2><span class="idx">01</span> The six arrangements</h2>
+  <h2 id="s01"><span class="idx">01</span> The six arrangements</h2>
   <p class="sect-lede">There has never been one "correct" periodic table. Chemists have folded the same sequence
   many ways, each exposing a different truth. Switch between them and watch what moves — the elements that
   travel farthest are the ones whose "home" is genuinely debated. The last one unrolls the table completely.</p>
@@ -211,7 +237,7 @@
     <a class="try alt" href="index.html?layout=wave&amp;color=ie"><span class="ar">▸</span>See the wave</a>
   </div>
 
-  <h2><span class="idx">02</span> What shapes the table — shells &amp; orbitals</h2>
+  <h2 id="s02"><span class="idx">02</span> What shapes the table — shells &amp; orbitals</h2>
   <p class="sect-lede">The table's outline isn't a design choice. The blocks, the torn-out f-block, the left-step
   ordering — all of it is one thing drawn different ways: the order in which electrons stack into an atom. Here is
   the machinery underneath every arrangement above.</p>
@@ -253,7 +279,7 @@
   <b class="gloss" tabindex="0" data-note="The address of every electron: shell number + orbital letter + count. '3p⁵' means five electrons in the p-orbital of the third shell — shown in every element's readout panel.">electron configuration</b> in a readout reads as shell-number, orbital-letter, count. Click any element and the
   “P-BLOCK” tag or the <code>3p⁵</code> in its profile is this, made concrete.</p>
 
-  <h2><span class="idx">03</span> The order the shells fill — aufbau</h2>
+  <h2 id="s03"><span class="idx">03</span> The order the shells fill — aufbau</h2>
   <p class="sect-lede">§02 showed <i>what</i> the orbitals are and <i>how many</i> electrons each holds. The other
   half of the story is the <i>order</i> they fill — and that order is the engine behind an element's electron
   configuration, behind the <b>left-step</b> arrangement (which literally sorts by it), and behind the block
@@ -320,7 +346,7 @@
     <a class="try alt" href="index.html?layout=left&amp;fill=1"><span class="ar">▸</span>Watch the orbitals fill</a>
   </div>
 
-  <h2><span class="idx">04</span> Isotopes — why the masses aren't whole numbers</h2>
+  <h2 id="s04"><span class="idx">04</span> Isotopes — why the masses aren't whole numbers</h2>
   <p class="sect-lede">Nearly every section here is about electrons. This one is about the nucleus, and it answers a
   question the property maps quietly raise: chlorine's mass reads <b>35.45</b> — so what is 0.45 of an atom? Nothing.
   The atomic mass on the table is an <i>average</i>.</p>
@@ -384,7 +410,7 @@
     <a href="index.html?color=mass&amp;sel=18">Experiment 04</a>.</p>
   </div>
 
-  <h2><span class="idx">05</span> Reading the property maps</h2>
+  <h2 id="s05"><span class="idx">05</span> Reading the property maps</h2>
   <p class="sect-lede">Color is where the table stops being a list and becomes a map. Each mode paints all 118
   elements on one scale at once, so a trend that takes a paragraph to state becomes a gradient you can read in a
   second. Open any of them, then switch arrangements while the colors hold.</p>
@@ -455,7 +481,7 @@
     <a class="try alt" href="index.html?layout=standard&amp;color=zeff&amp;sel=17"><span class="ar">▸</span>Now map the cause</a>
   </div>
 
-  <h2><span class="idx">06</span> Periodic trends — quick reference</h2>
+  <h2 id="s06"><span class="idx">06</span> Periodic trends — quick reference</h2>
   <p class="sect-lede">Four trends explain most of chemistry's behaviour. Each comes down to a tug-of-war between
   how strongly the nucleus pulls and how far away (and how shielded) the outer electrons are. Two words do the
   heavy lifting below: a <b>period</b> is a <i>row</i> (read left to right across one), a <b>group</b> is a
@@ -472,7 +498,7 @@
       <td>Easily-lost outer electrons make metals; the metalloid staircase marks the hand-off to nonmetals.</td></tr>
   </table>
 
-  <h2><span class="idx">07</span> Isoelectronic — Coulomb's law you can measure</h2>
+  <h2 id="s07"><span class="idx">07</span> Isoelectronic — Coulomb's law you can measure</h2>
   <p class="sect-lede">The effective-charge map in §05 showed the nucleus's pull rising across a period as protons
   pile up. Here is that idea stripped to one variable: take seven species that all carry the <b>same ten
   electrons</b>, and just keep adding protons. Nothing else changes — so whatever happens to their size is the
@@ -546,150 +572,12 @@
     trend gets distorted.</p>
   </div>
 
-  <h2><span class="idx">08</span> Two-minute experiments</h2>
+  <h2 id="s08"><span class="idx">08</span> Two-minute experiments</h2>
   <p class="sect-lede">The fastest way to learn from the instrument is to ask it a question and watch it answer.
-  Each one opens already set up — give it a try, then poke around from there.</p>
-
-  <div class="card">
-    <div class="tag">Experiment 01</div>
-    <h3>Does helium really belong with the noble gases?</h3>
-    <p>Open the left-step table with helium locked in. It now sits above beryllium, with the other noble gases
-    far away. Switch back to Standard and watch it leap across to neon. Which home convinces you?</p>
-    <a class="try alt" href="index.html?layout=left&amp;sel=2&amp;color=cat"><span class="ar">▸</span>Run experiment</a>
-  </div>
-  <div class="card">
-    <div class="tag">Experiment 02</div>
-    <h3>Where on the table is an element most reactive?</h3>
-    <p>Map ionization energy, then isolate the alkali metals. The deep-violet, easy-to-ionize corner is where
-    metals give up electrons most readily — the most reactive metals live at the bottom-left.</p>
-    <a class="try" href="index.html?color=ie&amp;family=alkali%20metal"><span class="ar">▸</span>Run experiment</a>
-  </div>
-  <div class="card">
-    <div class="tag">Experiment 03</div>
-    <h3>What are the toughest materials on the chart?</h3>
-    <p>Map melting point and lock in tungsten. The glowing band through the centre of the d-block is exactly the
-    family of refractory metals engineers reach for when nothing else survives the heat.</p>
-    <a class="try" href="index.html?color=melt&amp;sel=74"><span class="ar">▸</span>Run experiment</a>
-  </div>
-  <div class="card">
-    <div class="tag">Experiment 04</div>
-    <h3>Why is the table ordered by number, not weight?</h3>
-    <p>Map atomic mass and find argon (18). Now look at its right-hand neighbour, potassium — it is <i>lighter</i>
-    than argon, yet comes after it. These mass inversions are the clue that <b>proton count</b>, not weight, is
-    the real organizing principle of the table.</p>
-    <a class="try" href="index.html?color=mass&amp;sel=18"><span class="ar">▸</span>Run experiment</a>
-  </div>
-  <div class="card">
-    <div class="tag">Experiment 05</div>
-    <h3>Which elements are liquid at room temperature?</h3>
-    <p>Map state and hunt for the odd ones out. Of all 118 elements, only two are liquid near room temperature —
-    <b>bromine</b> (35) and <b>mercury</b> (80). Everything else is solid or gas. See if you can spot both.</p>
-    <a class="try" href="index.html?color=phase&amp;sel=35"><span class="ar">▸</span>Run experiment</a>
-  </div>
-  <div class="card">
-    <div class="tag">Experiment 06</div>
-    <h3>Find the staircase between metals and nonmetals</h3>
-    <p>Isolate the metalloids — boron, silicon, germanium, arsenic, antimony, tellurium (and, in this dataset,
-    astatine). They form a diagonal <b>staircase</b> marking the fuzzy border where metals hand off to nonmetals.
-    The semiconductors that run modern electronics live right on this line.</p>
-    <a class="try" href="index.html?color=cat&amp;family=metalloid"><span class="ar">▸</span>Run experiment</a>
-  </div>
-  <div class="card">
-    <div class="tag">Experiment 07</div>
-    <h3>Why won't the noble gases react?</h3>
-    <p>Map ionization energy and isolate the noble gases. They sit at the very <b>top</b> of the scale — their
-    electron shells are already full, so prising an electron loose costs more energy than almost anywhere else
-    on the table. That stinginess is exactly why they are famously inert.</p>
-    <a class="try" href="index.html?color=ie&amp;family=noble%20gas"><span class="ar">▸</span>Run experiment</a>
-  </div>
-  <div class="card">
-    <div class="tag">Experiment 08</div>
-    <h3>Watch the word "periodic" come true</h3>
-    <p>Switch to the spiral and map ionization energy. Follow the ribbon outward: a sharp peak flares at the end
-    of <i>every single loop</i> — the noble gases. The property doesn't drift, it <b>repeats</b>. That regular
-    recurrence is precisely what "periodic" means.</p>
-    <a class="try" href="index.html?layout=spiral&amp;color=ie"><span class="ar">▸</span>Run experiment</a>
-  </div>
-  <div class="card">
-    <div class="tag">Experiment 09 · the table meets biology</div>
-    <h3>Read the label on a bag of fertilizer</h3>
-    <p>Every fertilizer bag carries three numbers — its <b>N-P-K</b> ratio — for nitrogen, phosphorus and
-    potassium, the elements plants burn through fastest. This experiment lights up the full set a plant needs:
-    those three macronutrients, three secondary ones (calcium, magnesium, sulfur), and eight micronutrients
-    required in mere traces (boron, chlorine, manganese, iron, nickel, copper, zinc, molybdenum). Carbon,
-    hydrogen and oxygen — most of the plant's actual mass — it pulls free from air and water, so they're not in
-    the soil-fed set. The cool part: this shopping list for life is <b>scattered clear across the table</b>,
-    drawing on alkali metals, nonmetals, transition metals and metalloids alike. The set stays lit as you switch
-    arrangements — flip to the spiral to watch the nutrients sprinkle along the thread, and notice they all
-    <b>hug the centre</b>. Since the spiral winds outward by atomic number, that means every essential nutrient
-    is a light element: life is built from what's abundant and bioavailable. The one straggler reaching outward
-    is molybdenum — the heaviest nutrient most plants need, and the metal at the heart of nitrogen fixation.</p>
-    <a class="try alt" href="index.html?highlight=N,P,K,Ca,Mg,S,B,Cl,Mn,Fe,Ni,Cu,Zn,Mo&amp;label=Essential%20plant%20nutrients&amp;color=cat"><span class="ar">▸</span>Light up the nutrients</a>
-  </div>
-  <div class="card">
-    <div class="tag">Experiment 10 · the heaviest nutrient</div>
-    <h3>The trace metal that unlocks nitrogen</h3>
-    <p>Molybdenum is the heaviest element most plants need — and they need a vanishingly small amount of it, less
-    than any other nutrient. Yet without it, nitrogen is almost useless to them. Molybdenum sits at the active
-    site of two crucial enzymes: <b>nitrogenase</b>, which nitrogen-fixing bacteria use to pull inert N₂ straight
-    out of the air, and <b>nitrate reductase</b>, which lets a plant turn soil nitrate into the raw material for
-    protein. So the lone heavy outlier in the nutrient set is the very metal that makes the <i>most</i> important
-    nutrient work. This experiment lights up nitrogen and molybdenum together and opens molybdenum's profile —
-    note how far apart they sit on the table, yet how tightly their fates are linked.</p>
-    <a class="try" href="index.html?highlight=N,Mo&amp;label=Molybdenum%20unlocks%20nitrogen&amp;sel=42&amp;color=cat"><span class="ar">▸</span>Run experiment</a>
-  </div>
-  <div class="card">
-    <div class="tag">Experiment 11 · the table meets the dentist</div>
-    <h3>The liquid metal in a solid filling</h3>
-    <p>A traditional dental filling is an <b>amalgam</b> — and its main ingredient is mercury, the one metal that's
-    a <b>liquid</b> at room temperature (it doesn't freeze until −39 °C). Roughly half of the filling is liquid
-    mercury, stirred into a powder of solids that melt far hotter: <b>silver</b> (962 °C), <b>tin</b> (232 °C) and
-    <b>copper</b> (1085 °C). The famous "silver filling" is really all four. Map melting point and the split is
-    stark: mercury sits alone at the cold end of the scale while its partners glow warm. Yet the paste sets within
-    minutes into a solid hard enough to chew on for decades. That's the point worth sitting with — the mixture has
-    <i>none</i> of its ingredients' extremes. It isn't a runny liquid like pure mercury, and it isn't a
-    stubborn high-melting metal like silver or copper; combining elements makes a material the periodic table can
-    describe the parts of but never predict the whole of. The table tells you what each element <i>is</i>; what
-    they <i>become</i> together is a story it can only hint at.</p>
-    <a class="try" href="index.html?highlight=Hg,Ag,Sn,Cu&amp;label=Dental%20amalgam&amp;sel=80&amp;color=melt"><span class="ar">▸</span>Run experiment</a>
-  </div>
-  <div class="card">
-    <div class="tag">Experiment 12 · reasoning from evidence</div>
-    <h3>Strip an atom one electron at a time</h3>
-    <p>Click <b>sodium</b> and find the <b>successive ionization energies</b> chart in its readout. The first
-    electron comes off cheaply — then the second costs <b>nine times</b> as much. That wall is sodium hitting its
-    <b>noble-gas core</b>: after the one loose outer electron is gone, the next has to be prised out of a full inner
-    shell. You didn't assume sodium is +1; you can <i>read</i> it off the jump. This is the one place in the tool
-    where measured numbers let you reason straight to a conclusion, not just recognise a color. Try <b>magnesium</b>
-    (the wall comes after <i>two</i>) and <b>aluminium</b> (after <i>three</i>) — the position of the wall is the
-    ion charge, every time. Nonmetals like oxygen show the same core wall, but they <i>gain</i> electrons in
-    chemistry rather than strip all of theirs away, so the jump reveals the shell without predicting an ion. The
-    chart covers elements 1–20, where every important jump lives; the values are measured, not modelled.</p>
-    <a class="try alt" href="index.html?sel=11&amp;color=ie"><span class="ar">▸</span>Strip sodium</a>
-  </div>
-  <div class="card">
-    <div class="tag">Experiment 13 · the table meets the chemical plant</div>
-    <h3>The metals that make your shampoo but never end up in it</h3>
-    <p>Turn over a bottle of shampoo or laundry liquid and you'll find <b>alcohol ethoxylates</b> — the workhorse
-    surfactants that lift grease into water. One widely used family, Shell's <b>Neodol</b> alcohols, is made
-    from petrochemicals as a stand-in for the "oleo" alcohols pressed from coconut and palm oil. Their trick is
-    being about <b>80% linear with 20% light branching</b> — enough kink to blend easily into a formulation, not
-    so much that it slows biodegradation. Here's the part the table can show. The finished molecule contains only three
-    elements: <b>carbon, hydrogen and oxygen</b>. But it can't be built without a relay of metals, each catalysing
-    one step and then stepping aside. <b>Nickel</b> strings ethylene into long chains; <b>cobalt</b>, fed carbon
-    monoxide and hydrogen, adds the alcohol end onto each chain — the step that sets that 80/20 shape;
-    <b>silver</b> oxidises ethylene into ethylene oxide; and <b>potassium</b> (as potassium hydroxide) threads those
-    oxide units onto the alcohol. Not an atom of any of the four ends up in the product. Light up all seven and the
-    split is stark: the <i>ingredients</i> are light nonmetals from the top-right of the table; the <i>makers</i>
-    are d-block metals from the middle (plus one alkali metal), whose easily reshuffled outer electrons let them
-    hold a molecule, rearrange it and let go. That is why the transition metals are the table's professional
-    go-betweens — though which metal does which job is chemistry the table can point at, not predict. This
-    experiment lights up the set and opens cobalt, the metal behind the shape-setting step. Flip to the spiral:
-    the ingredients huddle in the light-element centre while the catalysts sit further out along the thread,
-    silver farthest of all.</p>
-    <a class="try" href="index.html?highlight=C,H,O,Ni,Co,Ag,K&amp;label=Detergent%20alcohols%3A%203%20ingredients%2C%204%20catalysts&amp;sel=27&amp;color=cat"><span class="ar">▸</span>Run experiment</a>
-  </div>
-
+  The experiments now live on their own page — thirteen of them, from "does helium belong with the noble gases?"
+  to a bag of fertilizer, a dental filling and a bottle of shampoo. Each opens the instrument already set up, and
+  each has its own link you can share.</p>
+  <a class="try alt" href="experiments.html"><span class="ar">▸</span>Open the experiments</a>
   <footer>
     <span class="copy">© 2026 <a href="https://ppr3.com">Peter Repetti</a> · All rights reserved</span>
     <a href="index.html">← back to the instrument</a><br>

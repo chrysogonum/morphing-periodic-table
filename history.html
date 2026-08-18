@@ -26,11 +26,12 @@
     background:rgba(8,9,12,.78);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);}
   .topbar-in{max-width:1500px;margin:0 auto;padding:0 22px;height:54px;display:flex;align-items:center;
     justify-content:space-between;gap:16px;}
-  .brand{display:flex;align-items:center;gap:10px;}
+  .brand{display:flex;align-items:center;gap:10px;min-width:0;}
   .brand .mk{width:22px;height:22px;flex:none;display:grid;place-items:center;color:var(--void);
     background:conic-gradient(from 200deg,#7A4DFF,#2BD7E0,#34D17A,#F2E14B,#FF9A3C,#FF4D5E,#7A4DFF);
     clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);font-weight:800;font-size:11px;}
-  .brand .nm{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;color:var(--ink);font-weight:500;}
+  .brand .nm{font-family:var(--mono);font-size:12.5px;letter-spacing:.16em;color:var(--ink);font-weight:500;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .brand .nm .sep{color:var(--faint);margin:0 2px;}
   .tnav{display:flex;align-items:center;gap:4px;}
   .tnav a{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
@@ -195,7 +196,7 @@
 <div class="topbar">
   <div class="topbar-in">
     <div class="brand"><span class="mk">Z</span><span class="nm">PERIODIC<span class="sep">/</span>SPECTROMETER</span></div>
-    <nav class="tnav"><a href="index.html">Explore</a><a href="learn.html">Guide</a><a href="history.html" class="active">History</a></nav>
+    <nav class="tnav"><a href="index.html">Explore</a><a href="learn.html">Guide</a><a href="experiments.html">Experiments</a><a href="history.html" class="active">History</a></nav>
   </div>
 </div>
 

@@ -5,6 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Two-minute experiments — The Morphing Periodic Table</title>
 <meta name="description" content="Thirteen two-minute experiments for the Morphing Periodic Table — each one a question, answered by opening the live instrument already set up. Every experiment has its own shareable link." />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="The Morphing Periodic Table" />
+<meta property="og:title" content="Two-minute experiments — The Morphing Periodic Table" />
+<meta property="og:description" content="Thirteen two-minute experiments for the Morphing Periodic Table — each one a question, answered by opening the live instrument already set up. Every experiment has its own shareable link." />
+<meta property="og:url" content="https://morphtable.ppr3.com/experiments" />
+<meta property="og:image" content="https://morphtable.ppr3.com/og/experiments.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Title card: Ask the instrument a question" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Two-minute experiments — The Morphing Periodic Table" />
+<meta name="twitter:description" content="Thirteen two-minute experiments for the Morphing Periodic Table — each one a question, answered by opening the live instrument already set up. Every experiment has its own shareable link." />
+<meta name="twitter:image" content="https://morphtable.ppr3.com/og/experiments.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Expanded:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -157,7 +170,7 @@
     <p class="lede">The fastest way to learn from the periodic table is to ask it something and watch it answer.
     Each experiment below is one question; its <b>RUN</b> button opens the live instrument already set up — arrangement
     chosen, property mapped, elements lit. Try it, then poke around from there. Every experiment has its own link
-    (<b>Copy link</b> on the card) so you can send a single one to someone.</p>
+    (<b>Copy link</b> on the card) so you can send a single one to someone — it unfurls with its own preview card.</p>
     <div class="ribbon" aria-hidden="true"></div>
   </section>
 
@@ -361,7 +374,7 @@ if(location.hash&&document.fonts){document.fonts.ready.then(()=>{const el=docume
 /* Copy a shareable link to one experiment. Falls back to selecting the URL if the clipboard API is unavailable. */
 document.querySelectorAll('.share').forEach(btn=>{
   btn.addEventListener('click',async()=>{
-    const url=location.origin+location.pathname+'#exp-'+btn.dataset.exp;
+    const url=location.origin+'/e/'+btn.dataset.exp;  /* share page: carries this experiment's preview card, forwards to #exp-NN */
     let ok=false;
     try{ await navigator.clipboard.writeText(url); ok=true; }catch(e){}
     if(!ok){ window.prompt('Copy this link:',url); return; }
